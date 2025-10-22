@@ -1,5 +1,6 @@
 import { prisma } from './db';
 import { Project } from '@/types';
+import { notificationService } from './notificationService';
 
 export type CreateProjectInput = {
   title: string;
@@ -21,7 +22,7 @@ export type UpdateProjectInput = {
 export const projectService = {
   // Create a new project
   async createProject(input: CreateProjectInput) {
-    return await prisma.project.create({
+    const project = await prisma.project.create({
       data: {
         title: input.title,
         description: input.description,
@@ -31,6 +32,15 @@ export const projectService = {
         ownerId: input.ownerId,
       },
     });
+    
+    // Emit real-time notification
+    notificationService.emit('projectUpdated', {
+      action: 'created',
+      project,
+      timestamp: new Date().toISOString(),
+    });
+    
+    return project;
   },
 
   // Get all projects
@@ -100,40 +110,88 @@ export const projectService = {
   // Update project
   async updateProject(input: UpdateProjectInput) {
     const { id, ...updateData } = input;
-    return await prisma.project.update({
+    const project = await prisma.project.update({
       where: { id },
       data: updateData,
     });
+    
+    // Emit real-time notification
+    notificationService.emit('projectUpdated', {
+      action: 'updated',
+      project,
+      timestamp: new Date().toISOString(),
+    });
+    
+    return project;
   },
 
   // Delete project
   async deleteProject(id: string) {
-    return await prisma.project.delete({
+    const project = await prisma.project.delete({
       where: { id },
     });
+    
+    // Emit real-time notification
+    notificationService.emit('projectUpdated', {
+      action: 'deleted',
+      projectId: id,
+      timestamp: new Date().toISOString(),
+    });
+    
+    return project;
   },
 
   // Add member to project
   async addMemberToProject(projectId: string, userId: string) {
-    return await prisma.project.update({
+    const project = await prisma.project.update({
       where: { id: projectId },
       data: {
         members: {
           connect: { id: userId },
         },
       },
+      include: {
+        owner: true,
+        members: true,
+        tasks: true,
+      },
     });
+    
+    // Emit real-time notification
+    notificationService.emit('projectUpdated', {
+      action: 'memberAdded',
+      project,
+      userId,
+      timestamp: new Date().toISOString(),
+    });
+    
+    return project;
   },
 
   // Remove member from project
   async removeMemberFromProject(projectId: string, userId: string) {
-    return await prisma.project.update({
+    const project = await prisma.project.update({
       where: { id: projectId },
       data: {
         members: {
           disconnect: { id: userId },
         },
       },
+      include: {
+        owner: true,
+        members: true,
+        tasks: true,
+      },
     });
+    
+    // Emit real-time notification
+    notificationService.emit('projectUpdated', {
+      action: 'memberRemoved',
+      project,
+      userId,
+      timestamp: new Date().toISOString(),
+    });
+    
+    return project;
   },
 };

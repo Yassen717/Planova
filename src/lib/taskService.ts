@@ -1,5 +1,6 @@
 import { prisma } from './db';
 import { Task } from '@/types';
+import { notificationService } from './notificationService';
 
 export type CreateTaskInput = {
   title: string;
@@ -24,7 +25,7 @@ export type UpdateTaskInput = {
 export const taskService = {
   // Create a new task
   async createTask(input: CreateTaskInput) {
-    return await prisma.task.create({
+    const task = await prisma.task.create({
       data: {
         title: input.title,
         description: input.description,
@@ -36,6 +37,15 @@ export const taskService = {
         assigneeId: input.assigneeId,
       },
     });
+    
+    // Emit real-time notification
+    notificationService.emit('taskUpdated', {
+      action: 'created',
+      task,
+      timestamp: new Date().toISOString(),
+    });
+    
+    return task;
   },
 
   // Get all tasks
@@ -126,16 +136,34 @@ export const taskService = {
   // Update task
   async updateTask(input: UpdateTaskInput) {
     const { id, ...updateData } = input;
-    return await prisma.task.update({
+    const task = await prisma.task.update({
       where: { id },
       data: updateData,
     });
+    
+    // Emit real-time notification
+    notificationService.emit('taskUpdated', {
+      action: 'updated',
+      task,
+      timestamp: new Date().toISOString(),
+    });
+    
+    return task;
   },
 
   // Delete task
   async deleteTask(id: string) {
-    return await prisma.task.delete({
+    const task = await prisma.task.delete({
       where: { id },
     });
+    
+    // Emit real-time notification
+    notificationService.emit('taskUpdated', {
+      action: 'deleted',
+      taskId: id,
+      timestamp: new Date().toISOString(),
+    });
+    
+    return task;
   },
 };
