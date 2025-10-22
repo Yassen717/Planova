@@ -1,4 +1,5 @@
 import { prisma } from './db';
+import { notificationService } from './notificationService';
 
 export type CreateCommentInput = {
   content: string;
@@ -10,13 +11,22 @@ export type CreateCommentInput = {
 export const commentService = {
   // Create a new comment
   async createComment(input: CreateCommentInput) {
-    return await prisma.comment.create({
-      data: {
-        content: input.content,
-        authorId: input.authorId,
-        taskId: input.taskId,
-        projectId: input.projectId,
-      },
+    // Build the data object dynamically to avoid TypeScript errors
+    const data: any = {
+      content: input.content,
+      authorId: input.authorId,
+    };
+    
+    if (input.taskId) {
+      data.taskId = input.taskId;
+    }
+    
+    if (input.projectId) {
+      data.projectId = input.projectId;
+    }
+
+    const comment = await prisma.comment.create({
+      data,
       include: {
         author: {
           select: {
@@ -27,6 +37,15 @@ export const commentService = {
         },
       },
     });
+    
+    // Emit real-time notification
+    notificationService.emit('commentAdded', {
+      action: 'created',
+      comment,
+      timestamp: new Date().toISOString(),
+    });
+    
+    return comment;
   },
 
   // Get comments by task ID
@@ -69,7 +88,7 @@ export const commentService = {
 
   // Update comment
   async updateComment(id: string, content: string) {
-    return await prisma.comment.update({
+    const comment = await prisma.comment.update({
       where: { id },
       data: { content },
       include: {
@@ -82,12 +101,30 @@ export const commentService = {
         },
       },
     });
+    
+    // Emit real-time notification
+    notificationService.emit('commentAdded', {
+      action: 'updated',
+      comment,
+      timestamp: new Date().toISOString(),
+    });
+    
+    return comment;
   },
 
   // Delete comment
   async deleteComment(id: string) {
-    return await prisma.comment.delete({
+    const comment = await prisma.comment.delete({
       where: { id },
     });
+    
+    // Emit real-time notification
+    notificationService.emit('commentAdded', {
+      action: 'deleted',
+      commentId: id,
+      timestamp: new Date().toISOString(),
+    });
+    
+    return comment;
   },
 };

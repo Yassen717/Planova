@@ -1,0 +1,14 @@
+{
+  "name": "notification-test",
+  "version": "1.0.0",
+  "description": "Test script for Planova notifications",
+  "main": "notification-test.ts",
+  "scripts": {
+    "test": "ts-node notification-test.ts"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.8.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  }
+}

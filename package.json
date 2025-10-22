@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev-socket": "node server.js",
     "build": "next build --turbopack",
-    "start": "next start"
+    "start": "next start",
+    "test-notifications": "cd test && npm install && npm test"
   },
   "dependencies": {
     "@prisma/client": "^6.17.1",
