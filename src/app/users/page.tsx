@@ -1,6 +1,3 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import { getTeamMetadata } from '@/lib/metadata';
 
 export const metadata = getTeamMetadata();

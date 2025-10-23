@@ -1,6 +1,3 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getTasksMetadata } from '@/lib/metadata';
 
@@ -30,22 +27,3 @@ export default function TasksPage() {
     </div>
   );
 }
-
-type Task = {
-  id: string;
-  title: string;
-  description: string | null;
-  status: 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'DONE';
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
-  startDate: string;
-  dueDate: string | null;
-  assignee: {
-    id: string;
-    name: string | null;
-    email: string;
-  } | null;
-  project: {
-    id: string;
-    title: string;
-  };
-};

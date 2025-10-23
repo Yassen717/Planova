@@ -1,7 +1,3 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useApi } from '@/hooks/useApi';
 import { getDashboardMetadata } from '@/lib/metadata';
 
 export const metadata = getDashboardMetadata();
