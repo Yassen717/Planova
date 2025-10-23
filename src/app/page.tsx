@@ -1,4 +1,11 @@
 import Image from "next/image";
+import defaultMetadata from '@/lib/metadata';
+
+export const metadata = {
+  ...defaultMetadata,
+  title: 'Planova - Project Management System',
+  description: 'A modern, full-stack project management system built with Next.js',
+};
 
 export default function Home() {
   return (
@@ -12,26 +19,26 @@ export default function Home() {
               <line x1="9" y1="21" x2="9" y2="9"></line>
             </svg>
           </div>
-          <h1 className="text-4xl font-bold">Planova</h1>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Planova</h1>
         </div>
-        <p className="text-xl text-center sm:text-left">
+        <p className="text-xl text-center sm:text-left text-gray-700 dark:text-gray-300">
           A modern, full-stack project management system
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
-          <div className="border rounded-lg p-6 hover:shadow-lg transition-shadow">
-            <h2 className="text-xl font-semibold mb-2">Project Management</h2>
+          <div className="border rounded-lg p-6 hover:shadow-lg transition-shadow dark:border-gray-700 dark:bg-gray-800">
+            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Project Management</h2>
             <p className="text-gray-600 dark:text-gray-400">
               Create, organize, and track projects with ease
             </p>
           </div>
-          <div className="border rounded-lg p-6 hover:shadow-lg transition-shadow">
-            <h2 className="text-xl font-semibold mb-2">Task Tracking</h2>
+          <div className="border rounded-lg p-6 hover:shadow-lg transition-shadow dark:border-gray-700 dark:bg-gray-800">
+            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Task Tracking</h2>
             <p className="text-gray-600 dark:text-gray-400">
               Assign tasks, set deadlines, and monitor progress
             </p>
           </div>
-          <div className="border rounded-lg p-6 hover:shadow-lg transition-shadow">
-            <h2 className="text-xl font-semibold mb-2">Team Collaboration</h2>
+          <div className="border rounded-lg p-6 hover:shadow-lg transition-shadow dark:border-gray-700 dark:bg-gray-800">
+            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Team Collaboration</h2>
             <p className="text-gray-600 dark:text-gray-400">
               Work together with your team in real-time
             </p>
@@ -54,7 +61,7 @@ export default function Home() {
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+          className="flex items-center gap-2 hover:underline hover:underline-offset-4 text-gray-700 dark:text-gray-300"
           href="https://nextjs.org/docs"
           target="_blank"
           rel="noopener noreferrer"
@@ -69,7 +76,7 @@ export default function Home() {
           Docs
         </a>
         <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+          className="flex items-center gap-2 hover:underline hover:underline-offset-4 text-gray-700 dark:text-gray-300"
           href="https://github.com"
           target="_blank"
           rel="noopener noreferrer"
@@ -84,7 +91,7 @@ export default function Home() {
           GitHub
         </a>
         <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+          className="flex items-center gap-2 hover:underline hover:underline-offset-4 text-gray-700 dark:text-gray-300"
           href="/dashboard"
         >
           <Image
