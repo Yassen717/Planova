@@ -20,6 +20,7 @@ model User {
   memberProjects Project[] @relation("MemberProjects")
   assignedTasks  Task[] @relation("AssignedTasks")
   authoredComments Comment[]
+  notifications Notification[] @relation("UserNotifications")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -66,6 +67,19 @@ model Comment {
   taskId    String
   project   Project? @relation(fields: [projectId], references: [id])
   projectId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  message   String
+  read      Boolean  @default(false)
+  userId    String
+  user      User     @relation("UserNotifications", fields: [userId], references: [id])
+  entityId  String?
+  entityType String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

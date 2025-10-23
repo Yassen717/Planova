@@ -1,6 +1,7 @@
 // Notification service for real-time updates using Socket.io
 import { io, Socket } from 'socket.io-client';
 import { NEXT_PUBLIC_API_BASE_URL } from '@/lib/api';
+import { notificationDbService } from './notificationDbService';
 
 class NotificationService {
   private socket: Socket | null = null;
@@ -107,14 +108,61 @@ class NotificationService {
     }
   }
 
-  // Send a notification
-  sendNotification(type: string, message: string, data?: any) {
-    this.emit('sendNotification', {
-      type,
-      message,
-      data,
-      timestamp: new Date().toISOString(),
-    });
+  // Send a notification and persist it to the database
+  async sendNotification(type: string, message: string, userId: string, data?: any) {
+    // Persist to database
+    try {
+      const notification = await notificationDbService.createNotification({
+        type,
+        message,
+        userId,
+        entityId: data?.entityId,
+        entityType: data?.entityType,
+      });
+      
+      // Emit real-time notification
+      this.emit('sendNotification', {
+        type,
+        message,
+        userId,
+        data,
+        timestamp: new Date().toISOString(),
+        id: notification.id,
+      });
+      
+      return notification;
+    } catch (error) {
+      console.error('Error creating notification:', error);
+      // Still emit the notification even if database persistence fails
+      this.emit('sendNotification', {
+        type,
+        message,
+        userId,
+        data,
+        timestamp: new Date().toISOString(),
+      });
+      throw error;
+    }
+  }
+  
+  // Get notifications for a user
+  async getNotifications(userId: string, limit: number = 10) {
+    return await notificationDbService.getNotificationsByUserId(userId, limit);
+  }
+  
+  // Get unread notifications for a user
+  async getUnreadNotifications(userId: string) {
+    return await notificationDbService.getUnreadNotificationsByUserId(userId);
+  }
+  
+  // Mark notification as read
+  async markAsRead(id: string) {
+    return await notificationDbService.markAsRead(id);
+  }
+  
+  // Mark all notifications as read for a user
+  async markAllAsRead(userId: string) {
+    return await notificationDbService.markAllAsRead(userId);
   }
 }
 

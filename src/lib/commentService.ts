@@ -45,6 +45,50 @@ export const commentService = {
       timestamp: new Date().toISOString(),
     });
     
+    // Create a persistent notification for the task assignee or project owner
+    if (input.taskId) {
+      try {
+        // Get the task with assignee
+        const task = await prisma.task.findUnique({
+          where: { id: input.taskId },
+          include: { 
+            assignee: true,
+            project: true,
+          },
+        });
+        
+        // Notify the assignee if it's not the comment author
+        if (task?.assigneeId && task.assigneeId !== input.authorId) {
+          await notificationService.sendNotification(
+            'info',
+            `New comment on your task: ${task.title}`,
+            task.assigneeId,
+            {
+              entityId: comment.id,
+              entityType: 'comment',
+            }
+          );
+        }
+        
+        // Notify the project owner if it's not the comment author and not the assignee
+        if (task?.project?.ownerId && 
+            task.project.ownerId !== input.authorId && 
+            task.project.ownerId !== task.assigneeId) {
+          await notificationService.sendNotification(
+            'info',
+            `New comment on task in your project: ${task.title}`,
+            task.project.ownerId,
+            {
+              entityId: comment.id,
+              entityType: 'comment',
+            }
+          );
+        }
+      } catch (error) {
+        console.error('Error creating notification:', error);
+      }
+    }
+    
     return comment;
   },
 

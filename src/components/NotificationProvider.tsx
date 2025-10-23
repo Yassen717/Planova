@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { notificationService } from '@/lib/notificationService';
+import NotificationCenter from './NotificationCenter';
 
 type Notification = {
   id: string;
@@ -15,12 +16,17 @@ type NotificationContextType = {
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp'>) => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
+  showNotificationCenter: () => void;
+  unreadCount: number;
 };
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
     // Connect to notification service
@@ -32,17 +38,18 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         type: data.type || 'info',
         message: data.message,
       });
+      
+      // Increment unread count
+      setUnreadCount(prev => prev + 1);
     };
 
     notificationService.on('notification', handleNotification);
 
-    // Simulate some notifications for demo purposes
-    const demoTimer = setTimeout(() => {
-      notificationService.simulateNotification('info', 'Welcome to Planova!');
-    }, 2000);
+    // In a real application, you would get the current user ID from auth context
+    // For now, we'll use a placeholder
+    setCurrentUserId('user-123');
 
     return () => {
-      clearTimeout(demoTimer);
       notificationService.off('notification', handleNotification);
       notificationService.disconnect();
     };
@@ -73,10 +80,33 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     setNotifications([]);
   };
 
+  const showNotificationCenter = () => {
+    setShowNotifications(true);
+    // Reset unread count when opening notification center
+    setUnreadCount(0);
+  };
+
+  const hideNotificationCenter = () => {
+    setShowNotifications(false);
+  };
+
   return (
-    <NotificationContext.Provider value={{ notifications, addNotification, removeNotification, clearNotifications }}>
+    <NotificationContext.Provider value={{ 
+      notifications, 
+      addNotification, 
+      removeNotification, 
+      clearNotifications,
+      showNotificationCenter,
+      unreadCount
+    }}>
       {children}
       <NotificationContainer notifications={notifications} onRemove={removeNotification} />
+      {showNotifications && currentUserId && (
+        <NotificationCenter 
+          userId={currentUserId} 
+          onClose={hideNotificationCenter} 
+        />
+      )}
     </NotificationContext.Provider>
   );
 }

@@ -45,6 +45,23 @@ export const taskService = {
       timestamp: new Date().toISOString(),
     });
     
+    // Create a persistent notification if the task has an assignee
+    if (input.assigneeId) {
+      try {
+        await notificationService.sendNotification(
+          'info',
+          `You have been assigned a new task: ${input.title}`,
+          input.assigneeId,
+          {
+            entityId: task.id,
+            entityType: 'task',
+          }
+        );
+      } catch (error) {
+        console.error('Error creating notification:', error);
+      }
+    }
+    
     return task;
   },
 
@@ -147,6 +164,23 @@ export const taskService = {
       task,
       timestamp: new Date().toISOString(),
     });
+    
+    // Create a persistent notification if the task status changed to DONE
+    if (updateData.status === 'DONE' && task.assigneeId) {
+      try {
+        await notificationService.sendNotification(
+          'success',
+          `Task completed: ${task.title}`,
+          task.assigneeId,
+          {
+            entityId: task.id,
+            entityType: 'task',
+          }
+        );
+      } catch (error) {
+        console.error('Error creating notification:', error);
+      }
+    }
     
     return task;
   },
