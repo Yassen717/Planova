@@ -40,6 +40,21 @@ export const projectService = {
       timestamp: new Date().toISOString(),
     });
     
+    // Create a persistent notification for the project owner
+    try {
+      await notificationService.sendNotification(
+        'info',
+        `You have created a new project: ${input.title}`,
+        input.ownerId,
+        {
+          entityId: project.id,
+          entityType: 'project',
+        }
+      );
+    } catch (error) {
+      console.error('Error creating notification:', error);
+    }
+    
     return project;
   },
 
@@ -164,6 +179,21 @@ export const projectService = {
       userId,
       timestamp: new Date().toISOString(),
     });
+    
+    // Create a persistent notification for the added member
+    try {
+      await notificationService.sendNotification(
+        'info',
+        `You have been added to project: ${project.title}`,
+        userId,
+        {
+          entityId: project.id,
+          entityType: 'project',
+        }
+      );
+    } catch (error) {
+      console.error('Error creating notification:', error);
+    }
     
     return project;
   },

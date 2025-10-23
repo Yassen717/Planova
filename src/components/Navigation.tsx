@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import NotificationButton from './NotificationButton';
+import ThemeToggle from './ThemeToggle';
 
 const Navigation = () => {
   const pathname = usePathname();
@@ -12,6 +14,7 @@ const Navigation = () => {
     { name: 'Projects', href: '/projects' },
     { name: 'Tasks', href: '/tasks' },
     { name: 'Team', href: '/users' },
+    { name: 'Reports', href: '/reports' },
   ];
 
   return (
@@ -44,6 +47,10 @@ const Navigation = () => {
                 </Link>
               ))}
             </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <NotificationButton />
+            <ThemeToggle />
           </div>
         </div>
       </div>
