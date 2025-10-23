@@ -90,21 +90,21 @@ export default function ReportingDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'DONE': return 'bg-green-500';
-      case 'IN_PROGRESS': return 'bg-blue-500';
-      case 'REVIEW': return 'bg-yellow-500';
-      case 'TODO': return 'bg-gray-500';
-      default: return 'bg-gray-500';
+      case 'DONE': return 'bg-green-500 dark:bg-green-600';
+      case 'IN_PROGRESS': return 'bg-blue-500 dark:bg-blue-600';
+      case 'REVIEW': return 'bg-yellow-500 dark:bg-yellow-600';
+      case 'TODO': return 'bg-gray-500 dark:bg-gray-600';
+      default: return 'bg-gray-500 dark:bg-gray-600';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'URGENT': return 'bg-red-500';
-      case 'HIGH': return 'bg-orange-500';
-      case 'MEDIUM': return 'bg-yellow-500';
-      case 'LOW': return 'bg-green-500';
-      default: return 'bg-gray-500';
+      case 'URGENT': return 'bg-red-500 dark:bg-red-600';
+      case 'HIGH': return 'bg-orange-500 dark:bg-orange-600';
+      case 'MEDIUM': return 'bg-yellow-500 dark:bg-yellow-600';
+      case 'LOW': return 'bg-green-500 dark:bg-green-600';
+      default: return 'bg-gray-500 dark:bg-gray-600';
     }
   };
 
@@ -112,12 +112,12 @@ export default function ReportingDashboard() {
     return (
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Reporting & Analytics</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Reporting & Analytics</h1>
           <div className="flex space-x-2">
             <select 
               value={timeRange}
               onChange={(e) => setTimeRange(Number(e.target.value))}
-              className="border border-gray-300 rounded-md px-3 py-1"
+              className="border border-gray-300 rounded-md px-3 py-1 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
               <option value={7}>Last 7 days</option>
               <option value={30}>Last 30 days</option>
@@ -125,14 +125,14 @@ export default function ReportingDashboard() {
             </select>
             <button 
               onClick={refreshData}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
             >
               Refresh
             </button>
           </div>
         </div>
         <div className="flex justify-center items-center h-64">
-          <p>Loading dashboard data...</p>
+          <p className="text-gray-900 dark:text-white">Loading dashboard data...</p>
         </div>
       </div>
     );
@@ -141,12 +141,12 @@ export default function ReportingDashboard() {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Reporting & Analytics</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Reporting & Analytics</h1>
         <div className="flex space-x-2">
           <select 
             value={timeRange}
             onChange={(e) => setTimeRange(Number(e.target.value))}
-            className="border border-gray-300 rounded-md px-3 py-1"
+            className="border border-gray-300 rounded-md px-3 py-1 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           >
             <option value={7}>Last 7 days</option>
             <option value={30}>Last 30 days</option>
@@ -154,7 +154,7 @@ export default function ReportingDashboard() {
           </select>
           <button 
             onClick={refreshData}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
           >
             Refresh
           </button>
@@ -163,43 +163,43 @@ export default function ReportingDashboard() {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Projects</h2>
+        <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800">
+          <h2 className="text-lg font-medium text-gray-900 mb-4 dark:text-white">Projects</h2>
           <div className="space-y-4">
             <div>
-              <p className="text-3xl font-bold text-gray-900">{projectStats?.total || 0}</p>
-              <p className="text-sm text-gray-500">Total Projects</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{projectStats?.total || 0}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Projects</p>
             </div>
             <div className="flex justify-between">
               <div>
-                <p className="text-lg font-medium text-blue-600">{projectStats?.active || 0}</p>
-                <p className="text-sm text-gray-500">Active</p>
+                <p className="text-lg font-medium text-blue-600 dark:text-blue-400">{projectStats?.active || 0}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Active</p>
               </div>
               <div>
-                <p className="text-lg font-medium text-green-600">{projectStats?.completed || 0}</p>
-                <p className="text-sm text-gray-500">Completed</p>
+                <p className="text-lg font-medium text-green-600 dark:text-green-400">{projectStats?.completed || 0}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Completed</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Tasks</h2>
+        <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800">
+          <h2 className="text-lg font-medium text-gray-900 mb-4 dark:text-white">Tasks</h2>
           <div className="space-y-4">
             <div>
-              <p className="text-3xl font-bold text-gray-900">{taskStats?.total || 0}</p>
-              <p className="text-sm text-gray-500">Total Tasks</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{taskStats?.total || 0}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Tasks</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500 mb-2">By Status</p>
+              <p className="text-sm text-gray-500 mb-2 dark:text-gray-400">By Status</p>
               <div className="space-y-2">
                 {taskStats?.byStatus.map((item) => (
                   <div key={item.status} className="flex items-center justify-between">
                     <div className="flex items-center">
                       <div className={`w-3 h-3 rounded-full mr-2 ${getStatusColor(item.status)}`}></div>
-                      <span className="text-sm">{item.status}</span>
+                      <span className="text-sm text-gray-900 dark:text-white">{item.status}</span>
                     </div>
-                    <span className="text-sm font-medium">{item._count.status}</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">{item._count.status}</span>
                   </div>
                 ))}
               </div>
@@ -207,21 +207,21 @@ export default function ReportingDashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Users</h2>
+        <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800">
+          <h2 className="text-lg font-medium text-gray-900 mb-4 dark:text-white">Users</h2>
           <div className="space-y-4">
             <div>
-              <p className="text-3xl font-bold text-gray-900">{userStats?.total || 0}</p>
-              <p className="text-sm text-gray-500">Total Users</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{userStats?.total || 0}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Users</p>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm text-gray-500">Project Owners</span>
-                <span className="text-sm font-medium">{userStats?.projectOwners || 0}</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Project Owners</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">{userStats?.projectOwners || 0}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-500">Task Assignees</span>
-                <span className="text-sm font-medium">{userStats?.taskAssignees || 0}</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Task Assignees</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">{userStats?.taskAssignees || 0}</span>
               </div>
             </div>
           </div>
@@ -231,18 +231,18 @@ export default function ReportingDashboard() {
       {/* Charts and Progress */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Task Completion Trend */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Task Completion Trend</h2>
+        <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800">
+          <h2 className="text-lg font-medium text-gray-900 mb-4 dark:text-white">Task Completion Trend</h2>
           <div className="h-64 flex items-end space-x-1">
             {trendData.map((item, index) => (
               <div key={index} className="flex flex-col items-center flex-1">
                 <div 
-                  className="w-full bg-blue-500 rounded-t hover:bg-blue-600 transition-colors"
+                  className="w-full bg-blue-500 rounded-t hover:bg-blue-600 transition-colors dark:bg-blue-600 dark:hover:bg-blue-700"
                   style={{ height: `${Math.max(5, (item.count / Math.max(...trendData.map(d => d.count)) * 100))}%` }}
                   title={`${item.date}: ${item.count} tasks`}
                 ></div>
                 {index % 5 === 0 && (
-                  <span className="text-xs text-gray-500 mt-1">
+                  <span className="text-xs text-gray-500 mt-1 dark:text-gray-400">
                     {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </span>
                 )}
@@ -252,22 +252,22 @@ export default function ReportingDashboard() {
         </div>
 
         {/* Project Progress */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Recent Project Progress</h2>
+        <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800">
+          <h2 className="text-lg font-medium text-gray-900 mb-4 dark:text-white">Recent Project Progress</h2>
           <div className="space-y-4">
             {progressData.map((project) => (
               <div key={project.id}>
                 <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-700 truncate">{project.title}</span>
-                  <span className="text-sm text-gray-500">{project.progress}%</span>
+                  <span className="text-sm font-medium text-gray-700 truncate dark:text-gray-300">{project.title}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">{project.progress}%</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
                   <div 
-                    className="bg-blue-600 h-2 rounded-full" 
+                    className="bg-blue-600 h-2 rounded-full dark:bg-blue-500" 
                     style={{ width: `${project.progress}%` }}
                   ></div>
                 </div>
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="flex justify-between text-xs text-gray-500 mt-1 dark:text-gray-400">
                   <span>{project.completedTasks} of {project.totalTasks} tasks</span>
                   <span>{new Date(project.createdAt).toLocaleDateString()}</span>
                 </div>
@@ -278,28 +278,28 @@ export default function ReportingDashboard() {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Recent Activity</h2>
+      <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800">
+        <h2 className="text-lg font-medium text-gray-900 mb-4 dark:text-white">Recent Activity</h2>
         <div className="space-y-4">
           {recentActivity.map((activity) => (
             <div key={activity.id} className="flex items-start">
               <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                activity.type === 'project' ? 'bg-blue-100' : 'bg-green-100'
+                activity.type === 'project' ? 'bg-blue-100 dark:bg-blue-900' : 'bg-green-100 dark:bg-green-900'
               }`}>
                 {activity.type === 'project' ? (
-                  <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                 ) : (
-                  <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                 )}
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-900">{activity.title}</p>
-                <p className="text-sm text-gray-500">{activity.description}</p>
-                <p className="text-xs text-gray-400">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{activity.title}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{activity.description}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">
                   {new Date(activity.createdAt).toLocaleString()}
                 </p>
               </div>

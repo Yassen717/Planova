@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import NotificationButton from './NotificationButton';
+import ThemeToggle from './ThemeToggle';
 
 const Navigation = () => {
   const pathname = usePathname();
@@ -47,8 +48,9 @@ const Navigation = () => {
               ))}
             </div>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center space-x-2">
             <NotificationButton />
+            <ThemeToggle />
           </div>
         </div>
       </div>
