@@ -86,7 +86,7 @@ src/
 ```
 
 ## Database Schema
-```prisma
+``prisma
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -198,7 +198,7 @@ enum Priority {
 - [x] Build team collaboration features
 - [x] Implement real-time notifications
 
-### Phase 3: Advanced Features (Week 4)
+### Phase 3: Advanced Features (Week 4) - IN PROGRESS 🚧
 - [x] Implement real-time updates with Socket.io
 - [ ] Add notification system
 - [ ] Create reporting and analytics
