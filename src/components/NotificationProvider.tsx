@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { notificationService } from '@/lib/notificationService';
+import { authService } from '@/lib/authService';
 import NotificationCenter from './NotificationCenter';
 
 type Notification = {
@@ -32,6 +33,12 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     // Connect to notification service
     notificationService.connect();
 
+    // Check for authenticated user
+    const user = authService.getCurrentUser();
+    if (user) {
+      setCurrentUserId(user.id);
+    }
+
     // Listen for notifications
     const handleNotification = (data: any) => {
       addNotification({
@@ -44,10 +51,6 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     };
 
     notificationService.on('notification', handleNotification);
-
-    // In a real application, you would get the current user ID from auth context
-    // For now, we'll use a placeholder
-    setCurrentUserId('user-123');
 
     return () => {
       notificationService.off('notification', handleNotification);

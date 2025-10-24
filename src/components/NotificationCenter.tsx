@@ -36,8 +36,18 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const userNotifications = await notificationService.getNotifications(userId, 20);
-      const formattedNotifications = userNotifications.map((n: any) => ({
+      const response = await fetch(`/api/notifications?userId=${userId}&limit=20`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch notifications');
+      }
+      
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to fetch notifications');
+      }
+      
+      const formattedNotifications = result.data.map((n: any) => ({
         id: n.id,
         type: n.type as 'info' | 'success' | 'warning' | 'error',
         message: n.message,
@@ -46,6 +56,7 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
         entityId: n.entityId,
         entityType: n.entityType,
       }));
+      
       setNotifications(formattedNotifications);
       setUnreadCount(formattedNotifications.filter((n: Notification) => !n.read).length);
     } catch (error) {
@@ -74,7 +85,23 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
 
   const markAsRead = async (id: string) => {
     try {
-      await notificationService.markAsRead(id);
+      const response = await fetch('/api/notifications', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, read: true }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to mark notification as read');
+      }
+      
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to mark notification as read');
+      }
+      
       setNotifications(prev => 
         prev.map(n => n.id === id ? { ...n, read: true } : n)
       );
@@ -86,7 +113,29 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
 
   const markAllAsRead = async () => {
     try {
-      await notificationService.markAllAsRead(userId);
+      // For marking all as read, we'll need to update each notification individually
+      // or implement a batch update endpoint
+      const unreadNotifications = notifications.filter(n => !n.read);
+      
+      // Update each notification
+      const updatePromises = unreadNotifications.map(notification => 
+        fetch('/api/notifications', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id: notification.id, read: true }),
+        })
+      );
+      
+      const responses = await Promise.all(updatePromises);
+      
+      // Check if all requests were successful
+      const allSuccessful = responses.every(response => response.ok);
+      if (!allSuccessful) {
+        throw new Error('Failed to mark all notifications as read');
+      }
+      
       setNotifications(prev => 
         prev.map(n => ({ ...n, read: true }))
       );
@@ -98,7 +147,16 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
 
   const deleteNotification = async (id: string) => {
     try {
-      // In a real implementation, you would call an API to delete the notification
+      // Call the API to delete the notification
+      const response = await fetch(`/api/notifications?id=${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete notification');
+      }
+      
+      // Update the UI state
       setNotifications(prev => prev.filter(n => n.id !== id));
       const notification = notifications.find(n => n.id === id);
       if (notification && !notification.read) {
