@@ -1,5 +1,5 @@
 // Test file for verifying real-time notifications
-import { notificationService } from '../src/lib/notificationService';
+import { notificationService } from '../../src/lib/notificationService';
 
 // Connect to the notification service
 console.log('Connecting to notification service...');
@@ -28,7 +28,7 @@ notificationService.on('commentAdded', (data: any) => {
 // Send a test notification after a delay
 setTimeout(() => {
   console.log('Sending test notification...');
-  notificationService.sendNotification('info', 'Test notification from client');
+  notificationService.sendNotification('info', 'Test notification from client', 'user-123');
 }, 2000);
 
 setTimeout(() => {

@@ -51,70 +51,22 @@ export default function ProjectDetailPage() {
   const fetchProject = async () => {
     try {
       setLoading(true);
-      // For now, we'll use mock data since we don't have the actual API endpoint yet
-      // In a real implementation, this would fetch from `/api/projects/${projectId}`
+      // Fetch real data from the API
+      const response = await fetch(`/api/projects/${projectId}`);
       
-      // Mock data for demonstration
-      const mockProject: Project = {
-        id: projectId,
-        title: 'Website Redesign',
-        description: 'Complete redesign of the company website with modern UI/UX',
-        status: 'ACTIVE',
-        startDate: '2025-10-01',
-        endDate: '2025-12-31',
-        owner: {
-          id: '1',
-          name: 'John Doe',
-          email: 'john@example.com',
-        },
-        members: [
-          {
-            id: '1',
-            name: 'John Doe',
-            email: 'john@example.com',
-          },
-          {
-            id: '2',
-            name: 'Jane Smith',
-            email: 'jane@example.com',
-          },
-        ],
-        tasks: [
-          {
-            id: '1',
-            title: 'Create wireframes',
-            status: 'DONE',
-            priority: 'HIGH',
-            assignee: {
-              id: '2',
-              name: 'Jane Smith',
-              email: 'jane@example.com',
-            },
-          },
-          {
-            id: '2',
-            title: 'Design homepage',
-            status: 'IN_PROGRESS',
-            priority: 'HIGH',
-            assignee: {
-              id: '2',
-              name: 'Jane Smith',
-              email: 'jane@example.com',
-            },
-          },
-          {
-            id: '3',
-            title: 'Implement frontend',
-            status: 'TODO',
-            priority: 'MEDIUM',
-            assignee: null,
-          },
-        ],
-      };
+      if (!response.ok) {
+        throw new Error('Failed to fetch project');
+      }
       
-      setProject(mockProject);
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to fetch project');
+      }
+      
+      setProject(result.data);
     } catch (err) {
-      setError('Failed to fetch project');
+      setError(err instanceof Error ? err.message : 'Failed to fetch project');
     } finally {
       setLoading(false);
     }
@@ -122,21 +74,21 @@ export default function ProjectDetailPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'TODO': return 'bg-gray-100 text-gray-800';
-      case 'IN_PROGRESS': return 'bg-blue-100 text-blue-800';
-      case 'REVIEW': return 'bg-yellow-100 text-yellow-800';
-      case 'DONE': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'TODO': return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+      case 'IN_PROGRESS': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+      case 'REVIEW': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+      case 'DONE': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'LOW': return 'bg-green-100 text-green-800';
-      case 'MEDIUM': return 'bg-yellow-100 text-yellow-800';
-      case 'HIGH': return 'bg-orange-100 text-orange-800';
-      case 'URGENT': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'LOW': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+      case 'MEDIUM': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+      case 'HIGH': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
+      case 'URGENT': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
     }
   };
 
@@ -215,7 +167,7 @@ export default function ProjectDetailPage() {
                       </span>
                     </dd>
                   </div>
-                  <div className="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <div className="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-33 sm:gap-4 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-300">Start Date</dt>
                     <dd className="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
                       {new Date(project.startDate).toLocaleDateString()}

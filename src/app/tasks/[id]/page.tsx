@@ -51,54 +51,22 @@ export default function TaskDetailPage() {
   const fetchTask = async () => {
     try {
       setLoading(true);
-      // For now, we'll use mock data since we don't have the actual API endpoint yet
-      // In a real implementation, this would fetch from `/api/tasks/${taskId}`
+      // Fetch real data from the API
+      const response = await fetch(`/api/tasks/${taskId}`);
       
-      // Mock data for demonstration
-      const mockTask: Task = {
-        id: taskId,
-        title: 'Design homepage',
-        description: 'Create a modern, responsive design for the homepage that aligns with our brand guidelines',
-        status: 'IN_PROGRESS',
-        priority: 'HIGH',
-        startDate: '2025-10-15',
-        dueDate: '2025-10-25',
-        assignee: {
-          id: '2',
-          name: 'Jane Smith',
-          email: 'jane@example.com',
-        },
-        project: {
-          id: '1',
-          title: 'Website Redesign',
-        },
-        comments: [
-          {
-            id: '1',
-            content: 'I\'ve completed the initial wireframes. Please review and let me know if any changes are needed.',
-            createdAt: '2025-10-18T10:30:00Z',
-            author: {
-              id: '2',
-              name: 'Jane Smith',
-              email: 'jane@example.com',
-            },
-          },
-          {
-            id: '2',
-            content: 'The wireframes look great! Can we add a section for customer testimonials?',
-            createdAt: '2025-10-18T14:15:00Z',
-            author: {
-              id: '1',
-              name: 'John Doe',
-              email: 'john@example.com',
-            },
-          },
-        ],
-      };
+      if (!response.ok) {
+        throw new Error('Failed to fetch task');
+      }
       
-      setTask(mockTask);
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to fetch task');
+      }
+      
+      setTask(result.data);
     } catch (err) {
-      setError('Failed to fetch task');
+      setError(err instanceof Error ? err.message : 'Failed to fetch task');
     } finally {
       setLoading(false);
     }
@@ -110,28 +78,39 @@ export default function TaskDetailPage() {
     if (!newComment.trim()) return;
     
     try {
-      // In a real implementation, this would call the API to add a comment
-      const newCommentObj = {
-        id: `${task?.comments.length || 0 + 1}`,
-        content: newComment,
-        createdAt: new Date().toISOString(),
-        author: {
-          id: '1', // Current user ID
-          name: 'Current User',
-          email: 'current@example.com',
+      // Call the API to add a comment
+      const response = await fetch('/api/comments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      };
+        body: JSON.stringify({
+          content: newComment,
+          authorId: '1', // In a real app, this would be the current user ID
+          taskId: taskId,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to add comment');
+      }
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to add comment');
+      }
       
       // Update local state
       if (task) {
         setTask({
           ...task,
-          comments: [newCommentObj, ...task.comments],
+          comments: [result.data, ...task.comments],
         });
         setNewComment('');
       }
     } catch (err) {
-      setError('Failed to add comment');
+      setError(err instanceof Error ? err.message : 'Failed to add comment');
     }
   };
 
