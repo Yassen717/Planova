@@ -12,7 +12,9 @@
   - Commit changes: `git add . && git commit -m "feat: set up UI foundation and design system"`
   - _Requirements: 1.1, 2.1, 3.1, 6.1_
 
-- [ ] 2. Implement core UI primitive components
+- [x] 2. Implement core UI primitive components
+
+
 - [x] 2.1 Create Button component with variants and loading states
 
 
@@ -78,37 +80,49 @@
   - _Requirements: 6.2, 6.4_
 
 - [ ] 3. Implement custom React hooks
-- [ ] 3.1 Create useSearch hook
+- [x] 3.1 Create useSearch hook
+
+
   - Implement useSearch hook with debouncing functionality
   - Add search term state management
   - Add clear search functionality
   - _Requirements: 3.1, 3.2_
 
-- [ ] 3.2 Create useFilters hook
+- [x] 3.2 Create useFilters hook
+
+
   - Implement useFilters hook with filter state management
   - Add filter application and reset functionality
   - Implement URL query parameter synchronization
   - _Requirements: 3.3, 3.4, 3.5_
 
-- [ ] 3.3 Create usePagination hook
+- [x] 3.3 Create usePagination hook
+
+
   - Implement usePagination hook with page state management
   - Add page size change functionality
   - Calculate total pages and handle boundary conditions
   - _Requirements: 7.3, 7.4, 7.5_
 
-- [ ] 3.4 Create useSort hook
+- [x] 3.4 Create useSort hook
+
+
   - Implement useSort hook with sort state management
   - Add toggle sort direction functionality
   - Implement multi-column sort support
   - _Requirements: 7.1, 7.2, 7.5_
 
-- [ ] 3.5 Create useKeyboardShortcuts hook
+- [x] 3.5 Create useKeyboardShortcuts hook
+
+
   - Implement useKeyboardShortcuts hook with event listener management
   - Add keyboard shortcut registration and unregistration
   - Implement modifier key detection (ctrl, shift, alt, meta)
   - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
 
-- [ ] 3.6 Create useDragAndDrop hook
+- [x] 3.6 Create useDragAndDrop hook
+
+
   - Implement useDragAndDrop hook for Kanban functionality
   - Add drag start, drag over, and drop event handlers
   - Implement optimistic updates with rollback on error
