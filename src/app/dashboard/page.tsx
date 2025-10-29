@@ -2,87 +2,142 @@ import { getDashboardMetadata } from '@/lib/metadata';
 import { projectService } from '@/lib/projectService';
 import { taskService } from '@/lib/taskService';
 import { reportingService } from '@/lib/reportingService';
+import { transformProjectsToChartData, transformTasksByAssignee } from '@/lib/utils/chartHelpers';
+import StatCard from '@/components/dashboard/StatCard';
+import ProgressChart from '@/components/dashboard/ProgressChart';
+import DeadlinesList from '@/components/dashboard/DeadlinesList';
+import TaskDistributionChart from '@/components/dashboard/TaskDistributionChart';
+import { Suspense } from 'react';
+import { SkeletonDashboard } from '@/components/ui/Skeleton';
 
 export const metadata = getDashboardMetadata();
 
 // Server-side data fetching
 async function getDashboardData() {
   try {
-    const [projectStats, taskStats, recentActivity] = await Promise.all([
+    const [projectStats, taskStats, recentActivity, projects, tasks] = await Promise.all([
       reportingService.getProjectStats(),
       reportingService.getTaskStats(),
       reportingService.getRecentActivity(5),
+      projectService.getAllProjects(),
+      taskService.getAllTasks(),
     ]);
     
-    return { projectStats, taskStats, recentActivity };
+    return { projectStats, taskStats, recentActivity, projects, tasks };
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
     return {
       projectStats: { total: 0, active: 0, completed: 0 },
       taskStats: { total: 0, byStatus: [], byPriority: [] },
       recentActivity: [],
+      projects: [],
+      tasks: [],
     };
   }
 }
 
 export default async function DashboardPage() {
-  const { projectStats, taskStats, recentActivity } = await getDashboardData();
+  const { projectStats, taskStats, recentActivity, projects, tasks } = await getDashboardData();
   
   // Calculate task status counts
   const inProgressTasks = taskStats.byStatus.find(s => s.status === 'IN_PROGRESS')?._count.status || 0;
   const completedTasks = taskStats.byStatus.find(s => s.status === 'DONE')?._count.status || 0;
   
+  // Transform data for charts
+  const projectsWithProgress = transformProjectsToChartData(projects);
+  const activeProjects = projectsWithProgress.filter(p => p.status === 'ACTIVE');
+  const taskDistribution = transformTasksByAssignee(tasks);
+  
+  // Get upcoming deadlines
+  const upcomingDeadlines = [
+    ...projects
+      .filter(p => p.endDate && new Date(p.endDate) > new Date())
+      .map(p => ({
+        id: p.id,
+        title: p.title,
+        dueDate: new Date(p.endDate!),
+        type: 'project' as const,
+      })),
+    ...tasks
+      .filter(t => t.dueDate && new Date(t.dueDate) > new Date())
+      .map(t => ({
+        id: t.id,
+        title: t.title,
+        dueDate: new Date(t.dueDate!),
+        type: 'task' as const,
+        priority: t.priority,
+      })),
+  ];
+  
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Dashboard</h1>
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+      
+      {/* Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Project Summary Card */}
+        <StatCard
+          title="Total Projects"
+          value={projectStats.total}
+          icon={
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          }
+          color="blue"
+          href="/projects"
+        />
+        <StatCard
+          title="Active Projects"
+          value={projectStats.active}
+          icon={
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          }
+          color="green"
+        />
+        <StatCard
+          title="Total Tasks"
+          value={taskStats.total}
+          icon={
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          }
+          color="orange"
+          href="/tasks"
+        />
+      </div>
+
+      {/* Charts and Lists */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Project Progress */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Projects</h2>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 dark:text-gray-400">Total</span>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">{projectStats.total}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 dark:text-gray-400">Active</span>
-              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{projectStats.active}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 dark:text-gray-400">Completed</span>
-              <span className="text-2xl font-bold text-green-600 dark:text-green-400">{projectStats.completed}</span>
-            </div>
-          </div>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Active Projects Progress</h2>
+          <ProgressChart projects={activeProjects} maxDisplay={5} />
         </div>
 
-        {/* Task Summary Card */}
+        {/* Upcoming Deadlines */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Tasks</h2>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 dark:text-gray-400">Total</span>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">{taskStats.total}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 dark:text-gray-400">In Progress</span>
-              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{inProgressTasks}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 dark:text-gray-400">Completed</span>
-              <span className="text-2xl font-bold text-green-600 dark:text-green-400">{completedTasks}</span>
-            </div>
-          </div>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Upcoming Deadlines</h2>
+          <DeadlinesList items={upcomingDeadlines} maxDisplay={5} />
         </div>
 
-        {/* Recent Activity Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 md:col-span-2 lg:col-span-1">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Activity</h2>
+        {/* Task Distribution */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Task Distribution by Assignee</h2>
+          <TaskDistributionChart data={taskDistribution} maxDisplay={5} />
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Activity</h2>
           <div className="space-y-4">
             {recentActivity.length > 0 ? (
               recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start">
+                <div key={activity.id} className="flex items-start gap-3">
                   <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                    activity.type === 'project' ? 'bg-blue-100 dark:bg-blue-900' : 'bg-green-100 dark:bg-green-900'
+                    activity.type === 'project' ? 'bg-blue-100 dark:bg-blue-900/20' : 'bg-green-100 dark:bg-green-900/20'
                   }`}>
                     {activity.type === 'project' ? (
                       <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -94,17 +149,17 @@ export default async function DashboardPage() {
                       </svg>
                     )}
                   </div>
-                  <div className="ml-3 flex-1">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">{activity.title}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{activity.description}</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{activity.title}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{activity.description}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                       {new Date(activity.createdAt).toLocaleString()}
                     </p>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-gray-600 dark:text-gray-400">No recent activity</p>
+              <p className="text-gray-600 dark:text-gray-400 text-center py-4">No recent activity</p>
             )}
           </div>
         </div>
