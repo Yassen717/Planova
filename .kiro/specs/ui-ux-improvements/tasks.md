@@ -216,7 +216,9 @@
   - Commit changes: `git add . && git commit -m "feat: enhance dashboard with visualizations"`
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 5.1, 5.2, 5.3_
 
-- [ ] 6. Enhance project components
+- [x] 6. Enhance project components
+
+
 - [x] 6.1 Create enhanced ProjectCard component
 
 
@@ -236,8 +238,12 @@
   - Commit changes: `git add . && git commit -m "feat: enhance project components and page"`
   - _Requirements: 3.1, 3.3, 3.5, 5.1, 5.2, 5.3, 6.1, 6.2, 6.3, 6.5_
 
-- [ ] 7. Implement Kanban board view
-- [ ] 7.1 Create TaskCard component for Kanban
+- [x] 7. Implement Kanban board view
+
+
+- [x] 7.1 Create TaskCard component for Kanban
+
+
   - Implement compact TaskCard with title (truncated to 2 lines)
   - Add priority badge in top-right corner
   - Add assignee avatar in bottom-left
@@ -245,7 +251,9 @@
   - Add hover shadow effect
   - _Requirements: 4.4, 6.4, 6.5_
 
-- [ ] 7.2 Create TaskKanban component
+- [x] 7.2 Create TaskKanban component
+
+
   - Implement TaskKanban with four columns (TODO, IN_PROGRESS, REVIEW, DONE)
   - Add column headers with task count and color indicators
   - Integrate useDragAndDrop hook for drag-and-drop functionality
@@ -253,28 +261,38 @@
   - Add error handling with rollback on failed updates
   - _Requirements: 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 7.3 Add view toggle to tasks page
+- [x] 7.3 Add view toggle to tasks page
+
+
   - Add toggle button to switch between table and Kanban views
   - Save view preference in localStorage
   - Update tasks page to conditionally render table or Kanban view
   - Commit changes: `git add . && git commit -m "feat: implement Kanban board view"`
   - _Requirements: 4.1_
 
-- [ ] 8. Enhance task table view
-- [ ] 8.1 Create SortableHeader component
+- [x] 8. Enhance task table view
+
+
+- [x] 8.1 Create SortableHeader component
+
+
   - Implement SortableHeader with sort indicator icons
   - Add click handler to toggle sort direction
   - Highlight active sort column with accent color
   - _Requirements: 7.1, 7.2_
 
-- [ ] 8.2 Create Pagination component
+- [x] 8.2 Create Pagination component
+
+
   - Implement Pagination with previous/next buttons
   - Add page number buttons (show 5 at a time with ellipsis)
   - Add page size selector dropdown
   - Display total items count
   - _Requirements: 7.3, 7.4, 7.5_
 
-- [ ] 8.3 Update TaskTable component
+- [x] 8.3 Update TaskTable component
+
+
   - Replace table headers with SortableHeader components
   - Integrate useSort hook for sorting functionality
   - Integrate usePagination hook for pagination
@@ -282,7 +300,9 @@
   - Add hover effect on table rows
   - _Requirements: 6.4, 6.5, 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 8.4 Create mobile card layout for tasks
+- [x] 8.4 Create mobile card layout for tasks
+
+
   - Create TaskMobileCard component as alternative to table rows
   - Implement responsive layout that switches to cards on mobile
   - Display all task information in card format
