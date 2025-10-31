@@ -216,7 +216,9 @@
   - Commit changes: `git add . && git commit -m "feat: enhance dashboard with visualizations"`
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 5.1, 5.2, 5.3_
 
-- [ ] 6. Enhance project components
+- [x] 6. Enhance project components
+
+
 - [x] 6.1 Create enhanced ProjectCard component
 
 
@@ -237,7 +239,9 @@
   - _Requirements: 3.1, 3.3, 3.5, 5.1, 5.2, 5.3, 6.1, 6.2, 6.3, 6.5_
 
 - [ ] 7. Implement Kanban board view
-- [ ] 7.1 Create TaskCard component for Kanban
+- [x] 7.1 Create TaskCard component for Kanban
+
+
   - Implement compact TaskCard with title (truncated to 2 lines)
   - Add priority badge in top-right corner
   - Add assignee avatar in bottom-left
@@ -245,7 +249,9 @@
   - Add hover shadow effect
   - _Requirements: 4.4, 6.4, 6.5_
 
-- [ ] 7.2 Create TaskKanban component
+- [x] 7.2 Create TaskKanban component
+
+
   - Implement TaskKanban with four columns (TODO, IN_PROGRESS, REVIEW, DONE)
   - Add column headers with task count and color indicators
   - Integrate useDragAndDrop hook for drag-and-drop functionality
@@ -253,7 +259,9 @@
   - Add error handling with rollback on failed updates
   - _Requirements: 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 7.3 Add view toggle to tasks page
+- [x] 7.3 Add view toggle to tasks page
+
+
   - Add toggle button to switch between table and Kanban views
   - Save view preference in localStorage
   - Update tasks page to conditionally render table or Kanban view
