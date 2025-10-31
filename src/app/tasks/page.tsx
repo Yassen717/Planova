@@ -10,7 +10,11 @@ import { SkeletonTable } from '@/components/ui/Skeleton';
 import Button from '@/components/ui/Button';
 import { TaskStatusBadge, TaskPriorityBadge } from '@/components/ui/Badge';
 import Avatar from '@/components/ui/Avatar';
+import SortableHeader from '@/components/shared/SortableHeader';
+import Pagination from '@/components/shared/Pagination';
 import { formatDate } from '@/lib/utils/dateHelpers';
+import { useSort } from '@/hooks/useSort';
+import { usePagination } from '@/hooks/usePagination';
 import {
   applySearchFilter,
   applyStatusFilter,
@@ -92,6 +96,22 @@ export default function TasksPage() {
 
     return result;
   }, [tasks, searchTerm, filters]);
+
+  // Sort tasks
+  const { sortState, sortedData, sortBy } = useSort({
+    data: filteredTasks,
+    initialSort: null,
+  });
+
+  // Paginate tasks
+  const pagination = usePagination({
+    totalItems: sortedData.length,
+    initialPageSize: 20,
+  });
+
+  const paginatedTasks = useMemo(() => {
+    return sortedData.slice(pagination.startIndex, pagination.endIndex);
+  }, [sortedData, pagination.startIndex, pagination.endIndex]);
 
   const handleFilterChange = (filterId: string, value: any) => {
     setFilters((prev) => ({ ...prev, [filterId]: value }));
@@ -225,25 +245,40 @@ export default function TasksPage() {
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Task
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Assignee
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Priority
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Due Date
-                      </th>
+                      <SortableHeader
+                        label="Task"
+                        sortKey="title"
+                        currentSort={sortState}
+                        onSort={sortBy}
+                      />
+                      <SortableHeader
+                        label="Assignee"
+                        sortKey="assignee.name"
+                        currentSort={sortState}
+                        onSort={sortBy}
+                      />
+                      <SortableHeader
+                        label="Status"
+                        sortKey="status"
+                        currentSort={sortState}
+                        onSort={sortBy}
+                      />
+                      <SortableHeader
+                        label="Priority"
+                        sortKey="priority"
+                        currentSort={sortState}
+                        onSort={sortBy}
+                      />
+                      <SortableHeader
+                        label="Due Date"
+                        sortKey="dueDate"
+                        currentSort={sortState}
+                        onSort={sortBy}
+                      />
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                    {filteredTasks.map((task) => (
+                    {paginatedTasks.map((task) => (
                       <tr key={task.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                         <td className="px-6 py-4">
                           <Link
@@ -284,6 +319,17 @@ export default function TasksPage() {
                   </tbody>
                 </table>
               </div>
+              {/* Pagination */}
+              {sortedData.length > 10 && (
+                <Pagination
+                  currentPage={pagination.currentPage}
+                  totalPages={pagination.totalPages}
+                  pageSize={pagination.pageSize}
+                  totalItems={pagination.totalItems}
+                  onPageChange={pagination.goToPage}
+                  onPageSizeChange={pagination.setPageSize}
+                />
+              )}
             </div>
           )}
         </>

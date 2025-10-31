@@ -238,7 +238,9 @@
   - Commit changes: `git add . && git commit -m "feat: enhance project components and page"`
   - _Requirements: 3.1, 3.3, 3.5, 5.1, 5.2, 5.3, 6.1, 6.2, 6.3, 6.5_
 
-- [ ] 7. Implement Kanban board view
+- [x] 7. Implement Kanban board view
+
+
 - [x] 7.1 Create TaskCard component for Kanban
 
 
@@ -269,20 +271,26 @@
   - _Requirements: 4.1_
 
 - [ ] 8. Enhance task table view
-- [ ] 8.1 Create SortableHeader component
+- [x] 8.1 Create SortableHeader component
+
+
   - Implement SortableHeader with sort indicator icons
   - Add click handler to toggle sort direction
   - Highlight active sort column with accent color
   - _Requirements: 7.1, 7.2_
 
-- [ ] 8.2 Create Pagination component
+- [x] 8.2 Create Pagination component
+
+
   - Implement Pagination with previous/next buttons
   - Add page number buttons (show 5 at a time with ellipsis)
   - Add page size selector dropdown
   - Display total items count
   - _Requirements: 7.3, 7.4, 7.5_
 
-- [ ] 8.3 Update TaskTable component
+- [x] 8.3 Update TaskTable component
+
+
   - Replace table headers with SortableHeader components
   - Integrate useSort hook for sorting functionality
   - Integrate usePagination hook for pagination
@@ -290,7 +298,9 @@
   - Add hover effect on table rows
   - _Requirements: 6.4, 6.5, 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 8.4 Create mobile card layout for tasks
+- [x] 8.4 Create mobile card layout for tasks
+
+
   - Create TaskMobileCard component as alternative to table rows
   - Implement responsive layout that switches to cards on mobile
   - Display all task information in card format
