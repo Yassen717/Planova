@@ -270,7 +270,9 @@
   - Commit changes: `git add . && git commit -m "feat: implement Kanban board view"`
   - _Requirements: 4.1_
 
-- [ ] 8. Enhance task table view
+- [x] 8. Enhance task table view
+
+
 - [x] 8.1 Create SortableHeader component
 
 

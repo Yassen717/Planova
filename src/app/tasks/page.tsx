@@ -103,15 +103,18 @@ export default function TasksPage() {
     initialSort: null,
   });
 
+  // Ensure sortedData is an array
+  const sortedTasksArray = Array.isArray(sortedData) ? sortedData : [];
+
   // Paginate tasks
   const pagination = usePagination({
-    totalItems: sortedData.length,
+    totalItems: sortedTasksArray.length,
     initialPageSize: 20,
   });
 
   const paginatedTasks = useMemo(() => {
-    return sortedData.slice(pagination.startIndex, pagination.endIndex);
-  }, [sortedData, pagination.startIndex, pagination.endIndex]);
+    return sortedTasksArray.slice(pagination.startIndex, pagination.endIndex);
+  }, [sortedTasksArray, pagination.startIndex, pagination.endIndex]);
 
   const handleFilterChange = (filterId: string, value: any) => {
     setFilters((prev) => ({ ...prev, [filterId]: value }));
@@ -320,7 +323,7 @@ export default function TasksPage() {
                 </table>
               </div>
               {/* Pagination */}
-              {sortedData.length > 10 && (
+              {sortedTasksArray.length > 10 && (
                 <Pagination
                   currentPage={pagination.currentPage}
                   totalPages={pagination.totalPages}

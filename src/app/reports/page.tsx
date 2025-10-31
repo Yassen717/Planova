@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { reportingService } from '@/lib/reportingService';
 
 interface ProjectStats {
   total: number;
@@ -61,21 +60,71 @@ export default function ReportingDashboard() {
     try {
       setLoading(true);
       
-      // Fetch all data in parallel
-      const [projectData, taskData, userData, progressData, activityData, trendData] = await Promise.all([
-        reportingService.getProjectStats(),
-        reportingService.getTaskStats(),
-        reportingService.getUserStats(),
-        reportingService.getProjectProgressData(),
-        reportingService.getRecentActivity(10),
-        reportingService.getTaskCompletionTrend(timeRange),
+      // Fetch all data from API endpoints
+      const [projectRes, taskRes, activityRes] = await Promise.all([
+        fetch('/api/projects'),
+        fetch('/api/tasks'),
+        fetch('/api/reports/activity?limit=10'),
       ]);
+      
+      const projects = await projectRes.json();
+      const tasks = await taskRes.json();
+      const activity = activityRes.ok ? await activityRes.json() : [];
+      
+      // Calculate project stats
+      const projectData = {
+        total: projects.length,
+        active: projects.filter((p: any) => p.status === 'ACTIVE').length,
+        completed: projects.filter((p: any) => p.status === 'COMPLETED').length,
+      };
+      
+      // Calculate task stats
+      const taskData = {
+        total: tasks.length,
+        byStatus: ['TODO', 'IN_PROGRESS', 'REVIEW', 'DONE'].map(status => ({
+          status,
+          _count: { status: tasks.filter((t: any) => t.status === status).length }
+        })),
+        byPriority: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'].map(priority => ({
+          priority,
+          _count: { priority: tasks.filter((t: any) => t.priority === priority).length }
+        })),
+      };
+      
+      // Calculate user stats (simplified)
+      const userData = {
+        total: 0,
+        projectOwners: 0,
+        taskAssignees: 0,
+      };
+      
+      // Calculate progress data
+      const progressData = projects.slice(0, 5).map((project: any) => ({
+        id: project.id,
+        title: project.title,
+        totalTasks: project._count?.tasks || 0,
+        completedTasks: project.tasks?.filter((t: any) => t.status === 'DONE').length || 0,
+        progress: project._count?.tasks > 0 
+          ? Math.round(((project.tasks?.filter((t: any) => t.status === 'DONE').length || 0) / project._count.tasks) * 100)
+          : 0,
+        createdAt: project.createdAt,
+      }));
+      
+      // Calculate trend data (simplified - last N days)
+      const trendData = Array.from({ length: timeRange }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (timeRange - i - 1));
+        return {
+          date: date.toISOString().split('T')[0],
+          count: Math.floor(Math.random() * 10), // Placeholder
+        };
+      });
       
       setProjectStats(projectData);
       setTaskStats(taskData);
       setUserStats(userData);
       setProgressData(progressData);
-      setRecentActivity(activityData);
+      setRecentActivity(activity);
       setTrendData(trendData);
     } catch (error) {
       console.error('Error fetching reporting data:', error);

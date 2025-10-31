@@ -57,20 +57,20 @@ const TaskFilters: React.FC<TaskFiltersProps> = ({
         id: 'assignee',
         label: 'Assignee',
         type: 'multiselect',
-        options: assignees.map((assignee) => ({
+        options: Array.isArray(assignees) ? assignees.map((assignee) => ({
           value: assignee.id,
           label: assignee.name || assignee.email,
-        })),
+        })) : [],
         value: filters.assignee,
       },
       {
         id: 'project',
         label: 'Project',
         type: 'multiselect',
-        options: projects.map((project) => ({
+        options: Array.isArray(projects) ? projects.map((project) => ({
           value: project.id,
           label: project.title,
-        })),
+        })) : [],
         value: filters.project,
       },
     ];

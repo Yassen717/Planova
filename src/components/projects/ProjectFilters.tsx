@@ -50,10 +50,10 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
         id: 'owner',
         label: 'Owner',
         type: 'multiselect',
-        options: owners.map((owner) => ({
+        options: Array.isArray(owners) ? owners.map((owner) => ({
           value: owner.id,
           label: owner.name || owner.email,
-        })),
+        })) : [],
         value: filters.owner,
       },
     ];
