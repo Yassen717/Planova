@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Navigation from "@/components/Navigation";
 import { NotificationProvider } from "@/components/NotificationProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { KeyboardShortcutsProvider } from "@/components/KeyboardShortcutsProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,10 +33,12 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <NotificationProvider>
-            <Navigation />
-            <div className="container mx-auto">
-              {children}
-            </div>
+            <KeyboardShortcutsProvider>
+              <Navigation />
+              <div className="container mx-auto">
+                {children}
+              </div>
+            </KeyboardShortcutsProvider>
           </NotificationProvider>
         </ThemeProvider>
       </body>
