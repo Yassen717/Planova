@@ -20,13 +20,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       'focus:outline-none focus:ring-2 focus:ring-offset-1',
       'disabled:cursor-not-allowed disabled:opacity-50',
       'dark:bg-gray-800 dark:text-white',
-      {
-        'border-red-500 focus:ring-red-500': hasError,
-        'border-green-500 focus:ring-green-500': success && !hasError,
-        'border-gray-300 focus:ring-blue-500 dark:border-gray-600': !hasError && !success,
-        'pl-10': prefixIcon,
-        'pr-10': suffixIcon || showClearButton,
-      },
+      hasError ? 'border-red-500 focus:ring-red-500' : '',
+      success && !hasError ? 'border-green-500 focus:ring-green-500' : '',
+      !hasError && !success ? 'border-gray-300 focus:ring-blue-500 dark:border-gray-600' : '',
+      prefixIcon ? 'pl-10' : '',
+      (suffixIcon || showClearButton) ? 'pr-10' : '',
       className
     );
 
