@@ -375,19 +375,28 @@
   - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
 
 - [ ] 11. Implement form validation improvements
-- [ ] 11.1 Create form validation utilities
+- [x] 11.1 Create form validation utilities
+
+
   - Create validation helper functions for common patterns
   - Create error message formatting utilities
   - _Requirements: 8.1, 8.2_
 
-- [ ] 11.2 Update project form with enhanced validation
+
+- [x] 11.2 Update project form with enhanced validation
+
+
+
+
   - Add inline error messages below each field
   - Implement real-time validation on field blur
   - Add loading state to submit button
   - Add success toast on successful submission
   - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-- [ ] 11.3 Update task form with enhanced validation
+- [x] 11.3 Update task form with enhanced validation
+
+
   - Add inline error messages below each field
   - Implement real-time validation on field blur
   - Add loading state to submit button
