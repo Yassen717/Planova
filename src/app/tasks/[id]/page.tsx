@@ -185,9 +185,9 @@ export default function TaskDetailPage() {
                 {task.description || 'No description provided'}
               </p>
             </div>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <Link href={`/tasks/${taskId}/edit`} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-block">
               Edit Task
-            </button>
+            </Link>
           </div>
         </div>
       </header>

@@ -143,9 +143,9 @@ export default function ProjectDetailPage() {
                 {project.description || 'No description provided'}
               </p>
             </div>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <Link href={`/projects/${projectId}/edit`} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-block">
               Edit Project
-            </button>
+            </Link>
           </div>
         </div>
       </header>
