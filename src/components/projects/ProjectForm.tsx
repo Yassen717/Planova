@@ -152,10 +152,15 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ initialData, onSubmit }) => {
         const url = initialData?.id ? `/api/projects/${initialData.id}` : '/api/projects';
         const method = initialData?.id ? 'PATCH' : 'POST';
         
+        // Add ownerId for new projects (using first user as default)
+        const dataToSend = initialData?.id 
+          ? formData 
+          : { ...formData, ownerId: '1' }; // TODO: Replace with actual logged-in user ID
+        
         const response = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(dataToSend),
         });
 
         if (!response.ok) {
