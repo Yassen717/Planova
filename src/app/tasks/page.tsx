@@ -67,9 +67,9 @@ export default function TasksPage() {
       const tasksData = await tasksRes.json();
       const projectsData = await projectsRes.json();
       const usersData = await usersRes.json();
-      setTasks(tasksData);
-      setProjects(projectsData);
-      setUsers(usersData);
+      setTasks(tasksData.data || tasksData);
+      setProjects(projectsData.data || projectsData);
+      setUsers(usersData.data || usersData);
     } catch (err) {
       console.error('Error fetching data:', err);
       setError(err instanceof Error ? err.message : 'Failed to load tasks');

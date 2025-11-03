@@ -7,7 +7,11 @@
     "dev-socket": "node server.js",
     "build": "next build --turbopack",
     "start": "next start",
-    "test-notifications": "cd test && npm install && npm test"
+    "test-notifications": "cd test && npm install && npm test",
+    "db:seed": "tsx prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.17.1",

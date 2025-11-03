@@ -38,8 +38,8 @@ export default function ProjectsPage() {
       
       const projectsData = await projectsRes.json();
       const usersData = await usersRes.json();
-      setProjects(projectsData);
-      setUsers(usersData);
+      setProjects(projectsData.data || projectsData);
+      setUsers(usersData.data || usersData);
     } catch (err) {
       console.error('Error fetching data:', err);
       setError(err instanceof Error ? err.message : 'Failed to load projects');
