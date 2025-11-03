@@ -85,7 +85,7 @@ const TaskKanban: React.FC<TaskKanbanProps> = ({ tasks, onTaskMove }) => {
   };
 
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4">
+    <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
       {COLUMNS.map((column) => {
         const columnTasks = getTasksByStatus(column.id);
         const isDragOver = dragOverColumn === column.id;
@@ -93,7 +93,7 @@ const TaskKanban: React.FC<TaskKanbanProps> = ({ tasks, onTaskMove }) => {
         return (
           <div
             key={column.id}
-            className="flex-shrink-0 w-80"
+            className="flex-shrink-0 w-72 sm:w-80"
             onDragOver={(e) => handleDragOver(e, column.id)}
             onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, column.id)}

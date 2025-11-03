@@ -5,6 +5,7 @@ import Link from 'next/link';
 import TaskKanban from '@/components/tasks/TaskKanban';
 import TaskSearch from '@/components/tasks/TaskSearch';
 import TaskFilters from '@/components/tasks/TaskFilters';
+import TaskMobileCard from '@/components/tasks/TaskMobileCard';
 import { EmptyTasks, EmptySearchResults } from '@/components/ui/EmptyState';
 import { SkeletonTable } from '@/components/ui/Skeleton';
 import Button from '@/components/ui/Button';
@@ -30,6 +31,7 @@ export default function TasksPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
@@ -48,26 +50,35 @@ export default function TasksPage() {
   }, []);
 
   // Fetch data
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [tasksRes, projectsRes, usersRes] = await Promise.all([
-          fetch('/api/tasks'),
-          fetch('/api/projects'),
-          fetch('/api/users'),
-        ]);
-        const tasksData = await tasksRes.json();
-        const projectsData = await projectsRes.json();
-        const usersData = await usersRes.json();
-        setTasks(tasksData);
-        setProjects(projectsData);
-        setUsers(usersData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setIsLoading(false);
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const [tasksRes, projectsRes, usersRes] = await Promise.all([
+        fetch('/api/tasks'),
+        fetch('/api/projects'),
+        fetch('/api/users'),
+      ]);
+      
+      if (!tasksRes.ok || !projectsRes.ok || !usersRes.ok) {
+        throw new Error('Failed to fetch data');
       }
+      
+      const tasksData = await tasksRes.json();
+      const projectsData = await projectsRes.json();
+      const usersData = await usersRes.json();
+      setTasks(tasksData.data || tasksData);
+      setProjects(projectsData.data || projectsData);
+      setUsers(usersData.data || usersData);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load tasks');
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -166,20 +177,45 @@ export default function TasksPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Tasks</h1>
+      <div className="p-4 sm:p-6">
+        <div className="flex justify-between items-center mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Tasks</h1>
         </div>
         <SkeletonTable rows={5} />
       </div>
     );
   }
 
+  if (error) {
+    return (
+      <div className="p-4 sm:p-6">
+        <div className="flex justify-between items-center mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Tasks</h1>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <svg className="w-16 h-16 text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Failed to load tasks</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">{error}</p>
+            <Button onClick={fetchData} variant="primary">
+              <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Tasks</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Tasks</h1>
         <Link href="/tasks/new">
           <Button variant="primary">
             <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -191,7 +227,7 @@ export default function TasksPage() {
       </div>
 
       {/* Search, Filters, and View Toggle */}
-      <div className="flex flex-col lg:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         <div className="flex-1">
           <TaskSearch
             value={searchTerm}
@@ -207,15 +243,16 @@ export default function TasksPage() {
             assignees={users}
             projects={projects}
           />
-          {/* View Toggle */}
-          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+          {/* View Toggle - Hidden on mobile, show cards by default */}
+          <div className="hidden sm:flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <button
               onClick={() => handleViewModeChange('table')}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
                 viewMode === 'table'
                   ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
+              aria-label="Table view"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -223,11 +260,12 @@ export default function TasksPage() {
             </button>
             <button
               onClick={() => handleViewModeChange('kanban')}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
                 viewMode === 'kanban'
                   ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
+              aria-label="Kanban view"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
@@ -241,11 +279,37 @@ export default function TasksPage() {
       {filteredTasks.length > 0 ? (
         <>
           {viewMode === 'kanban' ? (
-            <TaskKanban tasks={filteredTasks} onTaskMove={handleTaskMove} />
+            <div className="overflow-x-auto">
+              <TaskKanban tasks={filteredTasks} onTaskMove={handleTaskMove} />
+            </div>
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <>
+              {/* Mobile Card View */}
+              <div className="sm:hidden">
+                <div className="space-y-3">
+                  {paginatedTasks.map((task) => (
+                    <TaskMobileCard key={task.id} task={task} />
+                  ))}
+                </div>
+                {/* Mobile Pagination */}
+                {sortedTasksArray.length > 10 && (
+                  <div className="mt-4">
+                    <Pagination
+                      currentPage={pagination.currentPage}
+                      totalPages={pagination.totalPages}
+                      pageSize={pagination.pageSize}
+                      totalItems={pagination.totalItems}
+                      onPageChange={pagination.goToPage}
+                      onPageSizeChange={pagination.setPageSize}
+                    />
+                  </div>
+                )}
+              </div>
+              
+              {/* Desktop Table View */}
+              <div className="hidden sm:block bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
                       <SortableHeader
@@ -334,6 +398,7 @@ export default function TasksPage() {
                 />
               )}
             </div>
+            </>
           )}
         </>
       ) : (

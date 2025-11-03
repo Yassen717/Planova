@@ -23,16 +23,16 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, change, icon, color, 
   };
 
   const content = (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">{title}</h3>
-        <div className={cn('p-2 rounded-lg bg-gradient-to-br', colorStyles[color])}>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6 hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <h3 className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">{title}</h3>
+        <div className={cn('p-1.5 sm:p-2 rounded-lg bg-gradient-to-br', colorStyles[color])}>
           {icon}
         </div>
       </div>
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
           {change && (
             <div className="flex items-center mt-2">
               {change.trend === 'up' ? (

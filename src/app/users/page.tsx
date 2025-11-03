@@ -73,7 +73,13 @@ export default async function UsersPage() {
               </table>
             </div>
           ) : (
-            <p className="text-gray-600 dark:text-gray-400">No users found.</p>
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No team members yet</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Team members will appear here once they join.</p>
+            </div>
           )}
         </div>
       </div>

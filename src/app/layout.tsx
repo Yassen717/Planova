@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import { NotificationProvider } from "@/components/NotificationProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { KeyboardShortcutsProvider } from "@/components/KeyboardShortcutsProvider";
+import { ToastProvider } from "@/components/ui/ToastProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,14 +33,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider>
-          <NotificationProvider>
-            <KeyboardShortcutsProvider>
-              <Navigation />
-              <div className="container mx-auto">
-                {children}
-              </div>
-            </KeyboardShortcutsProvider>
-          </NotificationProvider>
+          <ToastProvider>
+            <NotificationProvider>
+              <KeyboardShortcutsProvider>
+                <Navigation />
+                <div className="container mx-auto">
+                  {children}
+                </div>
+              </KeyboardShortcutsProvider>
+            </NotificationProvider>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

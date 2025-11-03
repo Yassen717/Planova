@@ -152,14 +152,33 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ initialData, onSubmit }) => {
         const url = initialData?.id ? `/api/projects/${initialData.id}` : '/api/projects';
         const method = initialData?.id ? 'PATCH' : 'POST';
         
+        // Get first user as owner for new projects
+        let dataToSend: any = formData;
+        if (!initialData?.id) {
+          // Fetch first user to use as owner
+          const usersRes = await fetch('/api/users');
+          const users = await usersRes.json();
+          const firstUser = users.data?.[0] || users[0];
+          
+          if (!firstUser) {
+            throw new Error('No users found. Please create a user first.');
+          }
+          
+          dataToSend = { ...formData, ownerId: firstUser.id };
+        }
+        
+        console.log('Sending data:', dataToSend); // Debug log
+        
         const response = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(dataToSend),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to save project');
+          const errorData = await response.json().catch(() => null);
+          console.error('API Error:', response.status, errorData);
+          throw new Error(errorData?.error || 'Failed to save project');
         }
 
         showToast(
@@ -170,7 +189,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ initialData, onSubmit }) => {
       }
     } catch (error) {
       console.error('Error saving project:', error);
-      showToast('Failed to save project. Please try again.', 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save project. Please try again.';
+      showToast(errorMessage, 'error');
     } finally {
       setIsSubmitting(false);
     }
