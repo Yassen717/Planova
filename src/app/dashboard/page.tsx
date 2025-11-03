@@ -70,11 +70,11 @@ export default async function DashboardPage() {
   ];
   
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+      <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
       
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <StatCard
           title="Total Projects"
           value={projectStats.total}
@@ -110,28 +110,34 @@ export default async function DashboardPage() {
       </div>
 
       {/* Charts and Lists */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Project Progress */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Active Projects Progress</h2>
-          <ProgressChart projects={activeProjects} maxDisplay={5} />
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6 w-full">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Active Projects Progress</h2>
+          <div className="w-full overflow-x-auto">
+            <ProgressChart projects={activeProjects} maxDisplay={5} />
+          </div>
         </div>
 
         {/* Upcoming Deadlines */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Upcoming Deadlines</h2>
-          <DeadlinesList items={upcomingDeadlines} maxDisplay={5} />
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6 w-full">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Upcoming Deadlines</h2>
+          <div className="w-full">
+            <DeadlinesList items={upcomingDeadlines} maxDisplay={5} />
+          </div>
         </div>
 
         {/* Task Distribution */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Task Distribution by Assignee</h2>
-          <TaskDistributionChart data={taskDistribution} maxDisplay={5} />
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6 w-full">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Task Distribution by Assignee</h2>
+          <div className="w-full overflow-x-auto">
+            <TaskDistributionChart data={taskDistribution} maxDisplay={5} />
+          </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Activity</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6 w-full">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Recent Activity</h2>
           <div className="space-y-4">
             {recentActivity.length > 0 ? (
               recentActivity.map((activity) => (

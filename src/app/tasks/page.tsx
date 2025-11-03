@@ -5,6 +5,7 @@ import Link from 'next/link';
 import TaskKanban from '@/components/tasks/TaskKanban';
 import TaskSearch from '@/components/tasks/TaskSearch';
 import TaskFilters from '@/components/tasks/TaskFilters';
+import TaskMobileCard from '@/components/tasks/TaskMobileCard';
 import { EmptyTasks, EmptySearchResults } from '@/components/ui/EmptyState';
 import { SkeletonTable } from '@/components/ui/Skeleton';
 import Button from '@/components/ui/Button';
@@ -166,9 +167,9 @@ export default function TasksPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Tasks</h1>
+      <div className="p-4 sm:p-6">
+        <div className="flex justify-between items-center mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Tasks</h1>
         </div>
         <SkeletonTable rows={5} />
       </div>
@@ -176,10 +177,10 @@ export default function TasksPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Tasks</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Tasks</h1>
         <Link href="/tasks/new">
           <Button variant="primary">
             <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -191,7 +192,7 @@ export default function TasksPage() {
       </div>
 
       {/* Search, Filters, and View Toggle */}
-      <div className="flex flex-col lg:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         <div className="flex-1">
           <TaskSearch
             value={searchTerm}
@@ -207,15 +208,16 @@ export default function TasksPage() {
             assignees={users}
             projects={projects}
           />
-          {/* View Toggle */}
-          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+          {/* View Toggle - Hidden on mobile, show cards by default */}
+          <div className="hidden sm:flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <button
               onClick={() => handleViewModeChange('table')}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
                 viewMode === 'table'
                   ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
+              aria-label="Table view"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -223,11 +225,12 @@ export default function TasksPage() {
             </button>
             <button
               onClick={() => handleViewModeChange('kanban')}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
                 viewMode === 'kanban'
                   ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
+              aria-label="Kanban view"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
@@ -241,11 +244,37 @@ export default function TasksPage() {
       {filteredTasks.length > 0 ? (
         <>
           {viewMode === 'kanban' ? (
-            <TaskKanban tasks={filteredTasks} onTaskMove={handleTaskMove} />
+            <div className="overflow-x-auto">
+              <TaskKanban tasks={filteredTasks} onTaskMove={handleTaskMove} />
+            </div>
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <>
+              {/* Mobile Card View */}
+              <div className="sm:hidden">
+                <div className="space-y-3">
+                  {paginatedTasks.map((task) => (
+                    <TaskMobileCard key={task.id} task={task} />
+                  ))}
+                </div>
+                {/* Mobile Pagination */}
+                {sortedTasksArray.length > 10 && (
+                  <div className="mt-4">
+                    <Pagination
+                      currentPage={pagination.currentPage}
+                      totalPages={pagination.totalPages}
+                      pageSize={pagination.pageSize}
+                      totalItems={pagination.totalItems}
+                      onPageChange={pagination.goToPage}
+                      onPageSizeChange={pagination.setPageSize}
+                    />
+                  </div>
+                )}
+              </div>
+              
+              {/* Desktop Table View */}
+              <div className="hidden sm:block bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
                       <SortableHeader
@@ -334,6 +363,7 @@ export default function TasksPage() {
                 />
               )}
             </div>
+            </>
           )}
         </>
       ) : (

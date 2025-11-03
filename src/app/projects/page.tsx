@@ -86,11 +86,11 @@ export default function ProjectsPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Projects</h1>
+      <div className="p-4 sm:p-6">
+        <div className="flex justify-between items-center mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Projects</h1>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />
@@ -100,10 +100,10 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Projects</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Projects</h1>
         <Link href="/projects/new">
           <Button variant="primary">
             <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -133,7 +133,7 @@ export default function ProjectsPage() {
 
       {/* Projects Grid */}
       {filteredProjects.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredProjects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
