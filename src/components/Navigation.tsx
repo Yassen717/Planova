@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import NotificationButton from './NotificationButton';
-import ThemeToggle from './ThemeToggle';
 import QuickActions from './navigation/QuickActions';
 import MobileMenu from './navigation/MobileMenu';
 import { QuickAction } from '@/types/ui';
@@ -138,7 +137,6 @@ const Navigation = () => {
             <div className="flex items-center space-x-2">
               <QuickActions actions={quickActions} />
               <NotificationButton />
-              <ThemeToggle />
             </div>
           </div>
         </div>

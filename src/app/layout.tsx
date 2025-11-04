@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navigation from "@/components/Navigation";
 import { NotificationProvider } from "@/components/NotificationProvider";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import { KeyboardShortcutsProvider } from "@/components/KeyboardShortcutsProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 
@@ -30,20 +29,18 @@ export default function RootLayout({
   return (
     <html lang="en" className="light">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
       >
-        <ThemeProvider>
-          <ToastProvider>
-            <NotificationProvider>
-              <KeyboardShortcutsProvider>
-                <Navigation />
-                <div className="container mx-auto">
-                  {children}
-                </div>
-              </KeyboardShortcutsProvider>
-            </NotificationProvider>
-          </ToastProvider>
-        </ThemeProvider>
+        <ToastProvider>
+          <NotificationProvider>
+            <KeyboardShortcutsProvider>
+              <Navigation />
+              <div className="container mx-auto">
+                {children}
+              </div>
+            </KeyboardShortcutsProvider>
+          </NotificationProvider>
+        </ToastProvider>
       </body>
     </html>
   );
