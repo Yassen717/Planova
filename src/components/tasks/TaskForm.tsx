@@ -60,8 +60,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
         ]);
         const projectsData = await projectsRes.json();
         const usersData = await usersRes.json();
-        setProjects(Array.isArray(projectsData) ? projectsData : []);
-        setUsers(Array.isArray(usersData) ? usersData : []);
+        setProjects(projectsData.data || projectsData || []);
+        setUsers(usersData.data || usersData || []);
       } catch (error) {
         console.error('Error fetching data:', error);
         showToast('Failed to load form data', 'error');
