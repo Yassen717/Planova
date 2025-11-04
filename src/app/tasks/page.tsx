@@ -148,13 +148,17 @@ export default function TasksPage() {
 
   const handleTaskMove = async (taskId: string, newStatus: string) => {
     try {
-      const response = await fetch(`/api/tasks/${taskId}`, {
-        method: 'PATCH',
+      const response = await fetch('/api/tasks', {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ id: taskId, status: newStatus }),
       });
 
-      if (!response.ok) throw new Error('Failed to update task');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error('API Error:', response.status, errorData);
+        throw new Error('Failed to update task');
+      }
 
       // Update local state
       setTasks((prev) =>
