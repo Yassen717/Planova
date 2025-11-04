@@ -22,6 +22,7 @@ export interface TaskFormProps {
     description: string;
     priority: string;
     status: string;
+    startDate: string;
     dueDate: string;
     projectId: string;
     assigneeId: string;
@@ -44,6 +45,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
     description: initialData?.description || '',
     priority: initialData?.priority || 'MEDIUM',
     status: initialData?.status || 'TODO',
+    startDate: initialData?.startDate || new Date().toISOString().split('T')[0],
     dueDate: initialData?.dueDate || '',
     projectId: initialData?.projectId || '',
     assigneeId: initialData?.assigneeId || '',
@@ -185,18 +187,29 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
         const url = initialData?.id ? `/api/tasks/${initialData.id}` : '/api/tasks';
         const method = initialData?.id ? 'PATCH' : 'POST';
         
+        const dataToSend = {
+          title: formData.title,
+          description: formData.description,
+          startDate: formData.startDate,
+          dueDate: formData.dueDate || null,
+          projectId: formData.projectId,
+          assigneeId: formData.assigneeId || null,
+          priority: formData.priority,
+          status: formData.status,
+        };
+        
+        console.log('Sending task data:', dataToSend); // Debug log
+        
         const response = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...formData,
-            assigneeId: formData.assigneeId || null,
-            dueDate: formData.dueDate || null,
-          }),
+          body: JSON.stringify(dataToSend),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to save task');
+          const errorData = await response.json().catch(() => null);
+          console.error('API Error:', response.status, errorData);
+          throw new Error(errorData?.error || 'Failed to save task');
         }
 
         showToast(
@@ -207,7 +220,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
       }
     } catch (error) {
       console.error('Error saving task:', error);
-      showToast('Failed to save task. Please try again.', 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save task. Please try again.';
+      showToast(errorMessage, 'error');
     } finally {
       setIsSubmitting(false);
     }
