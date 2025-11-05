@@ -1,18 +1,15 @@
 import { NextResponse } from 'next/server';
-import { taskService } from '@/lib/taskService';
+import { projectService } from '@/lib/projectService';
 import { createApiResponse, validateRequestBody } from '@/lib/api';
 import { z } from 'zod';
 
-// Validation schema for updating a task
-const updateTaskSchema = z.object({
+// Validation schema for updating a project
+const updateProjectSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
-  status: z.enum(['TODO', 'IN_PROGRESS', 'REVIEW', 'DONE']).optional(),
-  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).optional(),
+  status: z.enum(['ACTIVE', 'COMPLETED', 'ARCHIVED']).optional(),
   startDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
-  dueDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
-  assigneeId: z.string().optional().nullable(),
-  projectId: z.string().optional(),
+  endDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
 });
 
 export async function GET(
@@ -20,19 +17,19 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const task = await taskService.getTaskById(params.id);
+    const project = await projectService.getProjectById(params.id);
     
-    if (!task) {
+    if (!project) {
       return NextResponse.json(
-        createApiResponse('Task not found'),
+        createApiResponse('Project not found'),
         { status: 404 }
       );
     }
     
-    return NextResponse.json(createApiResponse(task));
+    return NextResponse.json(createApiResponse(project));
   } catch (error) {
     return NextResponse.json(
-      createApiResponse('Failed to fetch task'),
+      createApiResponse('Failed to fetch project'),
       { status: 500 }
     );
   }
@@ -43,7 +40,7 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    const validation = await validateRequestBody(request, updateTaskSchema);
+    const validation = await validateRequestBody(request, updateProjectSchema);
     
     if (!validation.success) {
       return NextResponse.json(
@@ -52,15 +49,15 @@ export async function PATCH(
       );
     }
     
-    const task = await taskService.updateTask({
+    const project = await projectService.updateProject({
       id: params.id,
       ...validation.data,
     });
     
-    return NextResponse.json(createApiResponse(task));
+    return NextResponse.json(createApiResponse(project));
   } catch (error) {
     return NextResponse.json(
-      createApiResponse('Failed to update task'),
+      createApiResponse('Failed to update project'),
       { status: 500 }
     );
   }

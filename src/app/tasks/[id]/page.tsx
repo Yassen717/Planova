@@ -78,6 +78,16 @@ export default function TaskDetailPage() {
     if (!newComment.trim()) return;
     
     try {
+      // Get first user as author
+      const usersRes = await fetch('/api/users');
+      const usersData = await usersRes.json();
+      const users = usersData.data || usersData;
+      const firstUser = users[0];
+      
+      if (!firstUser) {
+        throw new Error('No users found');
+      }
+      
       // Call the API to add a comment
       const response = await fetch('/api/comments', {
         method: 'POST',
@@ -86,13 +96,15 @@ export default function TaskDetailPage() {
         },
         body: JSON.stringify({
           content: newComment,
-          authorId: '1', // In a real app, this would be the current user ID
+          authorId: firstUser.id,
           taskId: taskId,
         }),
       });
       
       if (!response.ok) {
-        throw new Error('Failed to add comment');
+        const errorData = await response.json().catch(() => null);
+        console.error('API Error:', response.status, errorData);
+        throw new Error(errorData?.error || 'Failed to add comment');
       }
       
       const result = await response.json();
@@ -110,6 +122,7 @@ export default function TaskDetailPage() {
         setNewComment('');
       }
     } catch (err) {
+      console.error('Error adding comment:', err);
       setError(err instanceof Error ? err.message : 'Failed to add comment');
     }
   };
@@ -266,7 +279,7 @@ export default function TaskDetailPage() {
                           value={newComment}
                           onChange={(e) => setNewComment(e.target.value)}
                           placeholder="Add a comment..."
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white p-2.5"
                         />
                         <div className="mt-3 flex justify-end">
                           <button
