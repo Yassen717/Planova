@@ -134,17 +134,17 @@ function NotificationContainer({
         <div
           key={notification.id}
           className={`max-w-sm w-full rounded-lg shadow-lg p-4 transform transition-all duration-300 ${notification.type === 'success' ? 'bg-green-100 border border-green-200 dark:bg-green-900 dark:border-green-700' :
-              notification.type === 'error' ? 'bg-red-100 border border-red-200 dark:bg-red-900 dark:border-red-700' :
-                notification.type === 'warning' ? 'bg-yellow-100 border border-yellow-200 dark:bg-yellow-900 dark:border-yellow-700' :
-                  'bg-blue-100 border border-blue-200 dark:bg-blue-900 dark:border-blue-700'
+            notification.type === 'error' ? 'bg-red-100 border border-red-200 dark:bg-red-900 dark:border-red-700' :
+              notification.type === 'warning' ? 'bg-yellow-100 border border-yellow-200 dark:bg-yellow-900 dark:border-yellow-700' :
+                'bg-blue-100 border border-blue-200 dark:bg-blue-900 dark:border-blue-700'
             }`}
         >
           <div className="flex justify-between items-start">
             <div className="flex items-start">
               <div className={`flex-shrink-0 ${notification.type === 'success' ? 'text-green-600 dark:text-green-400' :
-                  notification.type === 'error' ? 'text-red-600 dark:text-red-400' :
-                    notification.type === 'warning' ? 'text-yellow-600 dark:text-yellow-400' :
-                      'text-blue-600 dark:text-blue-400'
+                notification.type === 'error' ? 'text-red-600 dark:text-red-400' :
+                  notification.type === 'warning' ? 'text-yellow-600 dark:text-yellow-400' :
+                    'text-blue-600 dark:text-blue-400'
                 }`}>
                 {notification.type === 'success' && (
                   <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -169,9 +169,9 @@ function NotificationContainer({
               </div>
               <div className="ml-3">
                 <p className={`text-sm font-medium ${notification.type === 'success' ? 'text-green-800 dark:text-green-200' :
-                    notification.type === 'error' ? 'text-red-800 dark:text-red-200' :
-                      notification.type === 'warning' ? 'text-yellow-800 dark:text-yellow-200' :
-                        'text-blue-800 dark:text-blue-200'
+                  notification.type === 'error' ? 'text-red-800 dark:text-red-200' :
+                    notification.type === 'warning' ? 'text-yellow-800 dark:text-yellow-200' :
+                      'text-blue-800 dark:text-blue-200'
                   }`}>
                   {notification.message}
                 </p>
@@ -180,9 +180,9 @@ function NotificationContainer({
             <button
               onClick={() => onRemove(notification.id)}
               className={`ml-4 flex-shrink-0 ${notification.type === 'success' ? 'text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300' :
-                  notification.type === 'error' ? 'text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300' :
-                    notification.type === 'warning' ? 'text-yellow-500 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300' :
-                      'text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300'
+                notification.type === 'error' ? 'text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300' :
+                  notification.type === 'warning' ? 'text-yellow-500 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300' :
+                    'text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300'
                 }`}
             >
               <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">

@@ -39,3 +39,8 @@ next-env.d.ts
 # prisma
 prisma/dev.db
 prisma/migrations/
+
+# kiro
+.kiro/spaces/
+.kiro/specs/ui-ux-improvements/
+.kiro/specs/authentication/
