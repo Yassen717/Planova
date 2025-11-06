@@ -13,14 +13,14 @@ const createCommentSchema = z.object({
 export async function POST(request: Request) {
   try {
     const validation = await validateRequestBody(request, createCommentSchema);
-    
+
     if (!validation.success) {
       return NextResponse.json(
         createApiResponse(validation.error),
         { status: 400 }
       );
     }
-    
+
     const comment = await prisma.comment.create({
       data: {
         content: validation.data.content,
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
         },
       },
     });
-    
+
     return NextResponse.json(createApiResponse(comment), { status: 201 });
   } catch (error) {
     console.error('Error creating comment:', error);
