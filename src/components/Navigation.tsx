@@ -3,14 +3,17 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import NotificationButton from './NotificationButton';
 import QuickActions from './navigation/QuickActions';
 import MobileMenu from './navigation/MobileMenu';
+import UserMenu from './UserMenu';
 import { QuickAction } from '@/types/ui';
 
 const Navigation = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const navItems = [
@@ -135,8 +138,28 @@ const Navigation = () => {
 
             {/* Right side actions */}
             <div className="flex items-center space-x-2">
-              <QuickActions actions={quickActions} />
-              <NotificationButton />
+              {session ? (
+                <>
+                  <QuickActions actions={quickActions} />
+                  <NotificationButton />
+                  <UserMenu />
+                </>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Link
+                    href="/auth/login"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Sign up
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
