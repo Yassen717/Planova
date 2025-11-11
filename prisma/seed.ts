@@ -13,7 +13,9 @@ async function main() {
   // Create users with hashed passwords
   const user1 = await prisma.user.upsert({
     where: { email: 'admin@planova.com' },
-    update: {},
+    update: {
+      password: hashedPassword,
+    },
     create: {
       email: 'admin@planova.com',
       name: 'Admin User',
@@ -24,7 +26,9 @@ async function main() {
 
   const user2 = await prisma.user.upsert({
     where: { email: 'john@planova.com' },
-    update: {},
+    update: {
+      password: hashedPassword,
+    },
     create: {
       email: 'john@planova.com',
       name: 'John Doe',
@@ -35,7 +39,9 @@ async function main() {
 
   const user3 = await prisma.user.upsert({
     where: { email: 'jane@planova.com' },
-    update: {},
+    update: {
+      password: hashedPassword,
+    },
     create: {
       email: 'jane@planova.com',
       name: 'Jane Smith',
