@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { projectService } from '@/lib/projectService';
 import { createApiResponse, validateRequestBody } from '@/lib/api';
+import { auth } from '@/lib/auth';
 import { z } from 'zod';
 
 // Validation schema for creating a project
@@ -24,6 +25,15 @@ const updateProjectSchema = z.object({
 
 export async function GET() {
   try {
+    const session = await auth();
+    
+    if (!session) {
+      return NextResponse.json(
+        createApiResponse('Unauthorized'),
+        { status: 401 }
+      );
+    }
+
     const projects = await projectService.getAllProjects();
     return NextResponse.json(createApiResponse(projects));
   } catch (error) {
@@ -33,6 +43,15 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const session = await auth();
+    
+    if (!session) {
+      return NextResponse.json(
+        createApiResponse('Unauthorized'),
+        { status: 401 }
+      );
+    }
+
     const validation = await validateRequestBody(request, createProjectSchema);
     
     if (!validation.success) {
@@ -48,6 +67,15 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    const session = await auth();
+    
+    if (!session) {
+      return NextResponse.json(
+        createApiResponse('Unauthorized'),
+        { status: 401 }
+      );
+    }
+
     const validation = await validateRequestBody(request, updateProjectSchema);
     
     if (!validation.success) {

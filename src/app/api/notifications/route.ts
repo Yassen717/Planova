@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { notificationDbService } from '@/lib/notificationDbService';
 import { createApiResponse, validateRequestBody } from '@/lib/api';
+import { auth } from '@/lib/auth';
 import { z } from 'zod';
 
 // Validation schema for creating a notification
@@ -20,13 +21,26 @@ const updateNotificationSchema = z.object({
 
 export async function GET(request: Request) {
   try {
+    const session = await auth();
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        createApiResponse('Unauthorized'),
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+    const userId = searchParams.get('userId') || (session.user as any).id;
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit') as string) : 10;
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
     
-    if (!userId) {
-      return NextResponse.json(createApiResponse('User ID is required'), { status: 400 });
+    // Ensure user can only access their own notifications
+    if (userId !== (session.user as any).id) {
+      return NextResponse.json(
+        createApiResponse('Forbidden: You can only access your own notifications'),
+        { status: 403 }
+      );
     }
     
     let notifications;
@@ -45,6 +59,15 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const session = await auth();
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        createApiResponse('Unauthorized'),
+        { status: 401 }
+      );
+    }
+
     const validation = await validateRequestBody(request, createNotificationSchema);
     
     if (!validation.success) {
@@ -61,6 +84,15 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    const session = await auth();
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        createApiResponse('Unauthorized'),
+        { status: 401 }
+      );
+    }
+
     const validation = await validateRequestBody(request, updateNotificationSchema);
     
     if (!validation.success) {
@@ -83,6 +115,15 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    const session = await auth();
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        createApiResponse('Unauthorized'),
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     
