@@ -104,3 +104,42 @@ export async function PUT(request: Request) {
     return NextResponse.json(createApiResponse('Failed to update project'), { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const session = await auth();
+    
+    if (!session) {
+      return NextResponse.json(
+        createApiResponse('Unauthorized'),
+        { status: 401 }
+      );
+    }
+
+    // Check if user is guest
+    if ((session.user as any).role === 'GUEST') {
+      return NextResponse.json(
+        createApiResponse('Forbidden: Guest users cannot delete projects'),
+        { status: 403 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    
+    if (!id) {
+      return NextResponse.json(
+        createApiResponse('Project ID is required'),
+        { status: 400 }
+      );
+    }
+    
+    await projectService.deleteProject(id);
+    return NextResponse.json(createApiResponse('Project deleted successfully'));
+  } catch (error) {
+    return NextResponse.json(
+      createApiResponse('Failed to delete project'),
+      { status: 500 }
+    );
+  }
+}

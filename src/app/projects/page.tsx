@@ -54,6 +54,25 @@ export default function ProjectsPage() {
     fetchData();
   }, []);
 
+  // Handle delete project
+  const handleDeleteProject = async (projectId: string) => {
+    try {
+      const response = await fetch(`/api/projects?id=${projectId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete project');
+      }
+
+      // Refresh projects list
+      await fetchData();
+    } catch (err) {
+      console.error('Error deleting project:', err);
+      setError(err instanceof Error ? err.message : 'Failed to delete project');
+    }
+  };
+
   // Filter projects
   const filteredProjects = useMemo(() => {
     let result = projects;
@@ -174,7 +193,7 @@ export default function ProjectsPage() {
       {filteredProjects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <ProjectCard key={project.id} project={project} onDelete={handleDeleteProject} />
           ))}
         </div>
       ) : (
