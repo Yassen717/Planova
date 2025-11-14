@@ -123,6 +123,7 @@ model VerificationToken {
 }
 
 enum Role {
+  GUEST
   USER
   ADMIN
 }

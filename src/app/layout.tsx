@@ -6,6 +6,7 @@ import { NotificationProvider } from "@/components/NotificationProvider";
 import { KeyboardShortcutsProvider } from "@/components/KeyboardShortcutsProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import SessionProvider from "@/components/SessionProvider";
+import GuestBanner from "@/components/GuestBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +38,7 @@ export default function RootLayout({
             <NotificationProvider>
               <KeyboardShortcutsProvider>
                 <Navigation />
+                <GuestBanner />
                 <div className="container mx-auto">
                   {children}
                 </div>

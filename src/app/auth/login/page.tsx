@@ -51,6 +51,29 @@ function LoginForm() {
     }
   };
 
+  const handleGuestSignIn = async () => {
+    setIsLoading(true);
+    try {
+      const result = await signIn("credentials", {
+        email: "guest@planova.com",
+        password: "password123",
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Failed to sign in as guest");
+        setIsLoading(false);
+        return;
+      }
+
+      router.push(callbackUrl);
+      router.refresh();
+    } catch (err) {
+      setError("Failed to sign in as guest");
+      setIsLoading(false);
+    }
+  };
+
   // Check if GitHub OAuth is configured
   const isGitHubConfigured = process.env.NEXT_PUBLIC_GITHUB_ENABLED === 'true';
 
@@ -161,6 +184,30 @@ function LoginForm() {
               </div>
             </>
           )}
+
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={handleGuestSignIn}
+              disabled={isLoading}
+              className="w-full flex justify-center items-center py-2 px-4 text-sm font-medium text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              Continue as Guest (Read-only)
+            </button>
+          </div>
         </form>
       </div>
     </div>
