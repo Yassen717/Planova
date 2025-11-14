@@ -104,3 +104,27 @@ export async function isResourceOwner(resourceOwnerId: string): Promise<boolean>
   const userId = await getCurrentUserId();
   return userId === resourceOwnerId;
 }
+
+/**
+ * Check if user is guest
+ * @returns True if user is guest, false otherwise
+ */
+export async function isGuest(): Promise<boolean> {
+  return hasRole(Role.GUEST);
+}
+
+/**
+ * Require non-guest user - throws error if user is guest
+ * @returns The current user session
+ * @throws Error if user is guest
+ */
+export async function requireNonGuest() {
+  const session = await requireAuth();
+  const userRole = (session.user as any).role;
+  
+  if (userRole === Role.GUEST) {
+    throw new Error("Forbidden: This action is not available for guest users");
+  }
+  
+  return session;
+}

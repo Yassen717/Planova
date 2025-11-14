@@ -50,8 +50,24 @@ async function main() {
     },
   });
 
-  console.log('Created users:', { user1, user2, user3 });
+  // Create guest user
+  const guestUser = await prisma.user.upsert({
+    where: { email: 'guest@planova.com' },
+    update: {
+      password: hashedPassword,
+      role: 'GUEST',
+    },
+    create: {
+      email: 'guest@planova.com',
+      name: 'Guest User',
+      password: hashedPassword,
+      role: 'GUEST',
+    },
+  });
+
+  console.log('Created users:', { user1, user2, user3, guestUser });
   console.log('All users created with password: password123');
+  console.log('Guest user: guest@planova.com / password123 (read-only access)');
   console.log('Seeding finished.');
 }
 

@@ -140,7 +140,9 @@ const Navigation = () => {
             <div className="flex items-center space-x-2">
               {session ? (
                 <>
-                  <QuickActions actions={quickActions} />
+                  {(session.user as any).role !== 'GUEST' && (
+                    <QuickActions actions={quickActions} />
+                  )}
                   <NotificationButton />
                   <UserMenu />
                 </>
