@@ -55,6 +55,14 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check if user is guest
+    if ((session.user as any).role === 'GUEST') {
+      return NextResponse.json(
+        createApiResponse('Forbidden: Guest users cannot create tasks'),
+        { status: 403 }
+      );
+    }
+
     const validation = await validateRequestBody(request, createTaskSchema);
     
     if (!validation.success) {
@@ -76,6 +84,14 @@ export async function PUT(request: Request) {
       return NextResponse.json(
         createApiResponse('Unauthorized'),
         { status: 401 }
+      );
+    }
+
+    // Check if user is guest
+    if ((session.user as any).role === 'GUEST') {
+      return NextResponse.json(
+        createApiResponse('Forbidden: Guest users cannot update tasks'),
+        { status: 403 }
       );
     }
 

@@ -23,10 +23,12 @@ import {
   applyAssigneeFilter,
   applyProjectFilter,
 } from '@/lib/utils/filterHelpers';
+import { useGuestCheck } from '@/hooks/useGuestCheck';
 
 type ViewMode = 'table' | 'kanban';
 
 export default function TasksPage() {
+  const { canCreate } = useGuestCheck();
   const [tasks, setTasks] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
@@ -220,14 +222,16 @@ export default function TasksPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Tasks</h1>
-        <Link href="/tasks/new">
-          <Button variant="primary">
-            <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            New Task
-          </Button>
-        </Link>
+        {canCreate && (
+          <Link href="/tasks/new">
+            <Button variant="primary">
+              <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              New Task
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* Search, Filters, and View Toggle */}

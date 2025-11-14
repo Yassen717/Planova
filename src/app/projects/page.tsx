@@ -9,8 +9,10 @@ import { EmptyProjects, EmptySearchResults } from '@/components/ui/EmptyState';
 import { SkeletonCard } from '@/components/ui/Skeleton';
 import Button from '@/components/ui/Button';
 import { applySearchFilter, applyStatusFilter, applyDateRangeFilter } from '@/lib/utils/filterHelpers';
+import { useGuestCheck } from '@/hooks/useGuestCheck';
 
 export default function ProjectsPage() {
+  const { canCreate } = useGuestCheck();
   const [projects, setProjects] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -139,14 +141,16 @@ export default function ProjectsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Projects</h1>
-        <Link href="/projects/new">
-          <Button variant="primary">
-            <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            New Project
-          </Button>
-        </Link>
+        {canCreate && (
+          <Link href="/projects/new">
+            <Button variant="primary">
+              <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              New Project
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* Search and Filters */}
