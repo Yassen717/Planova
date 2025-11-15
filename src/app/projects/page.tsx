@@ -10,9 +10,11 @@ import { SkeletonCard } from '@/components/ui/Skeleton';
 import Button from '@/components/ui/Button';
 import { applySearchFilter, applyStatusFilter, applyDateRangeFilter } from '@/lib/utils/filterHelpers';
 import { useGuestCheck } from '@/hooks/useGuestCheck';
+import { useToast } from '@/components/ui/ToastProvider';
 
 export default function ProjectsPage() {
   const { canCreate } = useGuestCheck();
+  const { showToast } = useToast();
   const [projects, setProjects] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -65,11 +67,16 @@ export default function ProjectsPage() {
         throw new Error('Failed to delete project');
       }
 
+      // Show success toast
+      showToast('Project deleted successfully', 'success');
+
       // Refresh projects list
       await fetchData();
     } catch (err) {
       console.error('Error deleting project:', err);
-      setError(err instanceof Error ? err.message : 'Failed to delete project');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to delete project';
+      setError(errorMessage);
+      showToast(errorMessage, 'error');
     }
   };
 
