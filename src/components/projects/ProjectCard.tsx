@@ -77,7 +77,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
     <div
       className={cn(
         'bg-white dark:bg-gray-800 rounded-lg shadow border-l-4 p-6',
-        'hover:shadow-lg transition-all duration-200 hover:-translate-y-1',
+        'transition-all duration-200',
+        !showConfirm && 'hover:shadow-lg hover:-translate-y-1',
         borderColor
       )}
     >
@@ -109,12 +110,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
       {/* Confirmation Dialog */}
       {showConfirm && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 transition-opacity duration-200"
           onClick={() => !isDeleting && setShowConfirm(false)}
+          style={{ animation: 'fadeIn 0.2s ease-out' }}
         >
           <div 
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 max-w-md w-full transform transition-all animate-scaleIn"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 max-w-md w-full"
             onClick={(e) => e.stopPropagation()}
+            style={{ animation: 'scaleIn 0.2s ease-out' }}
           >
             {/* Icon */}
             <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-100 dark:bg-red-900/30 rounded-full">
@@ -177,38 +180,20 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
               </button>
             </div>
           </div>
+
+          {/* Inline styles for animations */}
+          <style>{`
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            @keyframes scaleIn {
+              from { opacity: 0; transform: scale(0.95); }
+              to { opacity: 1; transform: scale(1); }
+            }
+          `}</style>
         </div>
       )}
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes scaleIn {
-          from {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
-        }
-
-        .animate-scaleIn {
-          animation: scaleIn 0.3s ease-out;
-        }
-      `}</style>
 
       {/* Description */}
       {project.description && (
