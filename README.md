@@ -35,7 +35,7 @@
 
 - Node.js 20+ 
 - npm or yarn
-- PostgreSQL (or SQLite for development)
+- PostgreSQL (Docker recommended, or cloud database)
 
 ### Installation
 
@@ -57,29 +57,43 @@
    
    Update `.env` with your configuration:
    ```env
-   DATABASE_URL="file:./dev.db"
+   # For local development with Docker
+   DATABASE_URL="postgresql://planova:planova123@localhost:5432/planova_dev"
+   
+   # Or use a cloud database (Vercel Postgres, Supabase, Railway)
+   # DATABASE_URL="postgresql://username:password@host:port/database"
+   
    NEXTAUTH_URL="http://localhost:3000"
    NEXTAUTH_SECRET="your-secret-key"
    GITHUB_ID="your-github-oauth-id"
    GITHUB_SECRET="your-github-oauth-secret"
    ```
 
-4. **Set up the database**
+4. **Start PostgreSQL**
+   
+   **Option A: Docker (Recommended)**
    ```bash
-   npx prisma migrate dev
+   docker-compose up -d
+   ```
+   
+   **Option B: Cloud Database**
+   - Use Vercel Postgres, Supabase, or Railway
+   - Copy the connection string to `.env`
+   
+   See [POSTGRES_SETUP.md](POSTGRES_SETUP.md) for detailed instructions.
+
+5. **Set up the database**
+   ```bash
+   npx prisma migrate dev --name init
    npx prisma db seed
    ```
 
-5. **Run the development server**
+6. **Run the development server**
    ```bash
-   # Standard development
    npm run dev
-
-   # With real-time notifications
-   npm run dev-socket
    ```
 
-6. **Open your browser**
+7. **Open your browser**
    
    Navigate to [http://localhost:3000](http://localhost:3000)
 
@@ -89,10 +103,9 @@ After seeding, you can login with:
 
 | Email | Password | Role |
 |-------|----------|------|
-| admin@planova.com | password123 | ADMIN |
-| john@planova.com | password123 | USER |
-| jane@planova.com | password123 | USER |
-| guest@planova.com | password123 | GUEST (Read-only) |
+| admin@planova.com | admin123 | ADMIN |
+| user@planova.com | user123 | USER |
+| guest@planova.com | guest123 | GUEST (Read-only) |
 
 ## ✨ Features
 
@@ -163,7 +176,7 @@ After seeding, you can login with:
 ### Backend
 - **API:** Next.js API Routes
 - **ORM:** Prisma 6.17.1
-- **Database:** PostgreSQL / SQLite
+- **Database:** PostgreSQL
 - **Authentication:** NextAuth.js v5
 - **Password Hashing:** bcryptjs
 - **Validation:** Zod
@@ -380,11 +393,11 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 👨‍💻 Author
 
-**Your Name**
+**Yassen Ibrahim**
 
-- GitHub: [@your-username](https://github.com/your-username)
-- LinkedIn: [Your Name](https://linkedin.com/in/your-profile)
-- Portfolio: [your-website.com](https://your-website.com)
+- GitHub:https://github.com/Yassen717
+- LinkedIn: https://www.linkedin.com/in/yassen-ibrahim-993117363/
+
 
 ---
 

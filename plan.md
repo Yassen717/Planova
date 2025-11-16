@@ -1,269 +1,342 @@
-# Planova - Project Management System
+# 🗓️ Database Migration Plan: SQLite → PostgreSQL
 
-## Overview
-Planova is a modern, full-stack project management system built to demonstrate real-world software engineering practices.
+## 🎯 Goal
+Migrate Planova from SQLite to PostgreSQL for production readiness.
 
-## Project Vision
-Planova aims to provide teams with an intuitive platform to plan, organize, and track projects efficiently. The application focuses on simplicity, collaboration, and real-time updates to enhance productivity.
+## ⏱️ Estimated Time: 2-3 hours
 
-## Core Features
+---
 
-### 1. Project Management
-- Create, read, update, and delete projects
-- Set project descriptions, deadlines, and priorities
-- Assign team members to projects
-- Track project progress with visual indicators
+## 📊 Migration Progress
 
-### 2. Task Management
-- Create tasks within projects
-- Assign tasks to team members
-- Set task priorities, deadlines, and descriptions
-- Track task status (To Do, In Progress, Review, Done)
-- Add comments and attachments to tasks
+### ✅ Completed Steps (60%)
+1. ✅ **Backup SQLite database** - `prisma/dev.db.backup` created
+2. ✅ **Update Prisma schema** - Changed to PostgreSQL provider
+3. ✅ **Generate Prisma Client** - Client regenerated for PostgreSQL
+4. ✅ **Delete old migrations** - Cleaned up SQLite migrations
+5. ✅ **Create docker-compose.yml** - PostgreSQL container configuration
+6. ✅ **Update .env.example** - PostgreSQL connection strings
+7. ✅ **Update .env** - Local PostgreSQL URL configured
+8. ✅ **Update .gitignore** - Added SQLite file patterns
+9. ✅ **Update README.md** - PostgreSQL setup instructions
+10. ✅ **Create POSTGRES_SETUP.md** - Detailed setup guide
 
-### 3. Team Collaboration
-- User profiles with roles and permissions
-- Real-time notifications
-- Commenting system on tasks and projects
-- Activity feed showing recent actions
+### ⏳ Next Steps (40%)
+1. ⏳ **Start PostgreSQL** - Choose one option:
+   - **Option A:** Start Docker Desktop → `docker-compose up -d`
+   - **Option B:** Use cloud database (Vercel/Supabase/Railway)
+   - **Option C:** Install PostgreSQL locally
+   
+2. ⏳ **Run migrations** - `npx prisma migrate dev --name init`
+3. ⏳ **Seed database** - `npm run db:seed`
+4. ⏳ **Test application** - Verify all features work
+5. ⏳ **Commit changes** - Git commit and push
 
-### 4. Dashboard & Analytics
-- Visual overview of project statuses
-- Task distribution charts
-- Upcoming deadlines
-- Team performance metrics
+### 📝 Quick Start
+See [POSTGRES_SETUP.md](POSTGRES_SETUP.md) for detailed instructions on starting PostgreSQL.
 
-### 5. Responsive UI/UX
-- Mobile-first design approach
-- Dark/light theme toggle
-- Intuitive navigation
-- Keyboard shortcuts for power users
+---
 
-## Technical Architecture
+## 📋 Current Status
 
-### Frontend
-- **Framework**: Next.js 15.5.6 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS with @tailwindcss/postcss plugin
-- **UI Components**: Shadcn UI for polished, accessible components
-- **State Management**: React Context API with useReducer
-- **Form Validation**: Zod for type-safe input validation
-- **Fonts**: next/font with Geist
+**Current Database:** SQLite (`file:./dev.db`) - Backed up ✅
+**Target Database:** PostgreSQL
+**Reason:** Production readiness, scalability, concurrent connections
+**Schema Status:** ✅ Updated to PostgreSQL
+**Migration Status:** ⏳ Waiting for PostgreSQL to start
 
-### Backend
-- **API**: Next.js API Routes
-- **Database**: PostgreSQL with Prisma ORM
-- **Authentication**: NextAuth.js
-- **Real-time**: Socket.io for WebSocket communication
-- **Validation**: Zod for API input validation
+### Why PostgreSQL?
+- ✅ Better for production environments
+- ✅ Supports multiple concurrent connections
+- ✅ Better performance for complex queries
+- ✅ Required by most hosting platforms (Vercel, Railway, etc.)
+- ✅ Better data integrity and ACID compliance
+- ✅ Advanced features (full-text search, JSON support, etc.)
 
-### DevOps
-- **Deployment**: Vercel
-- **CI/CD**: GitHub Actions
-- **Testing**: Jest and React Testing Library
-- **Linting**: ESLint with Prettier
-- **Error Tracking**: Sentry for error monitoring and logging
-- **Logging**: Logtail for structured logging
+**Current:** SQLite (`file:./dev.db`)
+**Target:** PostgreSQL
+**Status:** Ready to migrate
 
-## Folder Structure
+---
+
+## 📝 Migration Steps
+
+### Step 1: Backup Current Data (5 minutes)
+- [x] Export current SQLite data
+- [x] Save backup of `prisma/dev.db`
+- [x] Document current data state
+- **Command:**
+  ```bash
+  cp prisma/dev.db prisma/dev.db.backup
+  ```
+- **Commit:** `chore: backup SQLite database before migration`
+- **Status:** ✅ COMPLETED - Backup created at `prisma/dev.db.backup`
+
+---
+
+### Step 2: Setup PostgreSQL (15 minutes)
+
+#### Option A: Local PostgreSQL
+- [ ] Install PostgreSQL on your machine
+- [ ] Create database: `planova_dev`
+- [ ] Create user with password
+- [ ] Test connection
+
+#### Option B: Docker (Recommended)
+- [x] Create `docker-compose.yml` for PostgreSQL
+- [ ] Start PostgreSQL container (need Docker Desktop running)
+- [ ] Verify container is running
+- **Command:**
+  ```bash
+  docker-compose up -d
+  ```
+- **Status:** ⏳ docker-compose.yml created, waiting for Docker Desktop
+
+#### Option C: Cloud Database (Easiest)
+- [ ] Sign up for Vercel Postgres / Supabase / Railway
+- [ ] Create new database
+- [ ] Copy connection string
+- [ ] Test connection
+
+- **Commit:** `chore: setup PostgreSQL database`
+
+---
+
+### Step 3: Update Prisma Schema (10 minutes)
+- [x] Open `prisma/schema.prisma`
+- [x] Change provider from `"sqlite"` to `"postgresql"`
+- [x] Update DATABASE_URL in `.env`
+- [x] Review schema for PostgreSQL compatibility
+- [x] Generate Prisma Client: `npx prisma generate`
+- **Changes:**
+  ```prisma
+  datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+  }
+  ```
+- **Commit:** `feat: migrate database from SQLite to PostgreSQL`
+- **Status:** ✅ COMPLETED - Schema updated and Prisma Client generated
+
+---
+
+### Step 4: Reset Migrations (10 minutes)
+- [x] Delete `prisma/migrations/` folder
+- [x] Delete `prisma/dev.db` and `prisma/dev.db-journal`
+- [ ] Create fresh migration: `npx prisma migrate dev --name init`
+- [ ] Verify migration files created
+- **Command:**
+  ```bash
+  rm -rf prisma/migrations
+  rm prisma/dev.db*
+  npx prisma migrate dev --name init
+  ```
+- **Commit:** `feat: create initial PostgreSQL migration`
+- **Status:** ⏳ WAITING - Need PostgreSQL running first (see POSTGRES_SETUP.md)
+
+---
+
+### Step 5: Seed Database (5 minutes)
+- [ ] Run seed script: `npm run db:seed`
+- [ ] Verify users created
+- [ ] Check data in Prisma Studio: `npx prisma studio`
+- [ ] Test login with seed users
+- **Command:**
+  ```bash
+  npm run db:seed
+  npx prisma studio
+  ```
+- **Commit:** `chore: seed PostgreSQL database`
+
+---
+
+### Step 6: Test Application (30 minutes)
+- [ ] Start development server: `npm run dev`
+- [ ] Test authentication (login, register, guest)
+- [ ] Test project CRUD operations
+- [ ] Test task CRUD operations
+- [ ] Test comments and notifications
+- [ ] Test all API endpoints
+- [ ] Verify data persistence
+- [ ] Check for any errors in console
+- **Commit:** `test: verify PostgreSQL migration success`
+
+---
+
+### Step 7: Update Documentation (15 minutes)
+- [x] Update README.md with PostgreSQL setup
+- [x] Update .env.example with PostgreSQL URL
+- [x] Create POSTGRES_SETUP.md with detailed instructions
+- [x] Add migration notes
+- **Commit:** `docs: update documentation for PostgreSQL`
+- **Status:** ✅ COMPLETED - All documentation updated
+
+---
+
+### Step 8: Update .gitignore (5 minutes)
+- [x] Ensure `prisma/dev.db*` is in .gitignore
+- [x] Add PostgreSQL-specific ignores if needed
+- [x] Verify no sensitive data in git
+- **Commit:** `chore: update gitignore for PostgreSQL`
+- **Status:** ✅ COMPLETED - .gitignore updated with all SQLite patterns
+
+---
+
+### Step 9: Final Verification (20 minutes)
+- [ ] Run full application test
+- [ ] Check all features work
+- [ ] Verify performance
+- [ ] Test on different browsers
+- [ ] Check mobile responsiveness
+- [ ] Review console for errors
+- **Commit:** `chore: final verification of PostgreSQL migration`
+
+---
+
+## 🔧 PostgreSQL Connection Strings
+
+### Local PostgreSQL
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/planova_dev"
 ```
-src/
-├── app/                 # Next.js app router pages
-│   ├── api/             # API routes
-│   ├── components/      # Reusable components
-│   ├── dashboard/       # Dashboard views
-│   ├── projects/        # Project management views
-│   ├── tasks/           # Task management views
-│   ├── users/           # User management views
-│   ├── layout.tsx       # Root layout
-│   └── page.tsx         # Entry point
-├── components/          # Shared components
-├── lib/                 # Utility functions and helpers
-├── hooks/               # Custom React hooks
-├── types/               # TypeScript interfaces and types
-├── styles/              # Global styles and theme
-└── middleware.ts        # Authentication middleware
+
+### Docker PostgreSQL
+```env
+DATABASE_URL="postgresql://planova:planova123@localhost:5432/planova_dev"
 ```
 
-## Database Schema
-``prisma
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  password  String
-  role      Role     @default(USER)
-  projects  Project[]
-  tasks     Task[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Project {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  status      Status   @default(ACTIVE)
-  startDate   DateTime
-  endDate     DateTime?
-  owner       User     @relation(fields: [ownerId], references: [id])
-  ownerId     String
-  members     User[]
-  tasks       Task[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Task {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  status      TaskStatus @default(TODO)
-  priority    Priority   @default(MEDIUM)
-  startDate   DateTime
-  dueDate     DateTime?
-  assignee    User?      @relation(fields: [assigneeId], references: [id])
-  assigneeId  String?
-  project     Project    @relation(fields: [projectId], references: [id])
-  projectId   String
-  comments    Comment[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-}
-
-model Comment {
-  id        String   @id @default(cuid())
-  content   String
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String
-  task      Task     @relation(fields: [taskId], references: [id])
-  taskId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-enum Role {
-  USER
-  ADMIN
-}
-
-enum Status {
-  ACTIVE
-  COMPLETED
-  ARCHIVED
-}
-
-enum TaskStatus {
-  TODO
-  IN_PROGRESS
-  REVIEW
-  DONE
-}
-
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
-}
+### Vercel Postgres
+```env
+DATABASE_URL="postgres://default:xxx@xxx.postgres.vercel-storage.com:5432/verceldb"
 ```
 
-## Implementation Roadmap
+### Supabase
+```env
+DATABASE_URL="postgresql://postgres:password@db.xxx.supabase.co:5432/postgres"
+```
 
-### Phase 1: Foundation (Week 1) - COMPLETE ✅
-- [x] Set up project with Next.js and TypeScript
-- [x] Configure Tailwind CSS and global styles
-- [x] Implement basic routing structure
-- [x] Create authentication system (NextAuth.js) - *Planned for next phase*
-- [x] Set up database with Prisma - *Planned for next phase*
-- [x] Design and implement UI components with Shadcn UI
-- [x] Created core application structure (dashboard, projects, tasks, users pages)
-- [x] Implemented navigation component
-- [x] Set up API utilities with Zod validation
-- [x] Created TypeScript type definitions
-- [x] Implemented custom React hooks for data fetching
+### Railway
+```env
+DATABASE_URL="postgresql://postgres:xxx@containers-us-west-xxx.railway.app:7431/railway"
+```
 
-### Phase 2: Core Features (Week 2-3) - COMPLETE ✅
-- [x] Set up database with Prisma ORM and SQLite
-- [x] Implement project management service layer
-- [x] Implement task management service layer
-- [x] Implement user management service layer
-- [x] Create API routes for projects, tasks, and users with Zod validation
-- [x] Enhance dashboard with project and task statistics
-- [x] Create detailed project view page
-- [x] Implement full task management functionality
-- [x] Create detailed task view page
-- [x] Implement user management functionality
-- [x] Add commenting system
-- [x] Build team collaboration features
-- [x] Implement real-time notifications
+---
 
-### Phase 3: Advanced Features (Week 4) - COMPLETE ✅
-- [x] Implement real-time updates with Socket.io
-- [x] Add notification system
-- [x] Create reporting and analytics
-- [x] Optimize performance and SEO
-- [x] Implement dark/light theme toggle
+## 🐳 Docker Setup (Optional)
 
-### Phase 4: Polish & Deployment (Week 5)
-- [x] Conduct thorough testing with Zod validation
-- [x] Fix bugs and improve UX
-- [x] Write comprehensive documentation
-- [x] Deploy to Vercel
-- [x] Set up monitoring with Sentry and Logtail
-- [x] Performance optimization and final QA
-- [x] Finalize portfolio presentation materials
+Create `docker-compose.yml`:
 
-## Portfolio Presentation
+```yaml
+version: '3.8'
 
-### Key Highlights
-1. **Full-Stack Development**: Showcases expertise in building scalable, maintainable web applications.
-2. **Modern Tech Stack**: Utilizes cutting-edge technologies like Next.js 15, React 19, TypeScript, and Tailwind CSS.
-3. **Responsive Design**: Mobile-first approach with adaptive layouts for all device sizes.
-4. **Performance Optimized**: Implements best practices for loading speed and runtime performance.
-5. **Clean Architecture**: Well-organized codebase following industry-standard patterns.
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: planova-postgres
+    environment:
+      POSTGRES_USER: planova
+      POSTGRES_PASSWORD: planova123
+      POSTGRES_DB: planova_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
-### Skills Demonstrated
-- Next.js (App Router, API Routes, Server Components)
-- TypeScript (Type safety, interfaces, Zod validation)
-- Database design and ORM usage (Prisma)
-- Authentication and authorization
-- Real-time communication with Socket.io
-- Responsive UI development with Shadcn UI
-- Testing strategies
-- Deployment and CI/CD with professional monitoring
+volumes:
+  postgres_data:
+```
 
-## Future Enhancements
-- Integration with third-party services (Slack, Google Calendar)
-- Mobile app development with React Native
-- Advanced reporting with data visualization
-- AI-powered project insights and recommendations
-- Multi-language support (i18n)
-- Offline functionality with service workers
-
-## Getting Started
+**Commands:**
 ```bash
-# Clone the repository
-git clone <repository-url>
+# Start PostgreSQL
+docker-compose up -d
 
-# Install dependencies
-npm install
+# Stop PostgreSQL
+docker-compose down
 
-# Set up environment variables
-cp .env.example .env.local
-# Update values in .env.local
-
-# Run database migrations
-npx prisma migrate dev
-
-# Start the development server
-npm run dev
+# View logs
+docker-compose logs -f postgres
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the application.
+---
 
-## Contributing
-This project is primarily for portfolio demonstration. However, suggestions and feedback are welcome through GitHub issues.
+## ⚠️ Important Notes
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+### Before Migration
+1. ✅ Backup your SQLite database
+2. ✅ Commit all changes to git
+3. ✅ Test current application works
+4. ✅ Document any custom configurations
+
+### During Migration
+1. ⚠️ Don't delete SQLite files until PostgreSQL is verified
+2. ⚠️ Test thoroughly before deploying
+3. ⚠️ Keep both .env configurations temporarily
+
+### After Migration
+1. ✅ Verify all features work
+2. ✅ Check data integrity
+3. ✅ Update all documentation
+4. ✅ Deploy to staging first
+5. ✅ Then deploy to production
+
+---
+
+## 🆘 Troubleshooting
+
+### Issue: Connection refused
+**Solution:** Ensure PostgreSQL is running
+```bash
+# Check if PostgreSQL is running
+docker ps  # for Docker
+sudo service postgresql status  # for local install
+```
+
+### Issue: Authentication failed
+**Solution:** Check username and password in DATABASE_URL
+
+### Issue: Database does not exist
+**Solution:** Create database first
+```bash
+createdb planova_dev
+```
+
+### Issue: Migration failed
+**Solution:** Reset and try again
+```bash
+npx prisma migrate reset
+npx prisma migrate dev --name init
+```
+
+---
+
+## ✅ Success Criteria
+
+Migration is successful when:
+- ✅ Application starts without errors
+- ✅ All authentication flows work
+- ✅ All CRUD operations work
+- ✅ Data persists correctly
+- ✅ No console errors
+- ✅ Performance is good
+- ✅ All tests pass
+
+---
+
+## 📊 Migration Checklist Summary
+
+- [ ] Step 1: Backup SQLite data (5 min)
+- [ ] Step 2: Setup PostgreSQL (15 min)
+- [ ] Step 3: Update Prisma schema (10 min)
+- [ ] Step 4: Reset migrations (10 min)
+- [ ] Step 5: Seed database (5 min)
+- [ ] Step 6: Test application (30 min)
+- [ ] Step 7: Update documentation (15 min)
+- [ ] Step 8: Update .gitignore (5 min)
+- [ ] Step 9: Final verification (20 min)
+
+**Total Time:** ~2 hours
+
+---
+
+**Ready to start? Let's migrate to PostgreSQL! 🚀**

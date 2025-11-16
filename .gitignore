@@ -38,7 +38,10 @@ next-env.d.ts
 
 # prisma
 prisma/dev.db
-prisma/migrations/
+prisma/dev.db-journal
+prisma/dev.db.backup
+prisma/*.db
+prisma/*.db-journal
 
 # kiro
 .kiro/spaces/
@@ -47,3 +50,5 @@ prisma/migrations/
 
 # deployment notes (contains sensitive info)
 deploy.md
+plan.md
+POSTGRES_SETUP.md
