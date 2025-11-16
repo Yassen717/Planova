@@ -44,3 +44,6 @@ prisma/migrations/
 .kiro/spaces/
 .kiro/specs/ui-ux-improvements/
 .kiro/specs/authentication/
+
+# deployment notes (contains sensitive info)
+deploy.md
