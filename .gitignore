@@ -51,4 +51,3 @@ prisma/*.db-journal
 # deployment notes (contains sensitive info)
 deploy.md
 plan.md
-POSTGRES_SETUP.md

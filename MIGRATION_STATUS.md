@@ -29,37 +29,39 @@
 
 ### Step 1: Start PostgreSQL 🐘
 
-Choose ONE of these options:
+**⚠️ Current Error:** `Can't reach database server at localhost:5432`
 
-#### Option A: Docker (Recommended) 🐳
+**Solution:** PostgreSQL is not running. Choose ONE option:
+
+#### 🚀 EASIEST: Cloud Database (Recommended)
+See detailed guide: **[QUICK_START_POSTGRES.md](QUICK_START_POSTGRES.md)**
+
+**Quick Links:**
+- **[Supabase](https://supabase.com)** - 5 minutes setup, free forever
+- **[Vercel Postgres](https://vercel.com/dashboard)** - Best if deploying to Vercel
+- **[Railway](https://railway.app)** - Simple and fast
+
+**Steps:**
+1. Sign up (free)
+2. Create PostgreSQL database
+3. Copy connection string
+4. Update `.env` with the connection string
+5. Run migrations (see Step 2 below)
+
+#### 🐳 Docker (If you prefer local)
 ```bash
-# 1. Start Docker Desktop
-# 2. Run this command:
+# 1. Start Docker Desktop first!
+# 2. Then run:
 docker-compose up -d
 
-# 3. Verify it's running:
+# 3. Verify:
 docker ps
 ```
 
-#### Option B: Cloud Database ☁️
-1. Sign up for one of these:
-   - [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres) (Free tier)
-   - [Supabase](https://supabase.com) (Free tier)
-   - [Railway](https://railway.app) (Free trial)
-
-2. Create a new PostgreSQL database
-
-3. Copy the connection string
-
-4. Update `.env`:
-   ```env
-   DATABASE_URL="your-connection-string-here"
-   ```
-
-#### Option C: Local PostgreSQL
-1. Install PostgreSQL from [postgresql.org](https://www.postgresql.org/download/)
+#### 💻 Local PostgreSQL
+1. Install from [postgresql.org](https://www.postgresql.org/download/)
 2. Create database: `createdb planova_dev`
-3. Update `.env` with your credentials
+3. Update `.env` with credentials
 
 ---
 
