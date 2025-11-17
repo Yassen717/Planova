@@ -38,12 +38,18 @@ next-env.d.ts
 
 # prisma
 prisma/dev.db
-prisma/migrations/
+prisma/dev.db-journal
+prisma/dev.db.backup
+prisma/*.db
+prisma/*.db-journal
 
 # kiro
 .kiro/spaces/
 .kiro/specs/ui-ux-improvements/
 .kiro/specs/authentication/
+
+# migration documentation (temporary files)
+migration-docs/
 
 # deployment notes (contains sensitive info)
 deploy.md
