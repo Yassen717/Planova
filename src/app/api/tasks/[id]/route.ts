@@ -17,10 +17,11 @@ const updateTaskSchema = z.object({
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const task = await taskService.getTaskById(params.id);
+    const { id } = await params;
+    const task = await taskService.getTaskById(id);
     
     if (!task) {
       return NextResponse.json(
@@ -40,9 +41,10 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const validation = await validateRequestBody(request, updateTaskSchema);
     
     if (!validation.success) {
@@ -52,9 +54,11 @@ export async function PATCH(
       );
     }
     
+    const { assigneeId, ...restData } = validation.data;
     const task = await taskService.updateTask({
-      id: params.id,
-      ...validation.data,
+      id,
+      ...restData,
+      ...(assigneeId !== undefined && { assigneeId: assigneeId || undefined }),
     });
     
     return NextResponse.json(createApiResponse(task));
