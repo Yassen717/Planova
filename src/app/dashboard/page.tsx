@@ -51,16 +51,16 @@ export default async function DashboardPage() {
   // Get upcoming deadlines
   const upcomingDeadlines = [
     ...projects
-      .filter(p => p.endDate && new Date(p.endDate) > new Date())
-      .map(p => ({
+      .filter((p: any) => p.endDate && new Date(p.endDate) > new Date())
+      .map((p: any) => ({
         id: p.id,
         title: p.title,
         dueDate: new Date(p.endDate!),
         type: 'project' as const,
       })),
     ...tasks
-      .filter(t => t.dueDate && new Date(t.dueDate) > new Date())
-      .map(t => ({
+      .filter((t: any) => t.dueDate && new Date(t.dueDate) > new Date())
+      .map((t: any) => ({
         id: t.id,
         title: t.title,
         dueDate: new Date(t.dueDate!),
