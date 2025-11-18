@@ -18,6 +18,7 @@
 </p>
 
 <p align="center">
+  <a href="https://planova-p-git-main-yassenyassenyasy-gmailcoms-projects.vercel.app/">🚀 Live Demo</a> •
   <a href="#-features">Features</a> •
   <a href="#-tech-stack">Tech Stack</a> •
   <a href="#-getting-started">Getting Started</a> •
@@ -26,10 +27,35 @@
   <a href="#-deployment">Deployment</a>
 </p>
 
+<p align="center">
+  <a href="https://planova-p-git-main-yassenyassenyasy-gmailcoms-projects.vercel.app/">
+    <img src="https://img.shields.io/badge/Demo-Live-success?style=for-the-badge&logo=vercel" alt="Live Demo" />
+  </a>
+  <img src="https://img.shields.io/badge/Status-Production-brightgreen?style=for-the-badge" alt="Status" />
+</p>
+
 </div>
 
 ---
 
+## 🌐 Live Demo
+
+**🚀 Try it now:** [https://planova-p-git-main-yassenyassenyasy-gmailcoms-projects.vercel.app/](https://planova-p-git-main-yassenyassenyasy-gmailcoms-projects.vercel.app/)
+
+### Demo Credentials
+
+You can test the application with these accounts:
+
+| Email | Password | Role | Access Level |
+|-------|----------|------|--------------|
+| admin@planova.com | password123 | ADMIN | Full access to all features |
+| john@planova.com | password123 | USER | Standard user access |
+| jane@planova.com | password123 | USER | Standard user access |
+| guest@planova.com | password123 | GUEST | Read-only access |
+
+**Or** register your own account to explore all features!
+
+---
 
 ## 🚀 Getting Started
 
@@ -522,6 +548,25 @@ This project is open source and available under the [MIT License](LICENSE).
 <div align="center">
 
 **⭐ Star this repo if you find it helpful!**
+
+---
+
+## 🌟 Production Deployment
+
+**Live Application:** [https://planova-p-git-main-yassenyassenyasy-gmailcoms-projects.vercel.app/](https://planova-p-git-main-yassenyassenyasy-gmailcoms-projects.vercel.app/)
+
+**Deployed on:** Vercel  
+**Database:** Supabase PostgreSQL  
+**Status:** ✅ Production Ready
+
+### Deployment Stack:
+- **Frontend & Backend:** Vercel Edge Network
+- **Database:** Supabase (PostgreSQL)
+- **Authentication:** NextAuth.js v5
+- **CDN:** Vercel Global CDN
+- **SSL:** Automatic HTTPS
+
+---
 
 Made with ❤️ and ☕
 
