@@ -40,8 +40,8 @@ export default async function DashboardPage() {
   const { projectStats, taskStats, recentActivity, projects, tasks } = await getDashboardData();
   
   // Calculate task status counts
-  const inProgressTasks = taskStats.byStatus.find(s => s.status === 'IN_PROGRESS')?._count.status || 0;
-  const completedTasks = taskStats.byStatus.find(s => s.status === 'DONE')?._count.status || 0;
+  const inProgressTasks = taskStats.byStatus.find((s: any) => s.status === 'IN_PROGRESS')?._count.status || 0;
+  const completedTasks = taskStats.byStatus.find((s: any) => s.status === 'DONE')?._count.status || 0;
   
   // Transform data for charts
   const projectsWithProgress = transformProjectsToChartData(projects);
