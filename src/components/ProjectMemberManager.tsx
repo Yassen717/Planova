@@ -28,7 +28,7 @@ export default function ProjectMemberManager({ projectId, currentMembers }: Proj
   const fetchUsers = async () => {
     try {
       const allUsers = await userService.getAllUsers();
-      setUsers(allUsers.filter(user => !currentMembers.some(member => member.id === user.id)));
+      setUsers(allUsers.filter((user: any) => !currentMembers.some((member: any) => member.id === user.id)));
       setLoading(false);
     } catch (error) {
       console.error('Error fetching users:', error);
