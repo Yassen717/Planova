@@ -25,10 +25,10 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({
       scope="col"
       className={cn(
         'px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer select-none',
-        'hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
+        'hover:bg-gray-100:bg-gray-600 transition-colors',
         isActive
-          ? 'text-blue-600 dark:text-blue-400 bg-gray-50 dark:bg-gray-700'
-          : 'text-gray-500 dark:text-gray-300',
+          ? 'text-blue-600 bg-gray-50'
+          : 'text-gray-500',
         className
       )}
       onClick={() => onSort(sortKey)}
@@ -41,8 +41,8 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({
             className={cn(
               'w-3 h-3 -mb-1',
               direction === 'asc'
-                ? 'text-blue-600 dark:text-blue-400'
-                : 'text-gray-400 dark:text-gray-600'
+                ? 'text-blue-600'
+                : 'text-gray-400'
             )}
             fill="currentColor"
             viewBox="0 0 20 20"
@@ -54,8 +54,8 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({
             className={cn(
               'w-3 h-3',
               direction === 'desc'
-                ? 'text-blue-600 dark:text-blue-400'
-                : 'text-gray-400 dark:text-gray-600'
+                ? 'text-blue-600'
+                : 'text-gray-400'
             )}
             fill="currentColor"
             viewBox="0 0 20 20"

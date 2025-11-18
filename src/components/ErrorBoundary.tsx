@@ -38,8 +38,8 @@ class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
-          <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+          <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
             <div className="mb-4">
               <svg
                 className="w-16 h-16 text-red-500 mx-auto"
@@ -55,18 +55,18 @@ class ErrorBoundary extends Component<Props, State> {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
               Something went wrong
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-sm text-gray-600 mb-6">
               We encountered an unexpected error. Please try again or contact support if the problem persists.
             </p>
             {this.state.error && (
               <details className="mb-6 text-left">
-                <summary className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
+                <summary className="text-sm text-gray-500 cursor-pointer hover:text-gray-700:text-gray-300">
                   Error details
                 </summary>
-                <pre className="mt-2 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10 p-3 rounded overflow-auto max-h-40">
+                <pre className="mt-2 text-xs text-red-600 bg-red-50 p-3 rounded overflow-auto max-h-40">
                   {this.state.error.message}
                 </pre>
               </details>

@@ -30,7 +30,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           <select
             value={filter.value || ''}
             onChange={(e) => onFilterChange(filter.id, e.target.value)}
-            className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All</option>
             {filter.options?.map((option) => (
@@ -58,7 +58,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                   }}
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300">{option.label}</span>
+                <span className="text-sm text-gray-700">{option.label}</span>
               </label>
             ))}
           </div>
@@ -76,7 +76,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                   start: e.target.value ? new Date(e.target.value) : null,
                 })
               }
-              className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Start date"
             />
             <input
@@ -88,7 +88,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                   end: e.target.value ? new Date(e.target.value) : null,
                 })
               }
-              className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="End date"
             />
           </div>
@@ -103,7 +103,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
               onChange={(e) => onFilterChange(filter.id, e.target.checked)}
               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-700 dark:text-gray-300">{filter.label}</span>
+            <span className="text-sm text-gray-700">{filter.label}</span>
           </label>
         );
 
@@ -154,18 +154,18 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           {/* Filter Panel */}
           <div
             className={cn(
-              'bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50',
+              'bg-white rounded-lg shadow-lg z-50',
               'md:absolute md:right-0 md:top-full md:mt-2 md:w-80',
               'fixed inset-x-0 bottom-0 md:inset-auto',
               'max-h-[80vh] overflow-y-auto'
             )}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h3>
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
               <button
                 onClick={onToggle}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 md:hidden"
+                className="text-gray-400 hover:text-gray-600:text-gray-300 md:hidden"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -177,7 +177,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <div className="p-4 space-y-4">
               {filters.map((filter) => (
                 <div key={filter.id}>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     {filter.label}
                   </label>
                   {renderFilterControl(filter)}
@@ -186,7 +186,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="flex gap-2 p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex gap-2 p-4 border-t border-gray-200">
               <Button variant="secondary" onClick={onReset} className="flex-1">
                 Reset
               </Button>

@@ -6,21 +6,19 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  darkMode: 'class', // Enable dark mode with class strategy
+  
+
+  darkMode: false,
+
   theme: {
     extend: {
       colors: {
-        background: {
-          light: '#f9fafb',
-          dark: '#111827',
-        },
-        foreground: {
-          light: '#111827',
-          dark: '#f9fafb',
-        },
+        background: '#ffffff',
+        foreground: '#000000',
       },
     },
   },
+
   plugins: [],
 };
 

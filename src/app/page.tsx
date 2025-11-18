@@ -22,27 +22,27 @@ export default async function Home() {
               <line x1="9" y1="21" x2="9" y2="9"></line>
             </svg>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Planova</h1>
+          <h1 className="text-4xl font-bold text-black">Planova</h1>
         </div>
-        <p className="text-xl text-center sm:text-left text-gray-700 dark:text-gray-300">
+        <p className="text-xl text-center sm:text-left text-black font-medium">
           A modern, full-stack project management system
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
-          <div className="border rounded-lg p-6 hover:shadow-lg transition-shadow dark:border-gray-700 dark:bg-gray-800">
-            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Project Management</h2>
-            <p className="text-gray-600 dark:text-gray-400">
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+            <h2 className="text-xl font-bold mb-2 text-black">Project Management</h2>
+            <p className="text-black">
               Create, organize, and track projects with ease
             </p>
           </div>
-          <div className="border rounded-lg p-6 hover:shadow-lg transition-shadow dark:border-gray-700 dark:bg-gray-800">
-            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Task Tracking</h2>
-            <p className="text-gray-600 dark:text-gray-400">
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+            <h2 className="text-xl font-bold mb-2 text-black">Task Tracking</h2>
+            <p className="text-black">
               Assign tasks, set deadlines, and monitor progress
             </p>
           </div>
-          <div className="border rounded-lg p-6 hover:shadow-lg transition-shadow dark:border-gray-700 dark:bg-gray-800">
-            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Team Collaboration</h2>
-            <p className="text-gray-600 dark:text-gray-400">
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+            <h2 className="text-xl font-bold mb-2 text-black">Team Collaboration</h2>
+            <p className="text-black">
               Work together with your team in real-time
             </p>
           </div>
@@ -57,7 +57,7 @@ export default async function Home() {
                 Go to Dashboard
               </Link>
               <Link
-                className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
+                className="rounded-full border border-solid border-gray-300 transition-colors flex items-center justify-center hover:bg-gray-100 hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
                 href="/projects"
               >
                 View Projects
@@ -72,7 +72,7 @@ export default async function Home() {
                 Get Started
               </Link>
               <Link
-                className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
+                className="rounded-full border border-solid border-gray-300 transition-colors flex items-center justify-center hover:bg-gray-100 hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
                 href="/auth/login"
               >
                 Sign In
@@ -83,7 +83,7 @@ export default async function Home() {
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4 text-gray-700 dark:text-gray-300"
+          className="flex items-center gap-2 hover:underline hover:underline-offset-4 text-gray-700"
           href="https://nextjs.org/docs"
           target="_blank"
           rel="noopener noreferrer"
@@ -98,7 +98,7 @@ export default async function Home() {
           Docs
         </a>
         <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4 text-gray-700 dark:text-gray-300"
+          className="flex items-center gap-2 hover:underline hover:underline-offset-4 text-gray-700"
           href="https://github.com"
           target="_blank"
           rel="noopener noreferrer"
@@ -113,7 +113,7 @@ export default async function Home() {
           GitHub
         </a>
         <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4 text-gray-700 dark:text-gray-300"
+          className="flex items-center gap-2 hover:underline hover:underline-offset-4 text-gray-700"
           href="/dashboard"
         >
           <Image

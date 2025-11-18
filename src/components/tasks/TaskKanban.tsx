@@ -102,14 +102,14 @@ const TaskKanban: React.FC<TaskKanbanProps> = ({ tasks, onTaskMove }) => {
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-2">
                 <div className={cn('w-3 h-3 rounded-full', column.color)} />
-                <h3 className="font-semibold text-gray-900 dark:text-white">
+                <h3 className="font-semibold text-gray-900">
                   {column.label}
                 </h3>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-sm text-gray-500">
                   ({columnTasks.length})
                 </span>
               </div>
-              <div className="h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
                 <div className={cn('h-full', column.color)} style={{ width: '100%' }} />
               </div>
             </div>
@@ -119,8 +119,8 @@ const TaskKanban: React.FC<TaskKanbanProps> = ({ tasks, onTaskMove }) => {
               className={cn(
                 'min-h-[200px] p-3 rounded-lg transition-colors',
                 isDragOver
-                  ? 'bg-blue-50 dark:bg-blue-900/10 border-2 border-dashed border-blue-400'
-                  : 'bg-gray-50 dark:bg-gray-900/50 border-2 border-transparent'
+                  ? 'bg-blue-50 border-2 border-dashed border-blue-400'
+                  : 'bg-gray-50 border-2 border-transparent'
               )}
             >
               <div className="space-y-3">
@@ -136,7 +136,7 @@ const TaskKanban: React.FC<TaskKanbanProps> = ({ tasks, onTaskMove }) => {
                     />
                   ))
                 ) : (
-                  <div className="text-center py-8 text-gray-400 dark:text-gray-600 text-sm">
+                  <div className="text-center py-8 text-gray-400 text-sm">
                     {isDragOver ? 'Drop here' : 'No tasks'}
                   </div>
                 )}

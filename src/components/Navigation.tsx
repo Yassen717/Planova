@@ -89,14 +89,14 @@ const Navigation = () => {
 
   return (
     <>
-      <nav className="bg-white dark:bg-gray-800 shadow sticky top-0 z-30">
+      <nav className="bg-white shadow sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                className="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-black hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
                 aria-label="Open menu"
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -114,7 +114,7 @@ const Navigation = () => {
                       <line x1="9" y1="21" x2="9" y2="9"></line>
                     </svg>
                   </div>
-                  <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">Planova</span>
+                  <span className="ml-2 text-xl font-bold text-black">Planova</span>
                 </Link>
               </div>
 
@@ -126,8 +126,8 @@ const Navigation = () => {
                     href={item.href}
                     className={`${
                       pathname === item.href
-                        ? 'border-blue-500 text-gray-900 dark:text-white'
-                        : 'border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-200'
+                        ? 'border-blue-500 text-black font-semibold'
+                        : 'border-transparent text-gray-700 hover:border-gray-300 hover:text-black'
                     } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors`}
                   >
                     {item.name}
@@ -150,7 +150,7 @@ const Navigation = () => {
                 <div className="flex items-center space-x-2">
                   <Link
                     href="/auth/login"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-black bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
                     Sign in
                   </Link>

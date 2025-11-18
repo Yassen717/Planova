@@ -16,7 +16,7 @@ const TaskDistributionChart: React.FC<TaskDistributionChartProps> = ({ data, max
 
   if (displayData.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+      <div className="text-center py-8 text-gray-500">
         No task distribution data available
       </div>
     );
@@ -36,14 +36,14 @@ const TaskDistributionChart: React.FC<TaskDistributionChartProps> = ({ data, max
             onMouseLeave={() => setHoveredIndex(null)}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+              <span className="text-sm font-medium text-gray-900 truncate">
                 {item.label}
               </span>
-              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-2">
+              <span className="text-sm font-semibold text-gray-700 ml-2">
                 {item.value} {item.value === 1 ? 'task' : 'tasks'}
               </span>
             </div>
-            <div className="relative w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+            <div className="relative w-full bg-gray-200 rounded-full h-3 overflow-hidden">
               <div
                 className="h-3 rounded-full transition-all duration-300"
                 style={{
@@ -54,7 +54,7 @@ const TaskDistributionChart: React.FC<TaskDistributionChartProps> = ({ data, max
               />
             </div>
             {isHovered && (
-              <div className="absolute top-full left-0 mt-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded px-2 py-1 z-10">
+              <div className="absolute top-full left-0 mt-2 bg-gray-900 text-white text-xs rounded px-2 py-1 z-10">
                 {item.value} tasks ({Math.round((item.value / data.reduce((sum, d) => sum + d.value, 0)) * 100)}%)
               </div>
             )}

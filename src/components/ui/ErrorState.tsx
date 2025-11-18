@@ -33,15 +33,15 @@ const ErrorState: React.FC<ErrorStateProps> = ({
           />
         </svg>
       </div>
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 max-w-md">{message}</p>
+      <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
+      <p className="text-sm text-gray-600 mb-6 max-w-md">{message}</p>
       
       {showDetails && details && (
         <details className="mb-6 text-left w-full max-w-md">
-          <summary className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
+          <summary className="text-sm text-gray-500 cursor-pointer hover:text-gray-700">
             Error details
           </summary>
-          <pre className="mt-2 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10 p-3 rounded overflow-auto max-h-40">
+          <pre className="mt-2 text-xs text-red-600 bg-red-50 p-3 rounded overflow-auto max-h-40">
             {details}
           </pre>
         </details>

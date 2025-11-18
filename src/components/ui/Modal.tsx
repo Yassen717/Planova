@@ -65,7 +65,7 @@ const Modal: React.FC<ModalProps> = ({
       {/* Modal */}
       <div
         className={cn(
-          'relative w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl',
+          'relative w-full bg-white rounded-lg shadow-xl',
           'transform transition-all duration-300 ease-out',
           'animate-in fade-in zoom-in-95',
           'max-h-[95vh] flex flex-col',
@@ -77,11 +77,11 @@ const Modal: React.FC<ModalProps> = ({
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex-shrink-0">
             {title && (
               <h2
                 id="modal-title"
-                className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white"
+                className="text-lg sm:text-xl font-semibold text-gray-900"
               >
                 {title}
               </h2>
@@ -89,7 +89,7 @@ const Modal: React.FC<ModalProps> = ({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center -mr-2"
+                className="text-gray-400 hover:text-gray-600 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center -mr-2"
                 aria-label="Close modal"
               >
                 <svg

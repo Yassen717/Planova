@@ -65,9 +65,9 @@ const Pagination: React.FC<PaginationProps> = ({
   const endItem = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 bg-white border-t border-gray-200">
       {/* Items info and page size selector */}
-      <div className="flex items-center gap-4 text-sm text-gray-700 dark:text-gray-300">
+      <div className="flex items-center gap-4 text-sm text-gray-700">
         <span>
           Showing {startItem} to {endItem} of {totalItems} results
         </span>
@@ -79,7 +79,7 @@ const Pagination: React.FC<PaginationProps> = ({
             id="pageSize"
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {pageSizeOptions.map((size) => (
               <option key={size} value={size}>
@@ -99,8 +99,8 @@ const Pagination: React.FC<PaginationProps> = ({
           className={cn(
             'px-3 py-2 rounded-md text-sm font-medium transition-colors',
             canGoPrevious
-              ? 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed border border-gray-200 dark:border-gray-700'
+              ? 'bg-white text-gray-700 hover:bg-gray-50:bg-gray-600 border border-gray-300'
+              : 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
           )}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -113,7 +113,7 @@ const Pagination: React.FC<PaginationProps> = ({
           {pageNumbers.map((page, index) => {
             if (page === '...') {
               return (
-                <span key={`ellipsis-${index}`} className="px-3 py-2 text-gray-500 dark:text-gray-400">
+                <span key={`ellipsis-${index}`} className="px-3 py-2 text-gray-500">
                   ...
                 </span>
               );
@@ -130,7 +130,7 @@ const Pagination: React.FC<PaginationProps> = ({
                   'px-3 py-2 rounded-md text-sm font-medium transition-colors',
                   isActive
                     ? 'bg-blue-600 text-white'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600'
+                    : 'bg-white text-gray-700 hover:bg-gray-50:bg-gray-600 border border-gray-300'
                 )}
               >
                 {pageNum}
@@ -146,8 +146,8 @@ const Pagination: React.FC<PaginationProps> = ({
           className={cn(
             'px-3 py-2 rounded-md text-sm font-medium transition-colors',
             canGoNext
-              ? 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed border border-gray-200 dark:border-gray-700'
+              ? 'bg-white text-gray-700 hover:bg-gray-50:bg-gray-600 border border-gray-300'
+              : 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
           )}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -64,12 +64,12 @@ export const AvatarGroup: React.FC<AvatarGroupProps> = ({ avatars, max = 3, size
   return (
     <div className={cn('flex -space-x-2', className)}>
       {displayAvatars.map((avatar, index) => (
-        <div key={index} className="ring-2 ring-white dark:ring-gray-800 rounded-full">
+        <div key={index} className="ring-2 ring-white rounded-full">
           <Avatar {...avatar} size={size} />
         </div>
       ))}
       {remainingCount > 0 && (
-        <div className="ring-2 ring-white dark:ring-gray-800 rounded-full">
+        <div className="ring-2 ring-white rounded-full">
           <Avatar name={`+${remainingCount}`} size={size} />
         </div>
       )}

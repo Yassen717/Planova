@@ -210,7 +210,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ initialData, onSubmit }) => {
       />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           Description
         </label>
         <textarea
@@ -219,21 +219,21 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ initialData, onSubmit }) => {
           onBlur={() => handleBlur('description')}
           placeholder="Enter project description"
           rows={4}
-          className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {touched.description && errors.description && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.description}</p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           Status
         </label>
         <select
           value={formData.status}
           onChange={(e) => handleChange('status', e.target.value)}
-          className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="ACTIVE">Active</option>
           <option value="COMPLETED">Completed</option>

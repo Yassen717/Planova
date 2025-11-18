@@ -126,7 +126,7 @@ export default function ProjectsPage() {
     return (
       <div className="p-4 sm:p-6">
         <div className="flex justify-between items-center mb-4 sm:mb-6">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Projects</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Projects</h1>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <SkeletonCard />
@@ -141,15 +141,15 @@ export default function ProjectsPage() {
     return (
       <div className="p-4 sm:p-6">
         <div className="flex justify-between items-center mb-4 sm:mb-6">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Projects</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Projects</h1>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6">
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <svg className="w-16 h-16 text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Failed to load projects</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">{error}</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to load projects</h3>
+            <p className="text-sm text-gray-600 mb-6">{error}</p>
             <Button onClick={fetchData} variant="primary">
               <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -166,7 +166,7 @@ export default function ProjectsPage() {
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Projects</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Projects</h1>
         {canCreate && (
           <Link href="/projects/new">
             <Button variant="primary">

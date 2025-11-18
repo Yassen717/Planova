@@ -171,25 +171,25 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
     switch (type) {
       case 'success':
         return (
-          <svg className="h-4 w-4 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         );
       case 'warning':
         return (
-          <svg className="h-4 w-4 text-yellow-500 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="h-4 w-4 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         );
       case 'error':
         return (
-          <svg className="h-4 w-4 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         );
       default:
         return (
-          <svg className="h-4 w-4 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         );
@@ -203,19 +203,19 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
 
   return (
     <div 
-      className="fixed inset-0 bg-gray-200 bg-opacity-40 dark:bg-gray-900 dark:bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-gray-200 bg-opacity-40 flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div 
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md h-[80vh] flex flex-col"
+        className="bg-white rounded-lg shadow-xl w-full max-w-md h-[80vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center space-x-2">
-            <svg className="h-5 w-5 text-gray-900 dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-5 w-5 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Notifications</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Notifications</h2>
             {unreadCount > 0 && (
               <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                 {unreadCount}
@@ -224,7 +224,7 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
           </div>
           <button 
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="text-gray-500 hover:text-gray-700"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -232,15 +232,15 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
           </button>
         </div>
         
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="text-sm text-gray-500">
               {notifications.length} notifications
             </span>
             {unreadCount > 0 && (
               <button 
                 onClick={markAllAsRead}
-                className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                className="text-sm text-blue-600 hover:text-blue-800"
               >
                 Mark all as read
               </button>
@@ -251,15 +251,15 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
         <div className="flex-1 overflow-y-auto p-4">
           {loading ? (
             <div className="flex justify-center items-center h-full">
-              <p className="text-gray-900 dark:text-white">Loading notifications...</p>
+              <p className="text-gray-900">Loading notifications...</p>
             </div>
           ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center p-4">
-              <svg className="h-12 w-12 text-gray-300 dark:text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-12 w-12 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
-              <h3 className="text-lg font-medium mb-1 text-gray-900 dark:text-white">No notifications</h3>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
+              <h3 className="text-lg font-medium mb-1 text-gray-900">No notifications</h3>
+              <p className="text-gray-500 text-sm">
                 You&apos;re all caught up! We&apos;ll notify you when something important happens.
               </p>
             </div>
@@ -270,8 +270,8 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
                   key={notification.id} 
                   className={`p-3 rounded-lg border ${
                     notification.read 
-                      ? 'bg-gray-50 border-gray-200 dark:bg-gray-700 dark:border-gray-600' 
-                      : 'bg-blue-50 border-blue-200 dark:bg-blue-900 dark:border-blue-700'
+                      ? 'bg-gray-50 border-gray-200' 
+                      : 'bg-blue-50 border-blue-200'
                   }`}
                 >
                   <div className="flex items-start space-x-3">
@@ -279,10 +279,10 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
                       {getIcon(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      <p className="text-sm font-medium text-gray-900">
                         {notification.message}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <p className="text-xs text-gray-500 mt-1">
                         {formatTime(notification.createdAt)}
                       </p>
                     </div>
@@ -290,7 +290,7 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
                       {!notification.read && (
                         <button
                           onClick={() => markAsRead(notification.id)}
-                          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                          className="text-gray-500 hover:text-gray-700"
                         >
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
@@ -299,7 +299,7 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
                       )}
                       <button
                         onClick={() => deleteNotification(notification.id)}
-                        className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        className="text-gray-500 hover:text-gray-700"
                       >
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

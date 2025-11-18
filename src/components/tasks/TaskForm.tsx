@@ -231,12 +231,12 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
     return (
       <div className="space-y-6">
         <div className="animate-pulse">
-          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
-          <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
-          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+          <div className="h-10 bg-gray-200 rounded mb-4"></div>
+          <div className="h-32 bg-gray-200 rounded mb-4"></div>
+          <div className="h-10 bg-gray-200 rounded mb-4"></div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
-            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div className="h-10 bg-gray-200 rounded"></div>
+            <div className="h-10 bg-gray-200 rounded"></div>
           </div>
         </div>
       </div>
@@ -259,7 +259,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           Description
         </label>
         <textarea
@@ -268,30 +268,30 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
           onBlur={() => handleBlur('description')}
           placeholder="Enter task description"
           rows={4}
-          className={`w-full rounded-md border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800 dark:text-white ${
+          className={`w-full rounded-md border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 ${
             touched.description && errors.description
               ? 'border-red-500 focus:ring-red-500'
-              : 'border-gray-300 focus:ring-blue-500 dark:border-gray-600'
+              : 'border-gray-300 focus:ring-blue-500'
           }`}
         />
         {touched.description && errors.description && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.description}</p>
         )}
       </div>
 
       {/* Project */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           Project <span className="text-red-500">*</span>
         </label>
         <select
           value={formData.projectId}
           onChange={(e) => handleChange('projectId', e.target.value)}
           onBlur={() => handleBlur('projectId')}
-          className={`w-full rounded-md border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800 dark:text-white ${
+          className={`w-full rounded-md border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 ${
             touched.projectId && errors.projectId
               ? 'border-red-500 focus:ring-red-500'
-              : 'border-gray-300 focus:ring-blue-500 dark:border-gray-600'
+              : 'border-gray-300 focus:ring-blue-500'
           }`}
           required
         >
@@ -303,20 +303,20 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
           ))}
         </select>
         {touched.projectId && errors.projectId && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.projectId}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.projectId}</p>
         )}
       </div>
 
       {/* Priority and Status */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Priority
           </label>
           <select
             value={formData.priority}
             onChange={(e) => handleChange('priority', e.target.value)}
-            className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="LOW">Low</option>
             <option value="MEDIUM">Medium</option>
@@ -326,13 +326,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Status
           </label>
           <select
             value={formData.status}
             onChange={(e) => handleChange('status', e.target.value)}
-            className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="TODO">To Do</option>
             <option value="IN_PROGRESS">In Progress</option>
@@ -345,13 +345,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
       {/* Assignee and Due Date */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Assignee
           </label>
           <select
             value={formData.assigneeId}
             onChange={(e) => handleChange('assigneeId', e.target.value)}
-            className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Unassigned</option>
             {users.map((user) => (

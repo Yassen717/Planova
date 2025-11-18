@@ -14,7 +14,7 @@ const Skeleton: React.FC<SkeletonProps> = ({
   height,
   className,
 }) => {
-  const baseStyles = 'animate-pulse bg-gray-200 dark:bg-gray-700';
+  const baseStyles = 'animate-pulse bg-gray-200';
 
   const variantStyles = {
     text: 'rounded h-4',
@@ -37,7 +37,7 @@ const Skeleton: React.FC<SkeletonProps> = ({
 
 // Preset skeleton layouts
 export const SkeletonCard: React.FC = () => (
-  <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
+  <div className="bg-white rounded-lg shadow p-6 space-y-4">
     <Skeleton variant="rectangular" height={120} />
     <Skeleton variant="text" width="60%" />
     <Skeleton variant="text" width="80%" />

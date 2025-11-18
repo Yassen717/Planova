@@ -75,7 +75,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
   return (
     <div
       className={cn(
-        'bg-white dark:bg-gray-800 rounded-lg shadow border-l-4 p-6 transition-all duration-200',
+        'bg-white rounded-lg shadow border-l-4 p-6 transition-all duration-200',
         !showConfirm && 'hover:shadow-lg hover:-translate-y-1',
         borderColor
       )}
@@ -84,7 +84,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
       <div className="flex items-start justify-between mb-3">
         <Link
           href={`/projects/${project.id}`}
-          className="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex-1"
+          className="text-lg font-semibold text-gray-900 hover:text-blue-600:text-blue-400 transition-colors flex-1"
         >
           {project.title}
         </Link>
@@ -96,7 +96,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
             <button
               onClick={() => setShowConfirm(true)}
               disabled={isDeleting}
-              className="group p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-all duration-200 disabled:opacity-50 transform hover:scale-110 active:scale-95"
+              className="group p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50:bg-red-900/20 rounded-md transition-all duration-200 disabled:opacity-50 transform hover:scale-110 active:scale-95"
               title="Delete project"
             >
               <svg className="w-5 h-5 transition-transform group-hover:rotate-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -114,11 +114,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
           onClick={() => !isDeleting && setShowConfirm(false)}
         >
           <div
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 max-w-md w-full animate-scaleIn"
+            className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full animate-scaleIn"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-100 dark:bg-red-900/30 rounded-full">
-              <svg className="w-8 h-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full">
+              <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -128,19 +128,19 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
               </svg>
             </div>
 
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 text-center">
+            <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
               Delete Project?
             </h3>
 
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 text-center">
+            <p className="text-sm text-gray-600 mb-2 text-center">
               Are you sure you want to delete
             </p>
 
-            <p className="text-base font-semibold text-gray-900 dark:text-white mb-4 text-center px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
+            <p className="text-base font-semibold text-gray-900 mb-4 text-center px-4 py-2 bg-gray-100 rounded-lg">
               "{project.title}"
             </p>
 
-            <p className="text-xs text-red-600 dark:text-red-400 mb-6 text-center font-medium">
+            <p className="text-xs text-red-600 mb-6 text-center font-medium">
               ⚠️ This action cannot be undone
             </p>
 
@@ -149,7 +149,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
               <button
                 onClick={() => setShowConfirm(false)}
                 disabled={isDeleting}
-                className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200 disabled:opacity-50 transform hover:scale-105 active:scale-95"
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200:bg-gray-600 rounded-lg transition-all duration-200 disabled:opacity-50 transform hover:scale-105 active:scale-95"
               >
                 Cancel
               </button>
@@ -178,7 +178,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
 
       {/* Description */}
       {project.description && (
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+        <p className="text-sm text-gray-600 mb-4 line-clamp-2">
           {project.description}
         </p>
       )}
@@ -186,11 +186,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
       {/* Progress */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Progress</span>
-          <span className="text-xs font-semibold text-gray-900 dark:text-white">{progress}%</span>
+          <span className="text-xs font-medium text-gray-600">Progress</span>
+          <span className="text-xs font-semibold text-gray-900">{progress}%</span>
         </div>
 
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
           <div
             className={cn(
               'h-2 rounded-full transition-all duration-300',
@@ -207,7 +207,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
           {memberAvatars.length > 0 ? (
             <AvatarGroup avatars={memberAvatars} max={3} size="sm" />
           ) : (
-            <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-1 text-xs text-gray-500">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
@@ -216,7 +216,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
           )}
         </div>
 
-        <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+        <div className="flex items-center gap-3 text-xs text-gray-500">
           <div className="flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />

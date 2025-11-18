@@ -22,10 +22,10 @@ const Toast: React.FC<ToastProps> = ({ id, message, type, duration = 5000, onClo
   }, [id, duration, onClose]);
 
   const typeStyles = {
-    success: 'bg-green-50 border-green-500 text-green-800 dark:bg-green-900/20 dark:border-green-500 dark:text-green-300',
-    error: 'bg-red-50 border-red-500 text-red-800 dark:bg-red-900/20 dark:border-red-500 dark:text-red-300',
-    warning: 'bg-yellow-50 border-yellow-500 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-500 dark:text-yellow-300',
-    info: 'bg-blue-50 border-blue-500 text-blue-800 dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-300',
+    success: 'bg-green-50 border-green-500 text-green-800',
+    error: 'bg-red-50 border-red-500 text-red-800',
+    warning: 'bg-yellow-50 border-yellow-500 text-yellow-800',
+    info: 'bg-blue-50 border-blue-500 text-blue-800',
   };
 
   const icons = {

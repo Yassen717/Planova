@@ -16,23 +16,23 @@ export interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, change, icon, color, href }) => {
   const colorStyles = {
-    blue: 'from-blue-500/10 to-blue-600/10 text-blue-600 dark:text-blue-400',
-    green: 'from-green-500/10 to-green-600/10 text-green-600 dark:text-green-400',
-    orange: 'from-orange-500/10 to-orange-600/10 text-orange-600 dark:text-orange-400',
-    red: 'from-red-500/10 to-red-600/10 text-red-600 dark:text-red-400',
+    blue: 'from-blue-500/10 to-blue-600/10 text-blue-600',
+    green: 'from-green-500/10 to-green-600/10 text-green-600',
+    orange: 'from-orange-500/10 to-orange-600/10 text-orange-600',
+    red: 'from-red-500/10 to-red-600/10 text-red-600',
   };
 
   const content = (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-lg shadow p-4 sm:p-6 hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <h3 className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">{title}</h3>
+        <h3 className="text-xs sm:text-sm font-medium text-gray-600">{title}</h3>
         <div className={cn('p-1.5 sm:p-2 rounded-lg bg-gradient-to-br', colorStyles[color])}>
           {icon}
         </div>
       </div>
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{value}</p>
           {change && (
             <div className="flex items-center mt-2">
               {change.trend === 'up' ? (
@@ -67,12 +67,12 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, change, icon, color, 
               <span
                 className={cn(
                   'ml-1 text-sm font-medium',
-                  change.trend === 'up' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                  change.trend === 'up' ? 'text-green-600' : 'text-red-600'
                 )}
               >
                 {Math.abs(change.value)}%
               </span>
-              <span className="ml-1 text-sm text-gray-500 dark:text-gray-400">vs last month</span>
+              <span className="ml-1 text-sm text-gray-500">vs last month</span>
             </div>
           )}
         </div>

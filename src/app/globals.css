@@ -2,14 +2,10 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --foreground: #000000;
+  
+  /* Force browser + OS to treat the site as light only */
+  color-scheme: light only;
 }
 
 body {
@@ -23,13 +19,6 @@ body {
   --color-foreground: var(--foreground);
 }
 
-/* Dark mode specific styles */
-.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-}
-
-/* Ensure smooth transitions for theme changes */
 * {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
