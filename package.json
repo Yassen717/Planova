@@ -5,10 +5,11 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev-socket": "node server.js",
-    "build": "next build --turbopack",
+    "build": "prisma generate && prisma migrate deploy && next build --turbopack",
     "start": "next start",
     "test-notifications": "cd test && npm install && npm test",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
