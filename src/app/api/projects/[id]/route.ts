@@ -14,10 +14,11 @@ const updateProjectSchema = z.object({
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const project = await projectService.getProjectById(params.id);
+    const { id } = await params;
+    const project = await projectService.getProjectById(id);
     
     if (!project) {
       return NextResponse.json(
@@ -37,9 +38,10 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const validation = await validateRequestBody(request, updateProjectSchema);
     
     if (!validation.success) {
@@ -50,7 +52,7 @@ export async function PATCH(
     }
     
     const project = await projectService.updateProject({
-      id: params.id,
+      id,
       ...validation.data,
     });
     

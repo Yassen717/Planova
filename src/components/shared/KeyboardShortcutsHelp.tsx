@@ -41,7 +41,7 @@ const KeyboardShortcutsHelp: React.FC<KeyboardShortcutsHelpProps> = ({ isOpen, o
       acc[category] = filtered;
     }
     return acc;
-  }, {} as Record<string, typeof shortcutCategories[keyof typeof shortcutCategories]>);
+  }, {} as Record<string, any>);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Keyboard Shortcuts" size="lg">
@@ -67,7 +67,7 @@ const KeyboardShortcutsHelp: React.FC<KeyboardShortcutsHelpProps> = ({ isOpen, o
                   {category}
                 </h3>
                 <div className="space-y-2">
-                  {shortcuts.map((shortcut) => (
+                  {shortcuts.map((shortcut: any) => (
                     <div
                       key={shortcut.name}
                       className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"

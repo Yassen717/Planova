@@ -12,6 +12,7 @@ type Task = {
   description: string | null;
   priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
   status: 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'DONE';
+  startDate: string | null;
   dueDate: string | null;
   projectId: string;
   assigneeId: string | null;
@@ -110,6 +111,7 @@ export default function EditTaskPage() {
               description: task.description || '',
               priority: task.priority,
               status: task.status,
+              startDate: task.startDate ? task.startDate.split('T')[0] : '',
               dueDate: task.dueDate ? task.dueDate.split('T')[0] : '',
               projectId: task.projectId,
               assigneeId: task.assigneeId || '',
