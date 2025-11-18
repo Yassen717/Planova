@@ -7,6 +7,7 @@
   <img src="https://img.shields.io/badge/React-19.1.0-61DAFB?style=for-the-badge&logo=react" alt="React" />
   <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Prisma-6.17.1-2D3748?style=for-the-badge&logo=prisma" alt="Prisma" />
+  <img src="https://img.shields.io/badge/PostgreSQL-16-336791?style=for-the-badge&logo=postgresql" alt="PostgreSQL" />
   <img src="https://img.shields.io/badge/Tailwind-4.0-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind" />
 </p>
 
@@ -20,6 +21,7 @@
   <a href="#-features">Features</a> •
   <a href="#-tech-stack">Tech Stack</a> •
   <a href="#-getting-started">Getting Started</a> •
+  <a href="#️-database">Database</a> •
   <a href="#-authentication">Authentication</a> •
   <a href="#-deployment">Deployment</a>
 </p>
@@ -55,45 +57,64 @@
    cp .env.example .env
    ```
    
-   Update `.env` with your configuration:
+   Update `.env` with your database configuration:
    ```env
-   # For local development with Docker
+   # Database - Choose one option:
+   
+   # Option 1: Supabase (Recommended - Free & Easy)
+   DATABASE_URL="postgresql://postgres.PROJECT_ID:PASSWORD@aws-0-REGION.pooler.supabase.com:6543/postgres?pgbouncer=true"
+   DIRECT_URL="postgresql://postgres.PROJECT_ID:PASSWORD@aws-0-REGION.pooler.supabase.com:5432/postgres"
+   
+   # Option 2: Vercel Postgres
+   DATABASE_URL="your-vercel-postgres-url"
+   
+   # Option 3: Local Docker
    DATABASE_URL="postgresql://planova:planova123@localhost:5432/planova_dev"
    
-   # Or use a cloud database (Vercel Postgres, Supabase, Railway)
-   # DATABASE_URL="postgresql://username:password@host:port/database"
-   
+   # NextAuth Configuration
    NEXTAUTH_URL="http://localhost:3000"
-   NEXTAUTH_SECRET="your-secret-key"
+   NEXTAUTH_SECRET="your-secret-key-here"
+   
+   # GitHub OAuth (Optional)
+   NEXT_PUBLIC_GITHUB_ENABLED=false
    GITHUB_ID="your-github-oauth-id"
    GITHUB_SECRET="your-github-oauth-secret"
    ```
 
-4. **Start PostgreSQL**
+4. **Set up PostgreSQL Database**
    
-   **Option A: Docker (Recommended)**
+   **Option A: Supabase (Recommended - 5 minutes)**
+   1. Go to [supabase.com](https://supabase.com)
+   2. Create new project
+   3. Copy connection strings from Settings → Database
+   4. Update `DATABASE_URL` and `DIRECT_URL` in `.env`
+   
+   **Option B: Vercel Postgres**
+   1. Go to [vercel.com/dashboard](https://vercel.com/dashboard)
+   2. Storage → Create Database → Postgres
+   3. Copy `POSTGRES_URL` to `.env`
+   
+   **Option C: Docker (Local)**
    ```bash
    docker-compose up -d
    ```
-   
-   **Option B: Cloud Database**
-   - Use Vercel Postgres, Supabase, or Railway
-   - Copy the connection string to `.env`
-   
-   See [POSTGRES_SETUP.md](POSTGRES_SETUP.md) for detailed instructions.
 
-5. **Set up the database**
+5. **Run database migrations**
    ```bash
-   npx prisma migrate dev --name init
-   npx prisma db seed
+   npx prisma migrate dev
    ```
 
-6. **Run the development server**
+6. **Seed the database**
+   ```bash
+   npm run db:seed
+   ```
+
+7. **Start the development server**
    ```bash
    npm run dev
    ```
 
-7. **Open your browser**
+8. **Open your browser**
    
    Navigate to [http://localhost:3000](http://localhost:3000)
 
@@ -101,11 +122,12 @@
 
 After seeding, you can login with:
 
-| Email | Password | Role |
-|-------|----------|------|
-| admin@planova.com | admin123 | ADMIN |
-| user@planova.com | user123 | USER |
-| guest@planova.com | guest123 | GUEST (Read-only) |
+| Email | Password | Role | Access |
+|-------|----------|------|--------|
+| admin@planova.com | password123 | ADMIN | Full access |
+| john@planova.com | password123 | USER | Standard user |
+| jane@planova.com | password123 | USER | Standard user |
+| guest@planova.com | password123 | GUEST | Read-only |
 
 ## ✨ Features
 
@@ -176,7 +198,7 @@ After seeding, you can login with:
 ### Backend
 - **API:** Next.js API Routes
 - **ORM:** Prisma 6.17.1
-- **Database:** PostgreSQL
+- **Database:** PostgreSQL (Supabase)
 - **Authentication:** NextAuth.js v5
 - **Password Hashing:** bcryptjs
 - **Validation:** Zod
@@ -240,6 +262,59 @@ planova/
 - **Custom Hooks** - Shared logic extraction
 - **Middleware Pattern** - Route protection and authentication
 
+## 🗄️ Database
+
+Planova uses **PostgreSQL** with **Prisma ORM** for type-safe database access.
+
+### Database Features
+
+- ✅ **PostgreSQL** - Production-ready relational database
+- ✅ **Prisma ORM** - Type-safe database queries
+- ✅ **Migrations** - Version-controlled schema changes
+- ✅ **Connection Pooling** - Optimized for serverless (Supabase)
+- ✅ **Seeding** - Pre-populated test data
+- ✅ **Prisma Studio** - Visual database browser
+
+### Database Schema
+
+```prisma
+- User (authentication & profiles)
+- Account (OAuth accounts)
+- Session (user sessions)
+- Project (project management)
+- Task (task tracking)
+- Comment (collaboration)
+- Notification (real-time updates)
+```
+
+### Supported Databases
+
+1. **Supabase** (Current) - Free PostgreSQL with great features
+2. **Vercel Postgres** - Seamless Vercel integration
+3. **Railway** - Includes PostgreSQL hosting
+4. **Local Docker** - For development
+
+### Database Commands
+
+```bash
+# View database in browser
+npx prisma studio
+
+# Create new migration
+npx prisma migrate dev --name your_migration_name
+
+# Apply migrations (production)
+npx prisma migrate deploy
+
+# Reset database (development only)
+npx prisma migrate reset
+
+# Seed database
+npm run db:seed
+```
+
+---
+
 ## 🔐 Authentication
 
 Planova uses **NextAuth.js v5** for authentication with multiple providers:
@@ -281,22 +356,53 @@ For detailed authentication documentation, see [docs/authentication.md](docs/aut
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/planova)
 
-### Manual Deployment
+### Prerequisites for Deployment
 
-1. **Set up environment variables** in your hosting platform
-2. **Run database migrations**: `npx prisma migrate deploy`
-3. **Build the application**: `npm run build`
-4. **Start the server**: `npm start`
+1. **PostgreSQL Database** (choose one):
+   - Vercel Postgres (recommended for Vercel deployment)
+   - Supabase (free tier available)
+   - Railway (includes PostgreSQL)
+
+2. **Environment Variables** - Set these in your hosting platform:
+   ```env
+   DATABASE_URL="your-postgres-connection-string"
+   DIRECT_URL="your-direct-connection-string"  # For Supabase
+   NEXTAUTH_URL="https://your-domain.com"
+   NEXTAUTH_SECRET="your-production-secret"
+   GITHUB_ID="your-github-oauth-id"
+   GITHUB_SECRET="your-github-oauth-secret"
+   NEXT_PUBLIC_GITHUB_ENABLED="true"
+   ```
+
+### Deployment Steps
+
+1. **Push to GitHub**
+   ```bash
+   git push origin main
+   ```
+
+2. **Deploy to Vercel**
+   - Connect your GitHub repository
+   - Add environment variables
+   - Deploy automatically
+
+3. **Run Migrations**
+   ```bash
+   npx prisma migrate deploy
+   ```
+
+4. **Seed Database** (optional)
+   ```bash
+   npm run db:seed
+   ```
 
 ### Deployment Options
 
-- **Vercel** (Recommended) - Zero configuration
-- **Netlify** - Easy setup with CLI
-- **Railway** - Built-in PostgreSQL
+- **Vercel** (Recommended) - Zero configuration, automatic deployments
+- **Railway** - Built-in PostgreSQL, easy setup
+- **Netlify** - Alternative to Vercel
 - **Docker** - Containerized deployment
 - **VPS** - Full control with Docker Compose
-
-For detailed deployment guide, see [deploy.md](deploy.md)
 
 ---
 
@@ -304,7 +410,8 @@ For detailed deployment guide, see [deploy.md](deploy.md)
 
 - [Authentication Guide](docs/authentication.md) - Complete auth documentation
 - [Authentication Testing](docs/authentication-testing.md) - Testing checklist
-- [Deployment Guide](deploy.md) - Step-by-step deployment instructions
+- [Database Setup](migration-docs/NEXT_STEPS.md) - PostgreSQL setup guide
+- [Supabase Setup](migration-docs/SUPABASE_SETUP_STEPS.md) - Supabase configuration
 
 ---
 
@@ -325,20 +432,21 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ```bash
 # Development
 npm run dev              # Start development server
-npm run dev-socket       # Start with Socket.io server
 
 # Database
 npx prisma migrate dev   # Run migrations (development)
 npx prisma migrate deploy # Run migrations (production)
-npx prisma db seed       # Seed database
-npx prisma studio        # Open Prisma Studio
+npm run db:seed          # Seed database with test users
+npx prisma studio        # Open Prisma Studio (database GUI)
+npx prisma generate      # Regenerate Prisma Client
 
-# Build
+# Build & Production
 npm run build            # Build for production
 npm start                # Start production server
 
-# Testing
-npm test                 # Run tests (if configured)
+# Utilities
+npm run lint             # Run ESLint
+npm run format           # Format code with Prettier
 ```
 
 ---
