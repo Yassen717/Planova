@@ -1,45 +1,16 @@
 import { auth } from "@/lib/auth";
-import { NextResponse } from "next/server";
 
 export default auth((req) => {
-  const isAuthenticated = !!req.auth;
-  const { pathname } = req.nextUrl;
-
-  // Protected routes
-  const protectedRoutes = [
-    "/dashboard",
-    "/projects",
-    "/tasks",
-    "/reports",
-    "/users",
-  ];
-
-  // Protected API routes
-  const protectedApiRoutes = [
-    "/api/projects",
-    "/api/tasks",
-    "/api/comments",
-    "/api/notifications",
-  ];
-
-  // Check if the current path is protected
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
-
-  const isProtectedApiRoute = protectedApiRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
-
-  // Redirect to login if accessing protected route without authentication
-  if ((isProtectedRoute || isProtectedApiRoute) && !isAuthenticated) {
-    // Save the original URL to redirect back after login
-    const signInUrl = new URL("/auth/login", req.url);
-    signInUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(signInUrl);
+  if (!req.auth) {
+    const { pathname } = req.nextUrl;
+    const paths = ["/dashboard", "/projects", "/tasks", "/reports", "/users", "/api/projects", "/api/tasks", "/api/comments", "/api/notifications"];
+    
+    if (paths.some(p => pathname.startsWith(p))) {
+      const url = new URL("/auth/login", req.url);
+      url.searchParams.set("callbackUrl", pathname);
+      return Response.redirect(url);
+    }
   }
-
-  return NextResponse.next();
 });
 
 export const config = {
