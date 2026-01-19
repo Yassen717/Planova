@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils/cn';
 
 export interface ToastProps {
@@ -12,20 +12,35 @@ export interface ToastProps {
 }
 
 const Toast: React.FC<ToastProps> = ({ id, message, type, duration = 5000, onClose }) => {
+  const [isExiting, setIsExiting] = useState(false);
+
   useEffect(() => {
     if (duration > 0) {
       const timer = setTimeout(() => {
-        onClose(id);
+        setIsExiting(true);
+        setTimeout(() => onClose(id), 200);
       }, duration);
       return () => clearTimeout(timer);
     }
   }, [id, duration, onClose]);
 
+  const handleClose = () => {
+    setIsExiting(true);
+    setTimeout(() => onClose(id), 200);
+  };
+
   const typeStyles = {
-    success: 'bg-green-50 border-green-500 text-green-800',
-    error: 'bg-red-50 border-red-500 text-red-800',
-    warning: 'bg-yellow-50 border-yellow-500 text-yellow-800',
-    info: 'bg-blue-50 border-blue-500 text-blue-800',
+    success: 'bg-white border-emerald-200 shadow-emerald-100',
+    error: 'bg-white border-red-200 shadow-red-100',
+    warning: 'bg-white border-amber-200 shadow-amber-100',
+    info: 'bg-white border-indigo-200 shadow-indigo-100',
+  };
+
+  const iconBgStyles = {
+    success: 'bg-emerald-100 text-emerald-600',
+    error: 'bg-red-100 text-red-600',
+    warning: 'bg-amber-100 text-amber-600',
+    info: 'bg-indigo-100 text-indigo-600',
   };
 
   const icons = {
@@ -54,18 +69,22 @@ const Toast: React.FC<ToastProps> = ({ id, message, type, duration = 5000, onClo
   return (
     <div
       className={cn(
-        'flex items-center gap-3 p-4 rounded-lg border-l-4 shadow-lg',
-        'animate-in slide-in-from-right duration-300',
-        'min-w-[300px] max-w-md',
+        'flex items-start gap-3 p-4 rounded-xl border shadow-lg',
+        'min-w-[320px] max-w-md backdrop-blur-sm',
+        isExiting ? 'animate-fade-out' : 'animate-slide-in-right',
         typeStyles[type]
       )}
       role="alert"
     >
-      <div className="flex-shrink-0">{icons[type]}</div>
-      <p className="flex-1 text-sm font-medium">{message}</p>
+      <div className={cn('flex-shrink-0 p-1.5 rounded-lg', iconBgStyles[type])}>
+        {icons[type]}
+      </div>
+      <div className="flex-1 pt-0.5">
+        <p className="text-sm font-medium text-slate-800">{message}</p>
+      </div>
       <button
-        onClick={() => onClose(id)}
-        className="flex-shrink-0 hover:opacity-70 transition-opacity"
+        onClick={handleClose}
+        className="flex-shrink-0 p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all duration-200"
         aria-label="Close"
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
