@@ -202,6 +202,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
               )}
               style={{ width: `${progress}%` }}
             />
+          </div>
         </div>
 
         {/* Footer */}
