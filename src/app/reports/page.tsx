@@ -67,9 +67,13 @@ export default function ReportingDashboard() {
         fetch('/api/reports/activity?limit=10'),
       ]);
       
-      const projects = await projectRes.json();
-      const tasks = await taskRes.json();
+      const projectsResponse = await projectRes.json();
+      const tasksResponse = await taskRes.json();
       const activity = activityRes.ok ? await activityRes.json() : [];
+      
+      // Extract data from API response (API returns { success, data })
+      const projects = projectsResponse.data || [];
+      const tasks = tasksResponse.data || [];
       
       // Calculate project stats
       const projectData = {
