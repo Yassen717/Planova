@@ -46,13 +46,15 @@ export default async function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/50 relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-indigo-400/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-violet-400/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 right-1/3 w-96 h-96 bg-cyan-400/15 rounded-full blur-3xl" />
-      </div>
+    <div className="min-h-screen flex flex-col bg-white">
+      {/* Main content area with gradient background */}
+      <div className="flex-1 bg-gradient-to-br from-slate-50 via-white to-indigo-50/50 relative">
+        {/* Background decorations */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-indigo-400/20 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-40 w-96 h-96 bg-violet-400/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/3 w-96 h-96 bg-cyan-400/15 rounded-full blur-3xl" />
+        </div>
 
       {/* Main content */}
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32">
@@ -188,9 +190,10 @@ export default async function Home() {
           </div>
         </div>
       </main>
+      </div>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-slate-200 bg-white/60 backdrop-blur-sm">
+      <footer className="border-t border-slate-200 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-slate-600">
