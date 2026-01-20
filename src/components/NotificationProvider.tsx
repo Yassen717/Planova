@@ -1,8 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useSession } from 'next-auth/react';
 import { notificationService } from '@/lib/notificationService';
-import { authService } from '@/lib/authService';
 import NotificationCenter from './NotificationCenter';
 
 type Notification = {
@@ -24,6 +24,7 @@ type NotificationContextType = {
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
+  const { data: session } = useSession();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -33,14 +34,11 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     // Connect to notification service
     notificationService.connect();
 
-    // Check for authenticated user
-    const user = authService.getCurrentUser();
-    if (user) {
-      setCurrentUserId(user.id);
+    // Get user ID from session
+    if (session?.user && (session.user as any).id) {
+      setCurrentUserId((session.user as any).id);
     } else {
-      // Use a default user ID if no user is authenticated
-      // This allows the notification center to work even without authentication
-      setCurrentUserId('1'); // Use user ID 1 as default (from seed data)
+      setCurrentUserId(null);
     }
 
     // Listen for notifications
@@ -60,7 +58,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       notificationService.off('notification', handleNotification);
       notificationService.disconnect();
     };
-  }, []);
+  }, [session]);
 
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp'>) => {
     const newNotification: Notification = {
