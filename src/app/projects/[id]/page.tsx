@@ -74,35 +74,35 @@ export default function ProjectDetailPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'TODO': return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
-      case 'IN_PROGRESS': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case 'REVIEW': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'DONE': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+      case 'TODO': return 'bg-slate-100 text-slate-700';
+      case 'IN_PROGRESS': return 'bg-blue-100 text-blue-800';
+      case 'REVIEW': return 'bg-amber-100 text-amber-800';
+      case 'DONE': return 'bg-emerald-100 text-emerald-800';
+      default: return 'bg-slate-100 text-slate-700';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'LOW': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'MEDIUM': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'HIGH': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
-      case 'URGENT': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+      case 'LOW': return 'bg-emerald-100 text-emerald-800';
+      case 'MEDIUM': return 'bg-amber-100 text-amber-800';
+      case 'HIGH': return 'bg-orange-100 text-orange-800';
+      case 'URGENT': return 'bg-red-100 text-red-800';
+      default: return 'bg-slate-100 text-slate-700';
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-slate-50">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
             <strong className="font-bold">Error! </strong>
@@ -115,12 +115,12 @@ export default function ProjectDetailPage() {
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-slate-50">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Project not found</h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">The project you're looking for doesn't exist.</p>
-            <Link href="/projects" className="mt-4 inline-block text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+            <h1 className="text-2xl font-bold text-gray-900">Project not found</h1>
+            <p className="mt-2 text-gray-600">The project you're looking for doesn't exist.</p>
+            <Link href="/projects" className="mt-4 inline-block text-indigo-600 hover:text-indigo-800">
               ← Back to Projects
             </Link>
           </div>
@@ -130,151 +130,138 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <Link href="/projects" className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                ← Back to Projects
-              </Link>
-              <h1 className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{project.title}</h1>
-              <p className="mt-1 text-gray-600 dark:text-gray-400">
-                {project.description || 'No description provided'}
-              </p>
-            </div>
-            <Link href={`/projects/${projectId}/edit`} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-block">
-              Edit Project
-            </Link>
+    <div className="p-4 sm:p-6 space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <Link href="/projects" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+            ← Back to Projects
+          </Link>
+          <h1 className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900">{project.title}</h1>
+          <p className="mt-1 text-gray-600">
+            {project.description || 'No description provided'}
+          </p>
+        </div>
+        <Link 
+          href={`/projects/${projectId}/edit`} 
+          className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-colors"
+        >
+          Edit Project
+        </Link>
+      </div>
+
+      {/* Project Overview */}
+      <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200/60 overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-100">
+          <h3 className="text-lg font-semibold text-gray-900">Project Overview</h3>
+        </div>
+        <div className="divide-y divide-slate-100">
+          <div className="px-5 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt className="text-sm font-medium text-slate-500">Status</dt>
+            <dd className="mt-1 text-sm sm:mt-0 sm:col-span-2">
+              <span className="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-emerald-100 text-emerald-800">
+                {project.status}
+              </span>
+            </dd>
+          </div>
+          <div className="px-5 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt className="text-sm font-medium text-slate-500">Start Date</dt>
+            <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              {new Date(project.startDate).toLocaleDateString()}
+            </dd>
+          </div>
+          <div className="px-5 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt className="text-sm font-medium text-slate-500">End Date</dt>
+            <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              {project.endDate ? new Date(project.endDate).toLocaleDateString() : 'Not set'}
+            </dd>
+          </div>
+          <div className="px-5 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt className="text-sm font-medium text-slate-500">Owner</dt>
+            <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              {project.owner.name || project.owner.email}
+            </dd>
           </div>
         </div>
-      </header>
-      <main>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
-            {/* Project Overview */}
-            <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg mb-8">
-              <div className="px-4 py-5 sm:px-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">Project Overview</h3>
-              </div>
-              <div className="border-t border-gray-200 dark:border-gray-700">
-                <dl>
-                  <div className="bg-gray-50 dark:bg-gray-700 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-300">Status</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                        {project.status}
-                      </span>
-                    </dd>
-                  </div>
-                  <div className="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-33 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-300">Start Date</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                      {new Date(project.startDate).toLocaleDateString()}
-                    </dd>
-                  </div>
-                  <div className="bg-gray-50 dark:bg-gray-700 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-300">End Date</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                      {project.endDate ? new Date(project.endDate).toLocaleDateString() : 'Not set'}
-                    </dd>
-                  </div>
-                  <div className="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-300">Owner</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                      {project.owner.name || project.owner.email}
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-            </div>
+      </div>
 
-            {/* Team Members */}
-            <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg mb-8">
-              <div className="px-4 py-5 sm:px-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">Team Members</h3>
-                  <button className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                    Add Member
-                  </button>
-                </div>
-              </div>
-              <div className="border-t border-gray-200 dark:border-gray-700">
-                <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {project.members.map((member) => (
-                    <li key={member.id} className="px-4 py-4 sm:px-6">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0">
-                          <div className="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10" />
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {member.name || member.email}
-                          </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {member.email}
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Tasks */}
-            <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
-              <div className="px-4 py-5 sm:px-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">Tasks</h3>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
-                    Add Task
-                  </button>
-                </div>
-              </div>
-              <div className="border-t border-gray-200 dark:border-gray-700">
-                {project.tasks.length > 0 ? (
-                  <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {project.tasks.map((task) => (
-                      <li key={task.id} className="px-4 py-4 sm:px-6">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <div>
-                              <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                {task.title}
-                              </div>
-                              {task.assignee && (
-                                <div className="text-sm text-gray-500 dark:text-gray-400">
-                                  Assigned to {task.assignee.name || task.assignee.email}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(task.status)}`}>
-                              {task.status.replace('_', ' ')}
-                            </span>
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getPriorityColor(task.priority)}`}>
-                              {task.priority}
-                            </span>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 dark:text-gray-400">No tasks yet.</p>
-                    <button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                      Create Your First Task
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+      {/* Team Members */}
+      <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200/60 overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+          <h3 className="text-lg font-semibold text-gray-900">Team Members</h3>
+          <button className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors">
+            Add Member
+          </button>
         </div>
-      </main>
+        <div className="divide-y divide-slate-100">
+          {project.members.length > 0 ? (
+            project.members.map((member) => (
+              <div key={member.id} className="px-5 py-4 flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-semibold text-sm">
+                    {(member.name || member.email).charAt(0).toUpperCase()}
+                  </div>
+                </div>
+                <div className="ml-4">
+                  <div className="text-sm font-medium text-gray-900">
+                    {member.name || member.email}
+                  </div>
+                  <div className="text-sm text-slate-500">
+                    {member.email}
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="px-5 py-8 text-center text-slate-500 text-sm">
+              No team members yet.
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Tasks */}
+      <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200/60 overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+          <h3 className="text-lg font-semibold text-gray-900">Tasks</h3>
+          <button className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-xl transition-colors">
+            Add Task
+          </button>
+        </div>
+        <div className="divide-y divide-slate-100">
+          {project.tasks.length > 0 ? (
+            project.tasks.map((task) => (
+              <div key={task.id} className="px-5 py-4 flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-medium text-gray-900">
+                    {task.title}
+                  </div>
+                  {task.assignee && (
+                    <div className="text-sm text-slate-500">
+                      Assigned to {task.assignee.name || task.assignee.email}
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${getStatusColor(task.status)}`}>
+                    {task.status.replace('_', ' ')}
+                  </span>
+                  <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${getPriorityColor(task.priority)}`}>
+                    {task.priority}
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-slate-500 mb-4">No tasks yet.</p>
+              <button className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-colors">
+                Create Your First Task
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
