@@ -29,9 +29,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light">
+    <html lang="en" className="light overflow-x-hidden">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white overflow-x-hidden`}
       >
         <SessionProvider>
           <ToastProvider>
@@ -39,9 +39,9 @@ export default function RootLayout({
               <KeyboardShortcutsProvider>
                 <Navigation />
                 <GuestBanner />
-                <div className="container mx-auto">
+                <main className="min-h-screen">
                   {children}
-                </div>
+                </main>
               </KeyboardShortcutsProvider>
             </NotificationProvider>
           </ToastProvider>
