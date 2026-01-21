@@ -224,16 +224,23 @@ export default function ProjectDetailPage() {
       <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200/60 overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
           <h3 className="text-lg font-semibold text-gray-900">Tasks</h3>
-          <button className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-xl transition-colors">
+          <Link 
+            href={`/tasks/new?projectId=${projectId}`}
+            className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-xl transition-colors"
+          >
             Add Task
-          </button>
+          </Link>
         </div>
         <div className="divide-y divide-slate-100">
           {project.tasks.length > 0 ? (
             project.tasks.map((task) => (
-              <div key={task.id} className="px-5 py-4 flex items-center justify-between">
+              <Link 
+                key={task.id} 
+                href={`/tasks/${task.id}`}
+                className="px-5 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
+              >
                 <div>
-                  <div className="text-sm font-medium text-gray-900">
+                  <div className="text-sm font-medium text-slate-900">
                     {task.title}
                   </div>
                   {task.assignee && (
@@ -250,14 +257,17 @@ export default function ProjectDetailPage() {
                     {task.priority}
                   </span>
                 </div>
-              </div>
+              </Link>
             ))
           ) : (
             <div className="text-center py-12">
               <p className="text-slate-500 mb-4">No tasks yet.</p>
-              <button className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-colors">
+              <Link 
+                href={`/tasks/new?projectId=${projectId}`}
+                className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-colors"
+              >
                 Create Your First Task
-              </button>
+              </Link>
             </div>
           )}
         </div>

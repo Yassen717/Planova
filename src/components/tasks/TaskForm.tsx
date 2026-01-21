@@ -27,10 +27,11 @@ export interface TaskFormProps {
     projectId: string;
     assigneeId: string;
   };
+  initialProjectId?: string;
   onSubmit?: (data: any) => Promise<void>;
 }
 
-const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
+const TaskForm: React.FC<TaskFormProps> = ({ initialData, initialProjectId, onSubmit }) => {
   const router = useRouter();
   const { showToast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,7 +48,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
     status: initialData?.status || 'TODO',
     startDate: initialData?.startDate || new Date().toISOString().split('T')[0],
     dueDate: initialData?.dueDate || '',
-    projectId: initialData?.projectId || '',
+    projectId: initialData?.projectId || initialProjectId || '',
     assigneeId: initialData?.assigneeId || '',
   });
 
@@ -231,12 +232,12 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
     return (
       <div className="space-y-6">
         <div className="animate-pulse">
-          <div className="h-10 bg-gray-200 rounded mb-4"></div>
-          <div className="h-32 bg-gray-200 rounded mb-4"></div>
-          <div className="h-10 bg-gray-200 rounded mb-4"></div>
+          <div className="h-12 bg-slate-200 rounded-xl mb-4"></div>
+          <div className="h-32 bg-slate-200 rounded-xl mb-4"></div>
+          <div className="h-12 bg-slate-200 rounded-xl mb-4"></div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="h-10 bg-gray-200 rounded"></div>
-            <div className="h-10 bg-gray-200 rounded"></div>
+            <div className="h-12 bg-slate-200 rounded-xl"></div>
+            <div className="h-12 bg-slate-200 rounded-xl"></div>
           </div>
         </div>
       </div>
@@ -259,7 +260,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-slate-700 mb-1.5">
           Description
         </label>
         <textarea
@@ -268,30 +269,35 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
           onBlur={() => handleBlur('description')}
           placeholder="Enter task description"
           rows={4}
-          className={`w-full rounded-md border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 ${
+          className={`block w-full px-4 py-3 border-2 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all duration-200 resize-none ${
             touched.description && errors.description
-              ? 'border-red-500 focus:ring-red-500'
-              : 'border-gray-300 focus:ring-blue-500'
+              ? 'border-red-300 focus:border-red-500'
+              : 'border-slate-200 focus:border-indigo-500'
           }`}
         />
         {touched.description && errors.description && (
-          <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+          <p className="mt-1.5 text-sm text-red-600 flex items-center gap-1">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {errors.description}
+          </p>
         )}
       </div>
 
       {/* Project */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-slate-700 mb-1.5">
           Project <span className="text-red-500">*</span>
         </label>
         <select
           value={formData.projectId}
           onChange={(e) => handleChange('projectId', e.target.value)}
           onBlur={() => handleBlur('projectId')}
-          className={`w-full rounded-md border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 ${
+          className={`block w-full px-4 py-3 border-2 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all duration-200 bg-white ${
             touched.projectId && errors.projectId
-              ? 'border-red-500 focus:ring-red-500'
-              : 'border-gray-300 focus:ring-blue-500'
+              ? 'border-red-300 focus:border-red-500'
+              : 'border-slate-200 focus:border-indigo-500'
           }`}
           required
         >
@@ -303,20 +309,25 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
           ))}
         </select>
         {touched.projectId && errors.projectId && (
-          <p className="mt-1 text-sm text-red-600">{errors.projectId}</p>
+          <p className="mt-1.5 text-sm text-red-600 flex items-center gap-1">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {errors.projectId}
+          </p>
         )}
       </div>
 
       {/* Priority and Status */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">
             Priority
           </label>
           <select
             value={formData.priority}
             onChange={(e) => handleChange('priority', e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 bg-white"
           >
             <option value="LOW">Low</option>
             <option value="MEDIUM">Medium</option>
@@ -326,13 +337,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">
             Status
           </label>
           <select
             value={formData.status}
             onChange={(e) => handleChange('status', e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 bg-white"
           >
             <option value="TODO">To Do</option>
             <option value="IN_PROGRESS">In Progress</option>
@@ -345,13 +356,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit }) => {
       {/* Assignee and Due Date */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">
             Assignee
           </label>
           <select
             value={formData.assigneeId}
             onChange={(e) => handleChange('assigneeId', e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 bg-white"
           >
             <option value="">Unassigned</option>
             {users.map((user) => (
