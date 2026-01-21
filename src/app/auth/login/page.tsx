@@ -1,19 +1,51 @@
 "use client";
 
-import { useState, FormEvent, Suspense } from "react";
-import { signIn } from "next-auth/react";
+import { useState, FormEvent, Suspense, useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect authenticated users away from login page
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      router.replace(callbackUrl);
+    }
+  }, [status, session, router, callbackUrl]);
+
+  // Show loading state while checking authentication
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-full border-4 border-indigo-200 border-t-indigo-500 animate-spin mx-auto"></div>
+          <p className="mt-4 text-slate-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render login form if already authenticated (prevents flash)
+  if (status === "authenticated") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-full border-4 border-indigo-200 border-t-indigo-500 animate-spin mx-auto"></div>
+          <p className="mt-4 text-slate-600">Redirecting...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,7 +65,8 @@ function LoginForm() {
         return;
       }
 
-      router.push(callbackUrl);
+      // Successful sign-in - the useEffect will handle redirection
+      // when session status changes to "authenticated"
       router.refresh();
     } catch (err) {
       setError("An error occurred. Please try again.");
@@ -66,7 +99,7 @@ function LoginForm() {
         return;
       }
 
-      router.push(callbackUrl);
+      // Successful sign-in - the useEffect will handle redirection
       router.refresh();
     } catch (err) {
       setError("Failed to sign in as guest");

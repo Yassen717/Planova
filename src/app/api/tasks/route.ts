@@ -37,7 +37,14 @@ export async function GET() {
       );
     }
 
-    const tasks = await taskService.getAllTasks();
+    const userId = (session.user as any).id;
+    const userRole = (session.user as any).role;
+
+    // Admin users see all tasks, regular users see only tasks from their projects or assigned to them
+    const tasks = userRole === 'ADMIN'
+      ? await taskService.getAllTasks()
+      : await taskService.getTasksByUser(userId);
+      
     return NextResponse.json(createApiResponse(tasks));
   } catch (error) {
     return NextResponse.json(createApiResponse('Failed to fetch tasks'), { status: 500 });

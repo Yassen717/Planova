@@ -1,7 +1,7 @@
 import { prisma } from './db';
 
 export const reportingService = {
-  // Get project statistics
+  // Get project statistics (for all projects - admin use)
   async getProjectStats() {
     const totalProjects = await prisma.project.count();
     const activeProjects = await prisma.project.count({
@@ -18,7 +18,33 @@ export const reportingService = {
     };
   },
 
-  // Get task statistics
+  // Get project statistics for a specific user
+  async getProjectStatsByUser(userId: string) {
+    const userProjectFilter = {
+      OR: [
+        { ownerId: userId },
+        { members: { some: { id: userId } } },
+      ],
+    };
+
+    const totalProjects = await prisma.project.count({
+      where: userProjectFilter,
+    });
+    const activeProjects = await prisma.project.count({
+      where: { ...userProjectFilter, status: 'ACTIVE' },
+    });
+    const completedProjects = await prisma.project.count({
+      where: { ...userProjectFilter, status: 'COMPLETED' },
+    });
+    
+    return {
+      total: totalProjects,
+      active: activeProjects,
+      completed: completedProjects,
+    };
+  },
+
+  // Get task statistics (for all tasks - admin use)
   async getTaskStats() {
     const totalTasks = await prisma.task.count();
     
@@ -31,6 +57,43 @@ export const reportingService = {
     
     const tasksByPriority = await prisma.task.groupBy({
       by: ['priority'],
+      _count: {
+        priority: true,
+      },
+    });
+    
+    return {
+      total: totalTasks,
+      byStatus: tasksByStatus,
+      byPriority: tasksByPriority,
+    };
+  },
+
+  // Get task statistics for a specific user
+  async getTaskStatsByUser(userId: string) {
+    const userTaskFilter = {
+      OR: [
+        { assigneeId: userId },
+        { project: { ownerId: userId } },
+        { project: { members: { some: { id: userId } } } },
+      ],
+    };
+
+    const totalTasks = await prisma.task.count({
+      where: userTaskFilter,
+    });
+    
+    const tasksByStatus = await prisma.task.groupBy({
+      by: ['status'],
+      where: userTaskFilter,
+      _count: {
+        status: true,
+      },
+    });
+    
+    const tasksByPriority = await prisma.task.groupBy({
+      by: ['priority'],
+      where: userTaskFilter,
       _count: {
         priority: true,
       },
@@ -109,7 +172,7 @@ export const reportingService = {
     });
   },
 
-  // Get recent activity
+  // Get recent activity (all - for admin)
   async getRecentActivity(limit: number = 10) {
     // Get recent projects
     const recentProjects = await prisma.project.findMany({
@@ -131,6 +194,85 @@ export const reportingService = {
     
     // Get recent tasks
     const recentTasks = await prisma.task.findMany({
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        id: true,
+        title: true,
+        createdAt: true,
+        status: true,
+        assignee: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+    
+    // Combine and sort by date
+    const allActivity = [
+      ...recentProjects.map(project => ({
+        id: project.id,
+        type: 'project' as const,
+        title: project.title,
+        description: `Project created by ${project.owner?.name || 'Unknown'}`,
+        createdAt: project.createdAt,
+      })),
+      ...recentTasks.map(task => ({
+        id: task.id,
+        type: 'task' as const,
+        title: task.title,
+        description: `Task ${task.status === 'DONE' ? 'completed' : 'created'}${task.assignee?.name ? ` by ${task.assignee.name}` : ''}`,
+        createdAt: task.createdAt,
+      })),
+    ];
+    
+    return allActivity
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, limit);
+  },
+
+  // Get recent activity for a specific user
+  async getRecentActivityByUser(userId: string, limit: number = 10) {
+    const userProjectFilter = {
+      OR: [
+        { ownerId: userId },
+        { members: { some: { id: userId } } },
+      ],
+    };
+
+    const userTaskFilter = {
+      OR: [
+        { assigneeId: userId },
+        { project: { ownerId: userId } },
+        { project: { members: { some: { id: userId } } } },
+      ],
+    };
+
+    // Get recent projects the user owns or is a member of
+    const recentProjects = await prisma.project.findMany({
+      where: userProjectFilter,
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        id: true,
+        title: true,
+        createdAt: true,
+        owner: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+    
+    // Get recent tasks from user's projects or assigned to user
+    const recentTasks = await prisma.task.findMany({
+      where: userTaskFilter,
       take: limit,
       orderBy: {
         createdAt: 'desc',

@@ -9,18 +9,46 @@ import DeadlinesList from '@/components/dashboard/DeadlinesList';
 import TaskDistributionChart from '@/components/dashboard/TaskDistributionChart';
 import { Suspense } from 'react';
 import { SkeletonDashboard } from '@/components/ui/Skeleton';
+import { auth } from '@/lib/auth';
 
 export const metadata = getDashboardMetadata();
 
-// Server-side data fetching
+// Server-side data fetching with user-based filtering
 async function getDashboardData() {
   try {
+    const session = await auth();
+    
+    if (!session?.user) {
+      return {
+        projectStats: { total: 0, active: 0, completed: 0 },
+        taskStats: { total: 0, byStatus: [], byPriority: [] },
+        recentActivity: [],
+        projects: [],
+        tasks: [],
+      };
+    }
+
+    const userId = (session.user as any).id;
+    const userRole = (session.user as any).role;
+    const isAdmin = userRole === 'ADMIN';
+
+    // Fetch data based on user role - Admin sees all, regular users see only their data
     const [projectStats, taskStats, recentActivity, projects, tasks] = await Promise.all([
-      reportingService.getProjectStats(),
-      reportingService.getTaskStats(),
-      reportingService.getRecentActivity(5),
-      projectService.getAllProjects(),
-      taskService.getAllTasks(),
+      isAdmin 
+        ? reportingService.getProjectStats()
+        : reportingService.getProjectStatsByUser(userId),
+      isAdmin
+        ? reportingService.getTaskStats()
+        : reportingService.getTaskStatsByUser(userId),
+      isAdmin
+        ? reportingService.getRecentActivity(5)
+        : reportingService.getRecentActivityByUser(userId, 5),
+      isAdmin
+        ? projectService.getAllProjects()
+        : projectService.getProjectsByUser(userId),
+      isAdmin
+        ? taskService.getAllTasks()
+        : taskService.getTasksByUser(userId),
     ]);
     
     return { projectStats, taskStats, recentActivity, projects, tasks };

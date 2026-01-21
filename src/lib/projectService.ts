@@ -58,9 +58,45 @@ export const projectService = {
     return project;
   },
 
-  // Get all projects
+  // Get all projects (admin only)
   async getAllProjects() {
     return await prisma.project.findMany({
+      include: {
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        members: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        _count: {
+          select: {
+            tasks: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  },
+
+  // Get projects for a specific user (projects they own or are a member of)
+  async getProjectsByUser(userId: string) {
+    return await prisma.project.findMany({
+      where: {
+        OR: [
+          { ownerId: userId },
+          { members: { some: { id: userId } } },
+        ],
+      },
       include: {
         owner: {
           select: {

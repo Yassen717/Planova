@@ -65,9 +65,40 @@ export const taskService = {
     return task;
   },
 
-  // Get all tasks
+  // Get all tasks (admin only)
   async getAllTasks() {
     return await prisma.task.findMany({
+      include: {
+        project: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  },
+
+  // Get tasks for a specific user (tasks assigned to them or from their projects)
+  async getTasksByUser(userId: string) {
+    return await prisma.task.findMany({
+      where: {
+        OR: [
+          { assigneeId: userId },
+          { project: { ownerId: userId } },
+          { project: { members: { some: { id: userId } } } },
+        ],
+      },
       include: {
         project: {
           select: {

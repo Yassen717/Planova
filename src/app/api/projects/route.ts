@@ -34,7 +34,14 @@ export async function GET() {
       );
     }
 
-    const projects = await projectService.getAllProjects();
+    const userId = (session.user as any).id;
+    const userRole = (session.user as any).role;
+
+    // Admin users see all projects, regular users see only their own
+    const projects = userRole === 'ADMIN' 
+      ? await projectService.getAllProjects()
+      : await projectService.getProjectsByUser(userId);
+      
     return NextResponse.json(createApiResponse(projects));
   } catch (error) {
     return NextResponse.json(createApiResponse('Failed to fetch projects'), { status: 500 });
