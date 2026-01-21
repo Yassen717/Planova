@@ -1,11 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import TaskForm from '@/components/tasks/TaskForm';
 import Breadcrumbs from '@/components/navigation/Breadcrumbs';
 
-export default function NewTaskPage() {
+function NewTaskContent() {
   const searchParams = useSearchParams();
   const projectId = searchParams.get('projectId') || '';
 
@@ -42,5 +42,35 @@ export default function NewTaskPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
+      <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div className="animate-pulse">
+          <div className="h-6 bg-slate-200 rounded w-48 mb-6"></div>
+          <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200/60 overflow-hidden">
+            <div className="bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-5">
+              <div className="h-8 bg-white/20 rounded w-64"></div>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="h-10 bg-slate-200 rounded"></div>
+              <div className="h-10 bg-slate-200 rounded"></div>
+              <div className="h-32 bg-slate-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function NewTaskPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <NewTaskContent />
+    </Suspense>
   );
 }
