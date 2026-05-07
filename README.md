@@ -69,7 +69,7 @@ You can test the application with these accounts:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/planova.git
+   git clone https://github.com/Yassen717/Planova.git
    cd planova
    ```
 
