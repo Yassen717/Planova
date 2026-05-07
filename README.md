@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="https://planova-p-git-main-yassenyassenyasy-gmailcoms-projects.vercel.app/">🚀 Live Demo</a> •
+   <a href="https://planova-p.vercel.app/">🚀 Live Demo</a> •
   <a href="#-features">Features</a> •
   <a href="#-tech-stack">Tech Stack</a> •
   <a href="#-getting-started">Getting Started</a> •
@@ -28,7 +28,7 @@
 </p>
 
 <p align="center">
-  <a href="https://planova-p-git-main-yassenyassenyasy-gmailcoms-projects.vercel.app/">
+   <a href="https://planova-p.vercel.app/">
     <img src="https://img.shields.io/badge/Demo-Live-success?style=for-the-badge&logo=vercel" alt="Live Demo" />
   </a>
   <img src="https://img.shields.io/badge/Status-Production-brightgreen?style=for-the-badge" alt="Status" />
@@ -40,7 +40,7 @@
 
 ## 🌐 Live Demo
 
-**🚀 Try it now:** [https://planova-p-git-main-yassenyassenyasy-gmailcoms-projects.vercel.app/](https://planova-p-git-main-yassenyassenyasy-gmailcoms-projects.vercel.app/)
+**🚀 Try it now:** [https://planova-p.vercel.app/](https://planova-p.vercel.app/)
 
 ### Demo Credentials
 
@@ -553,7 +553,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 🌟 Production Deployment
 
-**Live Application:** [https://planova-p-git-main-yassenyassenyasy-gmailcoms-projects.vercel.app/](https://planova-p-git-main-yassenyassenyasy-gmailcoms-projects.vercel.app/)
+**Live Application:** [https://planova-p.vercel.app/](https://planova-p.vercel.app/)
 
 **Deployed on:** Vercel  
 **Database:** Supabase PostgreSQL  
