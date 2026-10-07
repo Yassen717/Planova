@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { useSession } from 'next-auth/react';
 import { notificationService } from '@/lib/notificationService';
 import NotificationCenter from './NotificationCenter';
@@ -25,23 +25,32 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const { data: session } = useSession();
+  const userId = (session?.user as { id?: string } | undefined)?.id ?? null;
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const autoRemoveTimeouts = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+
+  // Clear pending auto-remove timeouts on unmount
+  useEffect(() => {
+    const timeouts = autoRemoveTimeouts.current;
+    return () => {
+      timeouts.forEach((id) => clearTimeout(id));
+      timeouts.clear();
+    };
+  }, []);
 
   useEffect(() => {
-    // Connect to notification service
-    notificationService.connect();
-
-    // Get user ID from session
-    if (session?.user && (session.user as any).id) {
-      setCurrentUserId((session.user as any).id);
-    } else {
-      setCurrentUserId(null);
+    // Only connect for authenticated users
+    if (!userId) {
+      notificationService.disconnect();
+      setUnreadCount(0);
+      return;
     }
 
-    // Listen for notifications
+    notificationService.connect();
+
+    // Listen for per-user notifications pushed by the server
     const handleNotification = (data: any) => {
       addNotification({
         type: data.type || 'info',
@@ -54,11 +63,24 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
     notificationService.on('notification', handleNotification);
 
+    // Seed the badge from persisted unread notifications
+    fetch('/api/notifications?unreadOnly=true')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((result) => {
+        const items = result?.data;
+        if (Array.isArray(items)) {
+          setUnreadCount(items.length);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching unread notifications:', error);
+      });
+
     return () => {
       notificationService.off('notification', handleNotification);
       notificationService.disconnect();
     };
-  }, [session]);
+  }, [userId]);
 
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp'>) => {
     const newNotification: Notification = {
@@ -71,9 +93,11 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
     // Auto-remove info notifications after 5 seconds
     if (notification.type === 'info') {
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
+        autoRemoveTimeouts.current.delete(timeoutId);
         removeNotification(newNotification.id);
       }, 5000);
+      autoRemoveTimeouts.current.add(timeoutId);
     }
   };
 
@@ -86,7 +110,6 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   };
 
   const showNotificationCenter = () => {
-    console.log('Opening notification center, currentUserId:', currentUserId);
     setShowNotifications(true);
     // Reset unread count when opening notification center
     setUnreadCount(0);
@@ -107,9 +130,9 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     }}>
       {children}
       <NotificationContainer notifications={notifications} onRemove={removeNotification} />
-      {showNotifications && currentUserId && (
+      {showNotifications && userId && (
         <NotificationCenter
-          userId={currentUserId}
+          userId={userId}
           onClose={hideNotificationCenter}
         />
       )}

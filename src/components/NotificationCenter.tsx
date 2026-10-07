@@ -25,10 +25,13 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
 
   useEffect(() => {
     fetchNotifications();
-    // Listen for real-time notifications
+    // Listen for real-time notifications: 'notification' is emitted per-user by the
+    // server, 'sendNotification' is kept for local same-tab feedback
+    notificationService.on('notification', handleRealTimeNotification);
     notificationService.on('sendNotification', handleRealTimeNotification);
-    
+
     return () => {
+      notificationService.off('notification', handleRealTimeNotification);
       notificationService.off('sendNotification', handleRealTimeNotification);
     };
   }, [userId]);
@@ -67,9 +70,20 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
         entityId: n.entityId,
         entityType: n.entityType,
       }));
-      
+
+      // Opening the center marks persisted unread notifications as read
+      const unread = formattedNotifications.filter((n: Notification) => !n.read);
+      if (unread.length > 0) {
+        try {
+          await markNotificationsAsRead(unread);
+          formattedNotifications.forEach((n: Notification) => (n.read = true));
+        } catch (error) {
+          console.error('Error marking notifications as read:', error);
+        }
+      }
+
       setNotifications(formattedNotifications);
-      setUnreadCount(formattedNotifications.filter((n: Notification) => !n.read).length);
+      setUnreadCount(0);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {
@@ -77,21 +91,40 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
     }
   };
 
+  const markNotificationsAsRead = async (items: Notification[]) => {
+    await Promise.all(
+      items.map((notification) =>
+        fetch('/api/notifications', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id: notification.id, read: true }),
+        }).then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to mark notification as read');
+          }
+        })
+      )
+    );
+  };
+
   const handleRealTimeNotification = (data: any) => {
-    if (data.userId === userId) {
-      const newNotification: Notification = {
-        id: data.id || Date.now().toString(),
-        type: data.type,
-        message: data.message,
-        read: false,
-        createdAt: data.timestamp,
-        entityId: data.data?.entityId,
-        entityType: data.data?.entityType,
-      };
-      
-      setNotifications(prev => [newNotification, ...prev]);
-      setUnreadCount(prev => prev + 1);
-    }
+    // Room-targeted events carry no userId; locally emitted ones may
+    if (data.userId && data.userId !== userId) return;
+
+    const newNotification: Notification = {
+      id: data.id || Date.now().toString(),
+      type: data.type,
+      message: data.message,
+      read: false,
+      createdAt: data.timestamp || new Date().toISOString(),
+      entityId: data.data?.entityId,
+      entityType: data.data?.entityType,
+    };
+
+    setNotifications(prev => [newNotification, ...prev]);
+    setUnreadCount(prev => prev + 1);
   };
 
   const markAsRead = async (id: string) => {
@@ -124,30 +157,10 @@ export default function NotificationCenter({ userId, onClose }: NotificationCent
 
   const markAllAsRead = async () => {
     try {
-      // For marking all as read, we'll need to update each notification individually
-      // or implement a batch update endpoint
       const unreadNotifications = notifications.filter(n => !n.read);
-      
-      // Update each notification
-      const updatePromises = unreadNotifications.map(notification => 
-        fetch('/api/notifications', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ id: notification.id, read: true }),
-        })
-      );
-      
-      const responses = await Promise.all(updatePromises);
-      
-      // Check if all requests were successful
-      const allSuccessful = responses.every(response => response.ok);
-      if (!allSuccessful) {
-        throw new Error('Failed to mark all notifications as read');
-      }
-      
-      setNotifications(prev => 
+      await markNotificationsAsRead(unreadNotifications);
+
+      setNotifications(prev =>
         prev.map(n => ({ ...n, read: true }))
       );
       setUnreadCount(0);

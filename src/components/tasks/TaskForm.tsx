@@ -12,6 +12,7 @@ import {
   validateFutureDate,
   validateFields,
   hasErrors,
+  mergeValidationResults,
   ValidationResult,
 } from '@/lib/utils/validationHelpers';
 
@@ -52,19 +53,17 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, initialProjectId, onSu
     assigneeId: initialData?.assigneeId || '',
   });
 
-  // Fetch projects and users for dropdowns
+  // Fetch projects for the project dropdown
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProjects = async () => {
       try {
         setIsLoadingData(true);
-        const [projectsRes, usersRes] = await Promise.all([
-          fetch('/api/projects'),
-          fetch('/api/users'),
-        ]);
+        const projectsRes = await fetch('/api/projects');
+        if (!projectsRes.ok) {
+          throw new Error('Failed to load projects');
+        }
         const projectsData = await projectsRes.json();
-        const usersData = await usersRes.json();
         setProjects(projectsData.data || projectsData || []);
-        setUsers(usersData.data || usersData || []);
       } catch (error) {
         console.error('Error fetching data:', error);
         showToast('Failed to load form data', 'error');
@@ -72,8 +71,36 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, initialProjectId, onSu
         setIsLoadingData(false);
       }
     };
-    fetchData();
+    fetchProjects();
   }, [showToast]);
+
+  // Fetch assignee options: project members when a project is selected, all users otherwise
+  useEffect(() => {
+    const fetchAssignees = async () => {
+      try {
+        if (formData.projectId) {
+          const res = await fetch(`/api/projects/members?projectId=${formData.projectId}`);
+          if (!res.ok) {
+            throw new Error('Failed to load project members');
+          }
+          const data = await res.json();
+          const members = (data.data || data || []).map((member: any) => member.user ?? member);
+          setUsers(members);
+        } else {
+          const res = await fetch('/api/users');
+          if (!res.ok) {
+            throw new Error('Failed to load users');
+          }
+          const data = await res.json();
+          setUsers(data.data || data || []);
+        }
+      } catch (error) {
+        console.error('Error fetching assignees:', error);
+        setUsers([]);
+      }
+    };
+    fetchAssignees();
+  }, [formData.projectId]);
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -137,10 +164,12 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, initialProjectId, onSu
 
   const validateForm = (): boolean => {
     const validators = {
-      title: (value: string) => 
-        validateRequired(value, 'Title') ||
-        validateMinLength(value, 3, 'Title') ||
-        validateMaxLength(value, 100, 'Title'),
+      title: (value: string) =>
+        mergeValidationResults([
+          validateRequired(value, 'Title'),
+          validateMinLength(value, 3, 'Title'),
+          validateMaxLength(value, 100, 'Title'),
+        ]),
       description: (value: string) => validateMaxLength(value, 500, 'Description'),
       projectId: (value: string) => validateRequired(value, 'Project'),
     };
@@ -365,7 +394,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, initialProjectId, onSu
             <option value="">Unassigned</option>
             {users.map((user) => (
               <option key={user.id} value={user.id}>
-                {user.name || user.email}
+                {user.name || user.email || 'Unnamed user'}
               </option>
             ))}
           </select>

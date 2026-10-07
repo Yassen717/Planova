@@ -31,6 +31,7 @@ export interface ProjectCardProps {
     _count?: {
       tasks: number;
     };
+    doneTaskCount?: number;
   };
   onDelete?: (projectId: string) => void;
 }
@@ -55,8 +56,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
   };
 
   // Progress
-  const totalTasks = project.tasks?.length || project._count?.tasks || 0;
-  const completedTasks = project.tasks?.filter(t => t.status === 'DONE').length || 0;
+  const totalTasks = project._count?.tasks ?? project.tasks?.length ?? 0;
+  const completedTasks =
+    project.doneTaskCount ??
+    project.tasks?.filter(t => t.status === 'DONE').length ??
+    0;
   const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   const statusGradients = {

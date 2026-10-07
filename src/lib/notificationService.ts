@@ -41,10 +41,15 @@ class NotificationService {
       this.isConnected = false;
     });
 
-    // Listen for notifications
+    // Listen for notifications (per-user room events from the server)
     this.socket.on('notification', (data) => {
       console.log('Received notification:', data);
       this.handleEvent('notification', data);
+    });
+
+    // Legacy local event name, kept for same-tab feedback if the server echoes it
+    this.socket.on('sendNotification', (data) => {
+      this.handleEvent('sendNotification', data);
     });
 
     // Listen for task updates

@@ -12,6 +12,7 @@ import {
   validateDateRange,
   validateFields,
   hasErrors,
+  mergeValidationResults,
   ValidationResult,
 } from '@/lib/utils/validationHelpers';
 
@@ -104,10 +105,12 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ initialData, onSubmit }) => {
 
   const validateForm = (): boolean => {
     const validators = {
-      title: (value: string) => 
-        validateRequired(value, 'Title') ||
-        validateMinLength(value, 3, 'Title') ||
-        validateMaxLength(value, 100, 'Title'),
+      title: (value: string) =>
+        mergeValidationResults([
+          validateRequired(value, 'Title'),
+          validateMinLength(value, 3, 'Title'),
+          validateMaxLength(value, 100, 'Title'),
+        ]),
       description: (value: string) => validateMaxLength(value, 500, 'Description'),
       startDate: (value: string) => validateRequired(value, 'Start date'),
     };
