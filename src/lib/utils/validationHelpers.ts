@@ -50,15 +50,26 @@ export function validateMaxLength(value: string, maxLength: number, fieldName: s
 }
 
 /**
- * Validate date is in the future
+ * Validate date is today or in the future
  */
 export function validateFutureDate(date: Date | string | null, fieldName: string): ValidationResult {
   if (!date) {
     return { isValid: false, error: `${fieldName} is required` };
   }
-  const dateObj = new Date(date);
-  if (dateObj < new Date()) {
-    return { isValid: false, error: `${fieldName} must be in the future` };
+  // Parse 'YYYY-MM-DD' as a local date so "today" is not shifted into the past by timezone offsets
+  const dateObj =
+    typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)
+      ? new Date(`${date}T00:00:00`)
+      : new Date(date);
+  if (isNaN(dateObj.getTime())) {
+    return { isValid: false, error: `${fieldName} must be a valid date` };
+  }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dateOnly = new Date(dateObj);
+  dateOnly.setHours(0, 0, 0, 0);
+  if (dateOnly < today) {
+    return { isValid: false, error: `${fieldName} must be today or in the future` };
   }
   return { isValid: true };
 }
@@ -98,6 +109,19 @@ export function validateUrl(url: string): ValidationResult {
  */
 export function formatErrorMessage(error: string): string {
   return error.charAt(0).toUpperCase() + error.slice(1);
+}
+
+/**
+ * Run multiple validators and merge all error messages
+ */
+export function mergeValidationResults(results: ValidationResult[]): ValidationResult {
+  const errors = results
+    .filter((result) => !result.isValid && result.error)
+    .map((result) => result.error!);
+  if (errors.length > 0) {
+    return { isValid: false, error: errors.join(' ') };
+  }
+  return { isValid: true };
 }
 
 /**

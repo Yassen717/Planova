@@ -24,6 +24,7 @@ export interface TaskKanbanProps {
     } | null;
   }>;
   onTaskMove: (taskId: string, newStatus: string) => Promise<void>;
+  onTaskDelete?: (taskId: string) => Promise<void>;
 }
 
 const COLUMNS = [
@@ -33,7 +34,7 @@ const COLUMNS = [
   { id: 'DONE', label: 'Done', color: 'bg-green-500' },
 ];
 
-const TaskKanban: React.FC<TaskKanbanProps> = ({ tasks, onTaskMove }) => {
+const TaskKanban: React.FC<TaskKanbanProps> = ({ tasks, onTaskMove, onTaskDelete }) => {
   const router = useRouter();
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
@@ -133,6 +134,7 @@ const TaskKanban: React.FC<TaskKanbanProps> = ({ tasks, onTaskMove }) => {
                       onClick={() => handleTaskClick(task.id)}
                       onDragStart={() => handleDragStart(task.id)}
                       onDragEnd={handleDragEnd}
+                      onDelete={onTaskDelete}
                     />
                   ))
                 ) : (

@@ -24,11 +24,13 @@ import {
   applyProjectFilter,
 } from '@/lib/utils/filterHelpers';
 import { useGuestCheck } from '@/hooks/useGuestCheck';
+import { useToast } from '@/components/ui/ToastProvider';
 
 type ViewMode = 'table' | 'kanban';
 
 export default function TasksPage() {
   const { canCreate } = useGuestCheck();
+  const { showToast } = useToast();
   const [tasks, setTasks] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
@@ -174,6 +176,29 @@ export default function TasksPage() {
     }
   };
 
+  const handleTaskDelete = async (taskId: string) => {
+    try {
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: 'DELETE',
+      });
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || 'Failed to delete task');
+      }
+
+      // Remove from local state
+      setTasks((prev) => prev.filter((task) => task.id !== taskId));
+      showToast('Task deleted successfully', 'success');
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete task';
+      showToast(errorMessage, 'error');
+      throw error;
+    }
+  };
+
   const hasActiveFilters =
     searchTerm ||
     filters.status.length > 0 ||
@@ -290,7 +315,7 @@ export default function TasksPage() {
         <>
           {viewMode === 'kanban' ? (
             <div className="overflow-x-auto">
-              <TaskKanban tasks={filteredTasks} onTaskMove={handleTaskMove} />
+              <TaskKanban tasks={filteredTasks} onTaskMove={handleTaskMove} onTaskDelete={handleTaskDelete} />
             </div>
           ) : (
             <>
