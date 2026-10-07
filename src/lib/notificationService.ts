@@ -1,27 +1,39 @@
 // Notification service for real-time updates using Socket.io
 import { io, Socket } from 'socket.io-client';
-import { NEXT_PUBLIC_API_BASE_URL } from '@/lib/api';
 import { notificationDbService } from './notificationDbService';
+
+// Server-side code reaches the socket server via SOCKET_URL (private);
+// the browser uses NEXT_PUBLIC_SOCKET_URL.
+function socketServerUrl(): string {
+  if (typeof window === 'undefined') {
+    return (
+      process.env.SOCKET_URL ??
+      process.env.NEXT_PUBLIC_SOCKET_URL ??
+      'http://localhost:3001'
+    );
+  }
+  return process.env.NEXT_PUBLIC_SOCKET_URL ?? 'http://localhost:3001';
+}
 
 class NotificationService {
   private socket: Socket | null = null;
   private listeners: Map<string, Function[]> = new Map();
   private isConnected: boolean = false;
 
-  // Connect to the Socket.io server
+  // Connect to the Socket.io server (browser only)
   connect() {
     if (this.socket && this.isConnected) return;
+    if (typeof window === 'undefined') return;
 
-    // Connect to the Socket.io server (using port 3001 for socket server)
-    const socketUrl = NEXT_PUBLIC_API_BASE_URL?.replace(':3000', ':3001') || 'http://localhost:3001';
-    this.socket = io(socketUrl, {
+    this.socket = io(socketServerUrl(), {
       transports: ['websocket'],
+      withCredentials: true,
     });
 
     this.socket.on('connect', () => {
       console.log('Connected to notification service with ID:', this.socket?.id);
       this.isConnected = true;
-      this.emit('connected', { message: 'Successfully connected to notification service' });
+      this.handleEvent('connected', { message: 'Successfully connected to notification service' });
     });
 
     this.socket.on('disconnect', () => {
@@ -63,15 +75,40 @@ class NotificationService {
     }
   }
 
-  // Emit an event to the server
+  // Emit an event. Server-side there is no socket connection, so events are
+  // relayed to the socket server over its authenticated /emit endpoint.
   emit(event: string, data: any) {
+    if (typeof window === 'undefined') {
+      this.relay(event, data);
+      return;
+    }
+
     if (!this.socket || !this.isConnected) {
       console.warn('Not connected to notification service. Cannot emit event:', event);
       return;
     }
-    
-    console.log(`Emitting event: ${event}`, data);
+
     this.socket.emit(event, data);
+  }
+
+  // Relay an event to the socket server via POST /emit (server-side only).
+  private relay(event: string, data: any, userId?: string) {
+    const secret = process.env.SOCKET_SECRET;
+    if (!secret) {
+      console.warn('SOCKET_SECRET is not set; skipping realtime emit:', event);
+      return;
+    }
+
+    fetch(`${socketServerUrl()}/emit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-socket-secret': secret,
+      },
+      body: JSON.stringify({ event, userId, data }),
+    }).catch((error) => {
+      console.error('Failed to relay socket event:', error);
+    });
   }
 
   // Listen for events
@@ -108,9 +145,27 @@ class NotificationService {
     }
   }
 
+  // Deliver a notification payload to the recipient in real time.
+  // Server-side it goes straight to the user's room over /emit; client-side it
+  // is sent over the socket for the server to relay as a 'notification' event.
+  private deliverNotification(payload: { userId: string } & Record<string, any>) {
+    if (typeof window === 'undefined') {
+      this.relay('notification', payload, payload.userId);
+    } else {
+      this.emit('sendNotification', payload);
+    }
+  }
+
   // Send a notification and persist it to the database
   async sendNotification(type: string, message: string, userId: string, data?: any) {
-    // Persist to database
+    const payload = {
+      type,
+      message,
+      userId,
+      data,
+      timestamp: new Date().toISOString(),
+    };
+
     try {
       const notification = await notificationDbService.createNotification({
         type,
@@ -119,28 +174,13 @@ class NotificationService {
         entityId: data?.entityId,
         entityType: data?.entityType,
       });
-      
-      // Emit real-time notification
-      this.emit('sendNotification', {
-        type,
-        message,
-        userId,
-        data,
-        timestamp: new Date().toISOString(),
-        id: notification.id,
-      });
-      
+
+      this.deliverNotification({ ...payload, id: notification.id });
       return notification;
     } catch (error) {
       console.error('Error creating notification:', error);
       // Still emit the notification even if database persistence fails
-      this.emit('sendNotification', {
-        type,
-        message,
-        userId,
-        data,
-        timestamp: new Date().toISOString(),
-      });
+      this.deliverNotification(payload);
       throw error;
     }
   }
