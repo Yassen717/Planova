@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import ErrorState from '@/components/ui/ErrorState';
 
 interface ProjectStats {
   total: number;
@@ -50,6 +51,7 @@ export default function ReportingDashboard() {
   const [recentActivity, setRecentActivity] = useState<Activity[]>([]);
   const [trendData, setTrendData] = useState<TrendData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState(30);
 
   useEffect(() => {
@@ -59,29 +61,55 @@ export default function ReportingDashboard() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
+      setError(null);
+
       // Fetch all data from API endpoints
-      const [projectRes, taskRes, activityRes] = await Promise.all([
+      const [projectRes, taskRes, activityRes, trendRes, userStatsRes] = await Promise.all([
         fetch('/api/projects'),
         fetch('/api/tasks'),
-        fetch('/api/reports/activity?limit=10'),
+        fetch('/api/reports?type=activity&limit=10'),
+        fetch(`/api/reports?type=trend&days=${timeRange}`),
+        fetch('/api/reports?type=users'),
       ]);
-      
+
+      if (!projectRes.ok || !taskRes.ok) {
+        throw new Error('Failed to fetch reporting data');
+      }
+
       const projectsResponse = await projectRes.json();
       const tasksResponse = await taskRes.json();
-      const activity = activityRes.ok ? await activityRes.json() : [];
-      
+
       // Extract data from API response (API returns { success, data })
       const projects = projectsResponse.data || [];
       const tasks = tasksResponse.data || [];
-      
+
+      const activityResult = activityRes.ok ? await activityRes.json() : null;
+      const activity = activityResult?.data || [];
+
+      const trendResult = trendRes.ok ? await trendRes.json() : null;
+      const trend = trendResult?.data || [];
+
+      // User statistics are admin-only; hide the section on 403/other failures
+      let userData: UserStats | null = null;
+      if (userStatsRes.ok) {
+        const userResult = await userStatsRes.json();
+        const stats = userResult?.data;
+        if (stats) {
+          userData = {
+            total: stats.total ?? 0,
+            projectOwners: stats.projectOwners ?? 0,
+            taskAssignees: stats.taskAssignees ?? 0,
+          };
+        }
+      }
+
       // Calculate project stats
       const projectData = {
         total: projects.length,
         active: projects.filter((p: any) => p.status === 'ACTIVE').length,
         completed: projects.filter((p: any) => p.status === 'COMPLETED').length,
       };
-      
+
       // Calculate task stats
       const taskData = {
         total: tasks.length,
@@ -94,44 +122,33 @@ export default function ReportingDashboard() {
           _count: { priority: tasks.filter((t: any) => t.priority === priority).length }
         })),
       };
-      
-      // Calculate user stats (simplified)
-      const userData = {
-        total: 0,
-        projectOwners: 0,
-        taskAssignees: 0,
-      };
-      
+
       // Calculate progress data
-      const progressData = projects.slice(0, 5).map((project: any) => ({
-        id: project.id,
-        title: project.title,
-        totalTasks: project._count?.tasks || 0,
-        completedTasks: project.tasks?.filter((t: any) => t.status === 'DONE').length || 0,
-        progress: project._count?.tasks > 0 
-          ? Math.round(((project.tasks?.filter((t: any) => t.status === 'DONE').length || 0) / project._count.tasks) * 100)
-          : 0,
-        createdAt: project.createdAt,
-      }));
-      
-      // Calculate trend data (simplified - last N days)
-      const trendData = Array.from({ length: timeRange }, (_, i) => {
-        const date = new Date();
-        date.setDate(date.getDate() - (timeRange - i - 1));
+      const progressData = projects.slice(0, 5).map((project: any) => {
+        const totalTasks = project._count?.tasks ?? project.tasks?.length ?? 0;
+        const completedTasks =
+          project.doneTaskCount ??
+          project.tasks?.filter((t: any) => t.status === 'DONE').length ??
+          0;
         return {
-          date: date.toISOString().split('T')[0],
-          count: Math.floor(Math.random() * 10), // Placeholder
+          id: project.id,
+          title: project.title,
+          totalTasks,
+          completedTasks,
+          progress: totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0,
+          createdAt: project.createdAt,
         };
       });
-      
+
       setProjectStats(projectData);
       setTaskStats(taskData);
       setUserStats(userData);
       setProgressData(progressData);
       setRecentActivity(activity);
-      setTrendData(trendData);
+      setTrendData(trend);
     } catch (error) {
       console.error('Error fetching reporting data:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load reporting data');
     } finally {
       setLoading(false);
     }
@@ -215,6 +232,23 @@ export default function ReportingDashboard() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="p-4 sm:p-6 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 min-h-screen">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Reporting & Analytics</h1>
+        </div>
+        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200/60 p-6">
+          <ErrorState
+            title="Failed to load reporting data"
+            message={error}
+            onRetry={fetchData}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 sm:p-6 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 min-h-screen">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
@@ -284,25 +318,27 @@ export default function ReportingDashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200/60 p-6">
-          <h2 className="text-lg font-medium text-slate-900 mb-4">Users</h2>
-          <div className="space-y-4">
-            <div>
-              <p className="text-3xl font-bold text-slate-900">{userStats?.total || 0}</p>
-              <p className="text-sm text-slate-500">Total Users</p>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-slate-500">Project Owners</span>
-                <span className="text-sm font-medium text-slate-900">{userStats?.projectOwners || 0}</span>
+        {userStats && (
+          <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200/60 p-6">
+            <h2 className="text-lg font-medium text-slate-900 mb-4">Users</h2>
+            <div className="space-y-4">
+              <div>
+                <p className="text-3xl font-bold text-slate-900">{userStats.total}</p>
+                <p className="text-sm text-slate-500">Total Users</p>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-slate-500">Task Assignees</span>
-                <span className="text-sm font-medium text-slate-900">{userStats?.taskAssignees || 0}</span>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-slate-500">Project Owners</span>
+                  <span className="text-sm font-medium text-slate-900">{userStats.projectOwners}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-slate-500">Task Assignees</span>
+                  <span className="text-sm font-medium text-slate-900">{userStats.taskAssignees}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Charts and Progress */}
@@ -311,20 +347,24 @@ export default function ReportingDashboard() {
         <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200/60 p-6">
           <h2 className="text-lg font-medium text-slate-900 mb-4">Task Completion Trend</h2>
           <div className="h-64 flex items-end space-x-1">
-            {trendData.map((item, index) => (
-              <div key={index} className="flex flex-col items-center flex-1">
-                <div 
-                  className="w-full bg-gradient-to-t from-indigo-600 to-violet-500 rounded-t hover:from-indigo-700 hover:to-violet-600 transition-colors"
-                  style={{ height: `${Math.max(5, (item.count / Math.max(...trendData.map(d => d.count)) * 100))}%` }}
-                  title={`${item.date}: ${item.count} tasks`}
-                ></div>
-                {index % 5 === 0 && (
-                  <span className="text-xs text-slate-500 mt-1">
-                    {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </span>
-                )}
-              </div>
-            ))}
+            {trendData.length > 0 ? (
+              trendData.map((item, index) => (
+                <div key={index} className="flex flex-col items-center flex-1">
+                  <div
+                    className="w-full bg-gradient-to-t from-indigo-600 to-violet-500 rounded-t hover:from-indigo-700 hover:to-violet-600 transition-colors"
+                    style={{ height: `${Math.max(5, (item.count / Math.max(1, ...trendData.map(d => d.count))) * 100)}%` }}
+                    title={`${item.date}: ${item.count} tasks`}
+                  ></div>
+                  {index % 5 === 0 && (
+                    <span className="text-xs text-slate-500 mt-1">
+                      {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </span>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-slate-500 self-center mx-auto">No completion data for this period</p>
+            )}
           </div>
         </div>
 

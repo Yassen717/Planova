@@ -13,15 +13,16 @@ export function transformProjectsToChartData(
     status: string;
     _count?: { tasks: number };
     tasks?: Array<{ status: string }>;
+    doneTaskCount?: number;
   }>
 ): Array<{ id: string; title: string; progress: number; status: string }> {
   return projects.map((project) => {
-    let progress = 0;
-
-    if (project.tasks && project.tasks.length > 0) {
-      const completedTasks = project.tasks.filter((task) => task.status === 'DONE').length;
-      progress = Math.round((completedTasks / project.tasks.length) * 100);
-    }
+    const totalTasks = project._count?.tasks ?? project.tasks?.length ?? 0;
+    const completedTasks =
+      project.doneTaskCount ??
+      project.tasks?.filter((task) => task.status === 'DONE').length ??
+      0;
+    const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
     return {
       id: project.id,
