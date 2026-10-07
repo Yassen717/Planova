@@ -135,9 +135,17 @@ export const reportingService = {
     };
   },
 
-  // Get project progress data
-  async getProjectProgressData() {
+  // Get project progress data (optionally scoped to a user's projects)
+  async getProjectProgressData(userId?: string) {
     const projects = await prisma.project.findMany({
+      where: userId
+        ? {
+            OR: [
+              { ownerId: userId },
+              { members: { some: { id: userId } } },
+            ],
+          }
+        : {},
       include: {
         _count: {
           select: {
@@ -313,8 +321,8 @@ export const reportingService = {
       .slice(0, limit);
   },
 
-  // Get task completion trend
-  async getTaskCompletionTrend(days: number = 30) {
+  // Get task completion trend (optionally scoped to a user's tasks)
+  async getTaskCompletionTrend(days: number = 30, userId?: string) {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
     
@@ -324,6 +332,15 @@ export const reportingService = {
         updatedAt: {
           gte: startDate,
         },
+        ...(userId
+          ? {
+              OR: [
+                { assigneeId: userId },
+                { project: { ownerId: userId } },
+                { project: { members: { some: { id: userId } } } },
+              ],
+            }
+          : {}),
       },
       select: {
         updatedAt: true,

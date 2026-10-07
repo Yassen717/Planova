@@ -148,31 +148,14 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ initialData, onSubmit }) => {
       if (onSubmit) {
         await onSubmit(formData);
       } else {
-        // Default API call
+        // Default API call — the server assigns the authenticated user as owner
         const url = initialData?.id ? `/api/projects/${initialData.id}` : '/api/projects';
         const method = initialData?.id ? 'PATCH' : 'POST';
-        
-        // Get first user as owner for new projects
-        let dataToSend: any = formData;
-        if (!initialData?.id) {
-          // Fetch first user to use as owner
-          const usersRes = await fetch('/api/users');
-          const users = await usersRes.json();
-          const firstUser = users.data?.[0] || users[0];
-          
-          if (!firstUser) {
-            throw new Error('No users found. Please create a user first.');
-          }
-          
-          dataToSend = { ...formData, ownerId: firstUser.id };
-        }
-        
-        console.log('Sending data:', dataToSend); // Debug log
         
         const response = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dataToSend),
+          body: JSON.stringify(formData),
         });
 
         if (!response.ok) {

@@ -124,6 +124,21 @@ export const projectService = {
     });
   },
 
+  // Get the fields needed for access control checks
+  async getProjectMembership(id: string) {
+    return await prisma.project.findUnique({
+      where: { id },
+      select: {
+        ownerId: true,
+        members: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+  },
+
   // Get project by ID
   async getProjectById(id: string) {
     return await prisma.project.findUnique({

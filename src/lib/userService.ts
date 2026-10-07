@@ -1,4 +1,5 @@
 import { prisma } from './db';
+import bcrypt from 'bcryptjs';
 
 export type CreateUserInput = {
   email: string;
@@ -15,11 +16,12 @@ export type UpdateUserInput = {
 export const userService = {
   // Create a new user
   async createUser(input: CreateUserInput) {
+    const hashedPassword = await bcrypt.hash(input.password, 12);
     return await prisma.user.create({
       data: {
         email: input.email,
         name: input.name,
-        password: input.password, // In a real app, this should be hashed
+        password: hashedPassword,
         role: 'USER',
       },
     });

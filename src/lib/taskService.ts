@@ -18,8 +18,8 @@ export type UpdateTaskInput = {
   status?: Task['status'];
   priority?: Task['priority'];
   startDate?: Date;
-  dueDate?: Date;
-  assigneeId?: string;
+  dueDate?: Date | null;
+  assigneeId?: string | null;
 };
 
 export const taskService = {
@@ -141,6 +141,26 @@ export const taskService = {
       },
       orderBy: {
         createdAt: 'desc',
+      },
+    });
+  },
+
+  // Get the fields needed for access control checks
+  async getTaskAccess(id: string) {
+    return await prisma.task.findUnique({
+      where: { id },
+      select: {
+        assigneeId: true,
+        project: {
+          select: {
+            ownerId: true,
+            members: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
       },
     });
   },

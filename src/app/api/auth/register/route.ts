@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import { createApiResponse, validateRequestBody } from "@/lib/api";
+import { badRequest, serverError } from "@/lib/apiHelpers";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 
@@ -11,11 +14,23 @@ const registerSchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    
-    // Validate input
-    const validatedData = registerSchema.parse(body);
-    const { email, name, password } = validatedData;
+    // Rate limit: 10 registrations per hour per IP
+    const { allowed, retryAfterSeconds } = checkRateLimit(
+      `register:${getClientIp(request)}`,
+      10,
+      60 * 60 * 1000
+    );
+
+    if (!allowed) {
+      return NextResponse.json(
+        createApiResponse("Too many registration attempts. Please try again later."),
+        { status: 429, headers: { "Retry-After": String(retryAfterSeconds) } }
+      );
+    }
+
+    const validation = await validateRequestBody(request, registerSchema);
+    if (!validation.success) return badRequest(validation.error);
+    const { email, name, password } = validation.data;
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -23,10 +38,7 @@ export async function POST(request: Request) {
     });
 
     if (existingUser) {
-      return NextResponse.json(
-        { error: "User with this email already exists" },
-        { status: 400 }
-      );
+      return badRequest("User with this email already exists");
     }
 
     // Hash password
@@ -49,25 +61,15 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(
-      { 
+      createApiResponse({
         message: "User created successfully",
-        user 
-      },
+        user
+      }),
       { status: 201 }
     );
 
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: "Validation error", details: error.issues },
-        { status: 400 }
-      );
-    }
-
     console.error("Registration error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return serverError();
   }
 }

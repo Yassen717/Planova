@@ -1,7 +1,16 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { commentService } from '@/lib/commentService';
+import { taskService } from '@/lib/taskService';
 import { createApiResponse, validateRequestBody } from '@/lib/api';
-import { auth } from '@/lib/auth';
+import {
+  getAuthContext,
+  canModifyTask,
+  unauthorized,
+  forbidden,
+  notFound,
+  badRequest,
+  serverError,
+} from '@/lib/apiHelpers';
 import { z } from 'zod';
 
 // Validation schema for creating a comment
@@ -12,48 +21,29 @@ const createCommentSchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    const session = await auth();
-    
-    if (!session?.user) {
-      return NextResponse.json(
-        createApiResponse('Unauthorized'),
-        { status: 401 }
-      );
-    }
+    const ctx = await getAuthContext();
+    if (!ctx) return unauthorized();
+    if (ctx.isGuest) return forbidden('Forbidden: Guest users cannot create comments');
 
     const validation = await validateRequestBody(request, createCommentSchema);
+    if (!validation.success) return badRequest(validation.error);
 
-    if (!validation.success) {
-      return NextResponse.json(
-        createApiResponse(validation.error),
-        { status: 400 }
-      );
+    const access = await taskService.getTaskAccess(validation.data.taskId);
+    if (!access) return notFound('Task not found');
+    if (!canModifyTask(access, ctx)) {
+      return forbidden('Forbidden: You do not have access to this task');
     }
 
-    // Use userId from session instead of request body
-    const comment = await prisma.comment.create({
-      data: {
-        content: validation.data.content,
-        authorId: (session.user as any).id,
-        taskId: validation.data.taskId,
-      },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
+    // authorId always comes from the session, never from the request body
+    const comment = await commentService.createComment({
+      content: validation.data.content,
+      authorId: ctx.userId,
+      taskId: validation.data.taskId,
     });
 
     return NextResponse.json(createApiResponse(comment), { status: 201 });
   } catch (error) {
     console.error('Error creating comment:', error);
-    return NextResponse.json(
-      createApiResponse('Failed to create comment'),
-      { status: 500 }
-    );
+    return serverError('Failed to create comment');
   }
 }
