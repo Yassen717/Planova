@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createApiResponse } from '@/lib/api';
+import { createApiErrorResponse } from '@/lib/api';
 import { auth } from '@/lib/auth';
 import { Role } from '@prisma/client';
 
@@ -33,6 +33,10 @@ type TaskAccessFields = {
   assigneeId: string | null;
   project: ProjectAccessFields;
 };
+
+export function isProjectMember(project: ProjectAccessFields, userId: string): boolean {
+  return project.ownerId === userId || project.members.some((m) => m.id === userId);
+}
 
 export function canViewProject(project: ProjectAccessFields, ctx: AuthContext): boolean {
   return (
@@ -75,16 +79,16 @@ export function canModifyTask(task: TaskAccessFields, ctx: AuthContext): boolean
 }
 
 export const unauthorized = (message = 'Unauthorized') =>
-  NextResponse.json(createApiResponse(message), { status: 401 });
+  NextResponse.json(createApiErrorResponse(message), { status: 401 });
 
 export const forbidden = (message = 'Forbidden') =>
-  NextResponse.json(createApiResponse(message), { status: 403 });
+  NextResponse.json(createApiErrorResponse(message), { status: 403 });
 
 export const notFound = (message = 'Resource not found') =>
-  NextResponse.json(createApiResponse(message), { status: 404 });
+  NextResponse.json(createApiErrorResponse(message), { status: 404 });
 
 export const badRequest = (message: string) =>
-  NextResponse.json(createApiResponse(message), { status: 400 });
+  NextResponse.json(createApiErrorResponse(message), { status: 400 });
 
 export const serverError = (message = 'Internal server error') =>
-  NextResponse.json(createApiResponse(message), { status: 500 });
+  NextResponse.json(createApiErrorResponse(message), { status: 500 });

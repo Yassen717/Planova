@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
-import { createApiResponse, validateRequestBody } from "@/lib/api";
+import { createApiResponse, createApiErrorResponse, validateRequestBody } from "@/lib/api";
 import { badRequest, serverError } from "@/lib/apiHelpers";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
     if (!allowed) {
       return NextResponse.json(
-        createApiResponse("Too many registration attempts. Please try again later."),
+        createApiErrorResponse("Too many registration attempts. Please try again later."),
         { status: 429, headers: { "Retry-After": String(retryAfterSeconds) } }
       );
     }
