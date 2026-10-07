@@ -1,22 +1,32 @@
 import { getTeamMetadata } from '@/lib/metadata';
 import { userService } from '@/lib/userService';
+import ErrorState from '@/components/ui/ErrorState';
 
 export const metadata = getTeamMetadata();
-
-// Server-side data fetching
-async function getUsers() {
-  try {
-    const users = await userService.getAllUsers();
-    return users;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    return [];
-  }
-}
+export const dynamic = 'force-dynamic';
 
 export default async function UsersPage() {
-  const users = await getUsers();
-  
+  let users: any[] | null = null;
+  try {
+    users = await userService.getAllUsers();
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+
+  if (users === null) {
+    return (
+      <div className="p-6 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 min-h-screen">
+        <h1 className="text-2xl font-bold text-slate-900 mb-6">Team Members</h1>
+        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200/60 overflow-hidden">
+          <ErrorState
+            title="Failed to load team members"
+            message="We couldn't load the user list. Please try again later."
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 min-h-screen">
       <h1 className="text-2xl font-bold text-slate-900 mb-6">Team Members</h1>
