@@ -199,8 +199,6 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, initialProjectId, onSu
           status: formData.status,
         };
         
-        console.log('Sending task data:', dataToSend); // Debug log
-        
         const response = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },

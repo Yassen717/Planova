@@ -1,35 +1,45 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export function middleware(request: NextRequest) {
+const protectedPaths = [
+  "/dashboard",
+  "/projects",
+  "/tasks",
+  "/reports",
+  "/users",
+  "/api/projects",
+  "/api/tasks",
+  "/api/comments",
+  "/api/notifications",
+  "/api/users",
+  "/api/reports",
+];
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
-  // Protected paths
-  const protectedPaths = [
-    "/dashboard",
-    "/projects",
-    "/tasks",
-    "/reports",
-    "/users",
-    "/api/projects",
-    "/api/tasks",
-    "/api/comments",
-    "/api/notifications",
-  ];
 
-  // Check if path is protected
   const isProtected = protectedPaths.some((path) => pathname.startsWith(path));
+  if (!isProtected) {
+    return NextResponse.next();
+  }
 
-  if (isProtected) {
-    // Check for session token
-    const token = request.cookies.get("authjs.session-token") || 
-                  request.cookies.get("__Secure-authjs.session-token");
+  const token = await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+  });
 
-    if (!token) {
-      const url = new URL("/auth/login", request.url);
-      url.searchParams.set("callbackUrl", pathname);
-      return NextResponse.redirect(url);
+  if (!token) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
     }
+
+    const url = new URL("/auth/login", request.url);
+    url.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();

@@ -1,7 +1,18 @@
 import { NextResponse } from 'next/server';
 import { taskService } from '@/lib/taskService';
+import { projectService } from '@/lib/projectService';
 import { createApiResponse, validateRequestBody } from '@/lib/api';
-import { auth } from '@/lib/auth';
+import {
+  getAuthContext,
+  canViewTask,
+  canModifyTask,
+  canCollaborateOnProject,
+  unauthorized,
+  forbidden,
+  notFound,
+  badRequest,
+  serverError,
+} from '@/lib/apiHelpers';
 import { z } from 'zod';
 
 // Validation schema for creating a task
@@ -9,9 +20,9 @@ const createTaskSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
   startDate: z.string().transform((str) => new Date(str)),
-  dueDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
+  dueDate: z.string().nullish().transform((str) => str ? new Date(str) : undefined),
   projectId: z.string().min(1, 'Project ID is required'),
-  assigneeId: z.string().optional(),
+  assigneeId: z.string().nullish().transform((str) => str || undefined),
 });
 
 // Validation schema for updating a task
@@ -22,95 +33,66 @@ const updateTaskSchema = z.object({
   status: z.enum(['TODO', 'IN_PROGRESS', 'REVIEW', 'DONE']).optional(),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).optional(),
   startDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
-  dueDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
-  assigneeId: z.string().optional(),
+  dueDate: z.string().nullish().transform((str) => str === null ? null : str ? new Date(str) : undefined),
+  assigneeId: z.string().nullish().transform((str) => str === null ? null : str || undefined),
 });
 
 export async function GET() {
   try {
-    const session = await auth();
-    
-    if (!session) {
-      return NextResponse.json(
-        createApiResponse('Unauthorized'),
-        { status: 401 }
-      );
-    }
+    const ctx = await getAuthContext();
+    if (!ctx) return unauthorized();
 
-    const userId = (session.user as any).id;
-    const userRole = (session.user as any).role;
-
-    // Admin users see all tasks, regular users see only tasks from their projects or assigned to them
-    const tasks = userRole === 'ADMIN'
+    // Admins and read-only guests see all tasks; regular users see tasks from their projects or assigned to them
+    const tasks = (ctx.isAdmin || ctx.isGuest)
       ? await taskService.getAllTasks()
-      : await taskService.getTasksByUser(userId);
+      : await taskService.getTasksByUser(ctx.userId);
       
     return NextResponse.json(createApiResponse(tasks));
   } catch (error) {
-    return NextResponse.json(createApiResponse('Failed to fetch tasks'), { status: 500 });
+    return serverError('Failed to fetch tasks');
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const session = await auth();
-    
-    if (!session) {
-      return NextResponse.json(
-        createApiResponse('Unauthorized'),
-        { status: 401 }
-      );
-    }
-
-    // Check if user is guest
-    if ((session.user as any).role === 'GUEST') {
-      return NextResponse.json(
-        createApiResponse('Forbidden: Guest users cannot create tasks'),
-        { status: 403 }
-      );
-    }
+    const ctx = await getAuthContext();
+    if (!ctx) return unauthorized();
+    if (ctx.isGuest) return forbidden('Forbidden: Guest users cannot create tasks');
 
     const validation = await validateRequestBody(request, createTaskSchema);
+    if (!validation.success) return badRequest(validation.error);
     
-    if (!validation.success) {
-      return NextResponse.json(createApiResponse(validation.error), { status: 400 });
+    const access = await projectService.getProjectMembership(validation.data.projectId);
+    if (!access) return notFound('Project not found');
+    if (!canCollaborateOnProject(access, ctx)) {
+      return forbidden('Forbidden: You do not have access to this project');
     }
     
     const task = await taskService.createTask(validation.data);
     return NextResponse.json(createApiResponse(task), { status: 201 });
   } catch (error) {
-    return NextResponse.json(createApiResponse('Failed to create task'), { status: 500 });
+    return serverError('Failed to create task');
   }
 }
 
 export async function PUT(request: Request) {
   try {
-    const session = await auth();
-    
-    if (!session) {
-      return NextResponse.json(
-        createApiResponse('Unauthorized'),
-        { status: 401 }
-      );
-    }
-
-    // Check if user is guest
-    if ((session.user as any).role === 'GUEST') {
-      return NextResponse.json(
-        createApiResponse('Forbidden: Guest users cannot update tasks'),
-        { status: 403 }
-      );
-    }
+    const ctx = await getAuthContext();
+    if (!ctx) return unauthorized();
+    if (ctx.isGuest) return forbidden('Forbidden: Guest users cannot update tasks');
 
     const validation = await validateRequestBody(request, updateTaskSchema);
+    if (!validation.success) return badRequest(validation.error);
     
-    if (!validation.success) {
-      return NextResponse.json(createApiResponse(validation.error), { status: 400 });
+    const access = await taskService.getTaskAccess(validation.data.id);
+    if (!access) return notFound('Task not found');
+    if (!canModifyTask(access, ctx)) {
+      return forbidden('Forbidden: You do not have permission to update this task');
     }
     
     const task = await taskService.updateTask(validation.data);
     return NextResponse.json(createApiResponse(task));
   } catch (error) {
-    return NextResponse.json(createApiResponse('Failed to update task'), { status: 500 });
+    return serverError('Failed to update task');
   }
 }

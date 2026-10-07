@@ -1,7 +1,15 @@
 import { NextResponse } from 'next/server';
 import { projectService } from '@/lib/projectService';
 import { createApiResponse, validateRequestBody } from '@/lib/api';
-import { auth } from '@/lib/auth';
+import {
+  getAuthContext,
+  canManageProject,
+  unauthorized,
+  forbidden,
+  notFound,
+  badRequest,
+  serverError,
+} from '@/lib/apiHelpers';
 import { z } from 'zod';
 
 // Validation schema for creating a project
@@ -10,7 +18,6 @@ const createProjectSchema = z.object({
   description: z.string().optional(),
   startDate: z.string().transform((str) => new Date(str)),
   endDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
-  ownerId: z.string().min(1, 'Owner ID is required'),
 });
 
 // Validation schema for updating a project
@@ -25,128 +32,81 @@ const updateProjectSchema = z.object({
 
 export async function GET() {
   try {
-    const session = await auth();
-    
-    if (!session) {
-      return NextResponse.json(
-        createApiResponse('Unauthorized'),
-        { status: 401 }
-      );
-    }
+    const ctx = await getAuthContext();
+    if (!ctx) return unauthorized();
 
-    const userId = (session.user as any).id;
-    const userRole = (session.user as any).role;
-
-    // Admin users see all projects, regular users see only their own
-    const projects = userRole === 'ADMIN' 
+    // Admins and read-only guests see all projects; regular users see only their own
+    const projects = (ctx.isAdmin || ctx.isGuest)
       ? await projectService.getAllProjects()
-      : await projectService.getProjectsByUser(userId);
+      : await projectService.getProjectsByUser(ctx.userId);
       
     return NextResponse.json(createApiResponse(projects));
   } catch (error) {
-    return NextResponse.json(createApiResponse('Failed to fetch projects'), { status: 500 });
+    return serverError('Failed to fetch projects');
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const session = await auth();
-    
-    if (!session) {
-      return NextResponse.json(
-        createApiResponse('Unauthorized'),
-        { status: 401 }
-      );
-    }
-
-    // Check if user is guest
-    if ((session.user as any).role === 'GUEST') {
-      return NextResponse.json(
-        createApiResponse('Forbidden: Guest users cannot create projects'),
-        { status: 403 }
-      );
-    }
+    const ctx = await getAuthContext();
+    if (!ctx) return unauthorized();
+    if (ctx.isGuest) return forbidden('Forbidden: Guest users cannot create projects');
 
     const validation = await validateRequestBody(request, createProjectSchema);
+    if (!validation.success) return badRequest(validation.error);
     
-    if (!validation.success) {
-      return NextResponse.json(createApiResponse(validation.error), { status: 400 });
-    }
-    
-    const project = await projectService.createProject(validation.data);
+    // Owner is always the authenticated user
+    const project = await projectService.createProject({
+      ...validation.data,
+      ownerId: ctx.userId,
+    });
     return NextResponse.json(createApiResponse(project), { status: 201 });
   } catch (error) {
-    return NextResponse.json(createApiResponse('Failed to create project'), { status: 500 });
+    return serverError('Failed to create project');
   }
 }
 
 export async function PUT(request: Request) {
   try {
-    const session = await auth();
-    
-    if (!session) {
-      return NextResponse.json(
-        createApiResponse('Unauthorized'),
-        { status: 401 }
-      );
-    }
-
-    // Check if user is guest
-    if ((session.user as any).role === 'GUEST') {
-      return NextResponse.json(
-        createApiResponse('Forbidden: Guest users cannot update projects'),
-        { status: 403 }
-      );
-    }
+    const ctx = await getAuthContext();
+    if (!ctx) return unauthorized();
+    if (ctx.isGuest) return forbidden('Forbidden: Guest users cannot update projects');
 
     const validation = await validateRequestBody(request, updateProjectSchema);
+    if (!validation.success) return badRequest(validation.error);
     
-    if (!validation.success) {
-      return NextResponse.json(createApiResponse(validation.error), { status: 400 });
+    const access = await projectService.getProjectMembership(validation.data.id);
+    if (!access) return notFound('Project not found');
+    if (!canManageProject(access, ctx)) {
+      return forbidden('Forbidden: You do not have permission to update this project');
     }
     
     const project = await projectService.updateProject(validation.data);
     return NextResponse.json(createApiResponse(project));
   } catch (error) {
-    return NextResponse.json(createApiResponse('Failed to update project'), { status: 500 });
+    return serverError('Failed to update project');
   }
 }
 
 export async function DELETE(request: Request) {
   try {
-    const session = await auth();
-    
-    if (!session) {
-      return NextResponse.json(
-        createApiResponse('Unauthorized'),
-        { status: 401 }
-      );
-    }
-
-    // Check if user is guest
-    if ((session.user as any).role === 'GUEST') {
-      return NextResponse.json(
-        createApiResponse('Forbidden: Guest users cannot delete projects'),
-        { status: 403 }
-      );
-    }
+    const ctx = await getAuthContext();
+    if (!ctx) return unauthorized();
+    if (ctx.isGuest) return forbidden('Forbidden: Guest users cannot delete projects');
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    if (!id) return badRequest('Project ID is required');
     
-    if (!id) {
-      return NextResponse.json(
-        createApiResponse('Project ID is required'),
-        { status: 400 }
-      );
+    const access = await projectService.getProjectMembership(id);
+    if (!access) return notFound('Project not found');
+    if (!canManageProject(access, ctx)) {
+      return forbidden('Forbidden: You do not have permission to delete this project');
     }
     
     await projectService.deleteProject(id);
     return NextResponse.json(createApiResponse('Project deleted successfully'));
   } catch (error) {
-    return NextResponse.json(
-      createApiResponse('Failed to delete project'),
-      { status: 500 }
-    );
+    return serverError('Failed to delete project');
   }
 }

@@ -36,6 +36,13 @@ export const notificationDbService = {
     });
   },
 
+  // Get a notification by ID
+  async getNotificationById(id: string) {
+    return await prisma.notification.findUnique({
+      where: { id },
+    });
+  },
+
   // Get notifications by user ID
   async getNotificationsByUserId(userId: string, limit: number = 10) {
     return await prisma.notification.findMany({

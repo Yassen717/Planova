@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server';
 import { notificationDbService } from '@/lib/notificationDbService';
 import { createApiResponse, validateRequestBody } from '@/lib/api';
-import { auth } from '@/lib/auth';
+import {
+  getAuthContext,
+  unauthorized,
+  forbidden,
+  notFound,
+  badRequest,
+  serverError,
+} from '@/lib/apiHelpers';
 import { z } from 'zod';
 
 // Validation schema for creating a notification
@@ -21,26 +28,17 @@ const updateNotificationSchema = z.object({
 
 export async function GET(request: Request) {
   try {
-    const session = await auth();
-    
-    if (!session?.user) {
-      return NextResponse.json(
-        createApiResponse('Unauthorized'),
-        { status: 401 }
-      );
-    }
+    const ctx = await getAuthContext();
+    if (!ctx) return unauthorized();
 
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId') || (session.user as any).id;
+    const userId = searchParams.get('userId') || ctx.userId;
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit') as string) : 10;
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
     
     // Ensure user can only access their own notifications
-    if (userId !== (session.user as any).id) {
-      return NextResponse.json(
-        createApiResponse('Forbidden: You can only access your own notifications'),
-        { status: 403 }
-      );
+    if (userId !== ctx.userId) {
+      return forbidden('Forbidden: You can only access your own notifications');
     }
     
     let notifications;
@@ -53,53 +51,47 @@ export async function GET(request: Request) {
     return NextResponse.json(createApiResponse(notifications));
   } catch (error) {
     console.error('Error fetching notifications:', error);
-    return NextResponse.json(createApiResponse('Failed to fetch notifications'), { status: 500 });
+    return serverError('Failed to fetch notifications');
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const session = await auth();
-    
-    if (!session?.user) {
-      return NextResponse.json(
-        createApiResponse('Unauthorized'),
-        { status: 401 }
-      );
-    }
+    const ctx = await getAuthContext();
+    if (!ctx) return unauthorized();
+    if (ctx.isGuest) return forbidden('Forbidden: Guest users cannot create notifications');
 
     const validation = await validateRequestBody(request, createNotificationSchema);
+    if (!validation.success) return badRequest(validation.error);
     
-    if (!validation.success) {
-      return NextResponse.json(createApiResponse(validation.error), { status: 400 });
+    // Users can only create notifications for themselves; admins can target anyone
+    if (validation.data.userId !== ctx.userId && !ctx.isAdmin) {
+      return forbidden('Forbidden: You cannot create notifications for other users');
     }
     
     const notification = await notificationDbService.createNotification(validation.data);
     return NextResponse.json(createApiResponse(notification), { status: 201 });
   } catch (error) {
     console.error('Error creating notification:', error);
-    return NextResponse.json(createApiResponse('Failed to create notification'), { status: 500 });
+    return serverError('Failed to create notification');
   }
 }
 
 export async function PUT(request: Request) {
   try {
-    const session = await auth();
-    
-    if (!session?.user) {
-      return NextResponse.json(
-        createApiResponse('Unauthorized'),
-        { status: 401 }
-      );
-    }
+    const ctx = await getAuthContext();
+    if (!ctx) return unauthorized();
 
     const validation = await validateRequestBody(request, updateNotificationSchema);
-    
-    if (!validation.success) {
-      return NextResponse.json(createApiResponse(validation.error), { status: 400 });
-    }
+    if (!validation.success) return badRequest(validation.error);
     
     const { id, read } = validation.data;
+
+    const existing = await notificationDbService.getNotificationById(id);
+    if (!existing) return notFound('Notification not found');
+    if (existing.userId !== ctx.userId && !ctx.isAdmin) {
+      return forbidden('Forbidden: You can only update your own notifications');
+    }
     
     let notification;
     if (read !== undefined) {
@@ -109,32 +101,29 @@ export async function PUT(request: Request) {
     return NextResponse.json(createApiResponse(notification));
   } catch (error) {
     console.error('Error updating notification:', error);
-    return NextResponse.json(createApiResponse('Failed to update notification'), { status: 500 });
+    return serverError('Failed to update notification');
   }
 }
 
 export async function DELETE(request: Request) {
   try {
-    const session = await auth();
-    
-    if (!session?.user) {
-      return NextResponse.json(
-        createApiResponse('Unauthorized'),
-        { status: 401 }
-      );
-    }
+    const ctx = await getAuthContext();
+    if (!ctx) return unauthorized();
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    if (!id) return badRequest('Notification ID is required');
     
-    if (!id) {
-      return NextResponse.json(createApiResponse('Notification ID is required'), { status: 400 });
+    const existing = await notificationDbService.getNotificationById(id);
+    if (!existing) return notFound('Notification not found');
+    if (existing.userId !== ctx.userId && !ctx.isAdmin) {
+      return forbidden('Forbidden: You can only delete your own notifications');
     }
     
     await notificationDbService.deleteNotification(id);
     return NextResponse.json(createApiResponse('Notification deleted successfully'));
   } catch (error) {
     console.error('Error deleting notification:', error);
-    return NextResponse.json(createApiResponse('Failed to delete notification'), { status: 500 });
+    return serverError('Failed to delete notification');
   }
 }
