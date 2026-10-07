@@ -30,6 +30,7 @@ export type Task = {
   priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
   startDate: Date;
   dueDate: Date | null;
+  completedAt: Date | null;
   assigneeId: string | null;
   projectId: string;
   createdAt: Date;

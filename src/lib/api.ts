@@ -7,25 +7,41 @@ export const NEXT_PUBLIC_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 
 export type ApiResponse<T> = {
   success: boolean;
   data?: T;
+  message?: string;
   error?: string;
 };
 
 // Utility function to handle API route responses
-export function createApiResponse<T>(data: T): ApiResponse<T>;
-export function createApiResponse<T>(error: string): ApiResponse<T>;
-export function createApiResponse<T>(dataOrError: T | string): ApiResponse<T> {
-  if (typeof dataOrError === 'string') {
+// A string payload is a success message (e.g. for DELETE endpoints);
+// use createApiErrorResponse for errors.
+export function createApiResponse<T>(data: T | string): ApiResponse<T> {
+  if (typeof data === 'string') {
     return {
-      success: false,
-      error: dataOrError,
+      success: true,
+      message: data,
     };
   }
-  
+
   return {
     success: true,
-    data: dataOrError,
+    data,
   };
 }
+
+// Utility function to build an error response envelope
+export function createApiErrorResponse(error: string): ApiResponse<never> {
+  return {
+    success: false,
+    error,
+  };
+}
+
+// Zod helper: accept a date string, reject unparseable values with a 400-level
+// validation error instead of letting an Invalid Date reach Prisma.
+export const zDateString = z
+  .string()
+  .refine((str) => !Number.isNaN(new Date(str).getTime()), { message: 'Invalid date' })
+  .transform((str) => new Date(str));
 
 // Utility function to validate request body with Zod
 export async function validateRequestBody<T>(

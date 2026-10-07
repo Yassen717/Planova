@@ -29,7 +29,11 @@ export async function GET() {
     const ctx = await getAuthContext();
     if (!ctx) return unauthorized();
 
-    const users = await userService.getAllUsers();
+    // Non-admin callers only get the minimal fields needed for pickers
+    // (id, name, image). Admins get the full field set.
+    const users = ctx.isAdmin
+      ? await userService.getAllUsers()
+      : await userService.getAssignableUsers();
     return NextResponse.json(createApiResponse(users));
   } catch (error) {
     return serverError('Failed to fetch users');

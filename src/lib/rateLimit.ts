@@ -20,7 +20,16 @@ export function checkRateLimit(
 
   if (!bucket || bucket.resetAt <= now) {
     if (buckets.size >= MAX_BUCKETS) {
-      buckets.clear();
+      // Sweep expired entries first, then evict oldest (Map iterates in
+      // insertion order) — never clear live buckets.
+      for (const [k, b] of buckets) {
+        if (b.resetAt <= now) buckets.delete(k);
+      }
+      while (buckets.size >= MAX_BUCKETS) {
+        const oldestKey = buckets.keys().next().value;
+        if (oldestKey === undefined) break;
+        buckets.delete(oldestKey);
+      }
     }
     buckets.set(key, { count: 1, resetAt: now + windowMs });
     return { allowed: true, retryAfterSeconds: 0 };
@@ -38,9 +47,24 @@ export function checkRateLimit(
 }
 
 export function getClientIp(request: Request): string {
+  // Prefer platform-set headers that clients can't spoof. When falling back to
+  // x-forwarded-for, take the LAST entry — the first is trivially spoofed,
+  // while the last is appended by the closest trusted proxy.
+  const vercelForwarded = request.headers.get('x-vercel-forwarded-for');
+  if (vercelForwarded) {
+    return vercelForwarded.split(',')[0].trim();
+  }
+
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) {
+    return realIp.trim();
+  }
+
   const forwarded = request.headers.get('x-forwarded-for');
   if (forwarded) {
-    return forwarded.split(',')[0].trim();
+    const parts = forwarded.split(',');
+    return parts[parts.length - 1].trim();
   }
-  return request.headers.get('x-real-ip') ?? 'unknown';
+
+  return 'unknown';
 }

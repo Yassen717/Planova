@@ -1,4 +1,4 @@
-import { prisma } from './db';
+import { prisma } from './prisma';
 
 export type CreateNotificationInput = {
   type: string;
@@ -90,6 +90,14 @@ export const notificationDbService = {
     return await prisma.notification.update({
       where: { id },
       data: { read: true },
+    });
+  },
+
+  // Set the read flag explicitly (supports un-marking a notification)
+  async setRead(id: string, read: boolean) {
+    return await prisma.notification.update({
+      where: { id },
+      data: { read },
     });
   },
 

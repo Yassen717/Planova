@@ -23,7 +23,7 @@ const createNotificationSchema = z.object({
 // Validation schema for updating a notification
 const updateNotificationSchema = z.object({
   id: z.string().min(1, 'Notification ID is required'),
-  read: z.boolean().optional(),
+  read: z.boolean(),
 });
 
 export async function GET(request: Request) {
@@ -33,11 +33,20 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId') || ctx.userId;
-    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit') as string) : 10;
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
-    
-    // Ensure user can only access their own notifications
-    if (userId !== ctx.userId) {
+
+    const limitParam = searchParams.get('limit');
+    let limit = 10;
+    if (limitParam !== null) {
+      const parsed = Number(limitParam);
+      if (limitParam.trim() === '' || !Number.isFinite(parsed)) {
+        return badRequest('Invalid limit parameter');
+      }
+      limit = Math.min(Math.max(Math.floor(parsed), 1), 100);
+    }
+
+    // Users can only access their own notifications; admins can view anyone's
+    if (userId !== ctx.userId && !ctx.isAdmin) {
       return forbidden('Forbidden: You can only access your own notifications');
     }
     
@@ -92,12 +101,9 @@ export async function PUT(request: Request) {
     if (existing.userId !== ctx.userId && !ctx.isAdmin) {
       return forbidden('Forbidden: You can only update your own notifications');
     }
-    
-    let notification;
-    if (read !== undefined) {
-      notification = await notificationDbService.markAsRead(id);
-    }
-    
+
+    const notification = await notificationDbService.setRead(id, read);
+
     return NextResponse.json(createApiResponse(notification));
   } catch (error) {
     console.error('Error updating notification:', error);

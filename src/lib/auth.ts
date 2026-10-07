@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rateLimit";
 import bcrypt from "bcryptjs";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -17,6 +18,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        // Rate limit credential attempts per account (not per IP — IPs are
+        // spoofable via x-forwarded-for). ~8 attempts per 15 minutes.
+        const email = String(credentials.email).toLowerCase().trim();
+        const { allowed } = checkRateLimit(`login:${email}`, 8, 15 * 60 * 1000);
+        if (!allowed) {
           return null;
         }
 

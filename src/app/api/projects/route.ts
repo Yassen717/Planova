@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { projectService } from '@/lib/projectService';
-import { createApiResponse, validateRequestBody } from '@/lib/api';
+import { createApiResponse, validateRequestBody, zDateString } from '@/lib/api';
 import {
   getAuthContext,
   canManageProject,
@@ -17,8 +17,8 @@ import { z } from 'zod';
 const createProjectSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
-  startDate: z.string().transform((str) => new Date(str)),
-  endDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
+  startDate: zDateString,
+  endDate: zDateString.optional(),
 });
 
 // PUT takes the project id in the request body
