@@ -1,5 +1,16 @@
-import { prisma } from './db';
+import { prisma } from './prisma';
 import bcrypt from 'bcryptjs';
+
+// Never return the password hash from service methods.
+const safeUserSelect = {
+  id: true,
+  email: true,
+  name: true,
+  role: true,
+  image: true,
+  createdAt: true,
+  updatedAt: true,
+} as const;
 
 export type CreateUserInput = {
   email: string;
@@ -24,6 +35,7 @@ export const userService = {
         password: hashedPassword,
         role: 'USER',
       },
+      select: safeUserSelect,
     });
   },
 
@@ -39,6 +51,20 @@ export const userService = {
       },
       orderBy: {
         createdAt: 'desc',
+      },
+    });
+  },
+
+  // Minimal public projection for pickers (e.g. task assignee dropdowns)
+  async getAssignableUsers() {
+    return await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        image: true,
+      },
+      orderBy: {
+        name: 'asc',
       },
     });
   },
@@ -75,10 +101,11 @@ export const userService = {
     });
   },
 
-  // Get user by email
+  // Get user by email (existence checks / lookups — password never selected)
   async getUserByEmail(email: string) {
     return await prisma.user.findUnique({
       where: { email },
+      select: safeUserSelect,
     });
   },
 
@@ -88,6 +115,7 @@ export const userService = {
     return await prisma.user.update({
       where: { id },
       data: updateData,
+      select: safeUserSelect,
     });
   },
 
@@ -95,6 +123,7 @@ export const userService = {
   async deleteUser(id: string) {
     return await prisma.user.delete({
       where: { id },
+      select: safeUserSelect,
     });
   },
 };

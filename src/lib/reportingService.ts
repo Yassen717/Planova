@@ -1,4 +1,4 @@
-import { prisma } from './db';
+import { prisma } from './prisma';
 
 export const reportingService = {
   // Get project statistics (for all projects - admin use)
@@ -325,36 +325,47 @@ export const reportingService = {
   async getTaskCompletionTrend(days: number = 30, userId?: string) {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
-    
+
     const completedTasks = await prisma.task.findMany({
       where: {
         status: 'DONE',
-        updatedAt: {
-          gte: startDate,
-        },
-        ...(userId
-          ? {
-              OR: [
-                { assigneeId: userId },
-                { project: { ownerId: userId } },
-                { project: { members: { some: { id: userId } } } },
-              ],
-            }
-          : {}),
+        AND: [
+          {
+            // completedAt is the canonical completion timestamp; tasks completed
+            // before the column existed fall back to updatedAt.
+            OR: [
+              { completedAt: { gte: startDate } },
+              { completedAt: null, updatedAt: { gte: startDate } },
+            ],
+          },
+          ...(userId
+            ? [
+                {
+                  OR: [
+                    { assigneeId: userId },
+                    { project: { ownerId: userId } },
+                    { project: { members: { some: { id: userId } } } },
+                  ],
+                },
+              ]
+            : []),
+        ],
       },
       select: {
+        completedAt: true,
         updatedAt: true,
       },
       orderBy: {
         updatedAt: 'asc',
       },
     });
-    
+
     // Group by date
     const trendData: Record<string, number> = {};
-    
+
     completedTasks.forEach(task => {
-      const date = task.updatedAt.toISOString().split('T')[0]; // YYYY-MM-DD
+      const completedAt = task.completedAt ?? task.updatedAt;
+      const date = completedAt.toISOString().split('T')[0]; // YYYY-MM-DD
       trendData[date] = (trendData[date] || 0) + 1;
     });
     

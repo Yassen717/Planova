@@ -1,12 +1,14 @@
-import { prisma } from './db';
+import { prisma } from './prisma';
 import { Task } from '@/types';
 import { notificationService } from './notificationService';
 
 export type CreateTaskInput = {
   title: string;
   description?: string;
+  status?: Task['status'];
+  priority?: Task['priority'];
   startDate: Date;
-  dueDate?: Date;
+  dueDate?: Date | null;
   projectId: string;
   assigneeId?: string;
 };
@@ -20,6 +22,7 @@ export type UpdateTaskInput = {
   startDate?: Date;
   dueDate?: Date | null;
   assigneeId?: string | null;
+  projectId?: string;
 };
 
 export const taskService = {
@@ -31,8 +34,9 @@ export const taskService = {
         description: input.description,
         startDate: input.startDate,
         dueDate: input.dueDate,
-        status: 'TODO',
-        priority: 'MEDIUM',
+        status: input.status ?? 'TODO',
+        priority: input.priority ?? 'MEDIUM',
+        completedAt: input.status === 'DONE' ? new Date() : null,
         projectId: input.projectId,
         assigneeId: input.assigneeId,
       },
@@ -203,7 +207,22 @@ export const taskService = {
 
   // Update task
   async updateTask(input: UpdateTaskInput) {
-    const { id, ...updateData } = input;
+    const { id, ...fields } = input;
+    const updateData: typeof fields & { completedAt?: Date | null } = { ...fields };
+
+    // Track completion time: set on transition to DONE, cleared when it leaves
+    if (updateData.status) {
+      const current = await prisma.task.findUnique({
+        where: { id },
+        select: { status: true },
+      });
+      if (updateData.status === 'DONE' && current?.status !== 'DONE') {
+        updateData.completedAt = new Date();
+      } else if (updateData.status !== 'DONE' && current?.status === 'DONE') {
+        updateData.completedAt = null;
+      }
+    }
+
     const task = await prisma.task.update({
       where: { id },
       data: updateData,

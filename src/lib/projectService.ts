@@ -1,4 +1,4 @@
-import { prisma } from './db';
+import { prisma } from './prisma';
 import { Project } from '@/types';
 import { notificationService } from './notificationService';
 
@@ -18,6 +18,24 @@ export type UpdateProjectInput = {
   startDate?: Date;
   endDate?: Date;
 };
+
+// Attach a doneTaskCount to each project with a single groupBy query
+// (no per-project N+1).
+async function withDoneTaskCounts<T extends { id: string }>(projects: T[]) {
+  if (projects.length === 0) {
+    return projects.map((p) => ({ ...p, doneTaskCount: 0 }));
+  }
+  const doneCounts = await prisma.task.groupBy({
+    by: ['projectId'],
+    where: {
+      projectId: { in: projects.map((p) => p.id) },
+      status: 'DONE',
+    },
+    _count: { _all: true },
+  });
+  const countByProject = new Map(doneCounts.map((d) => [d.projectId, d._count._all]));
+  return projects.map((p) => ({ ...p, doneTaskCount: countByProject.get(p.id) ?? 0 }));
+}
 
 export const projectService = {
   // Create a new project
@@ -60,7 +78,7 @@ export const projectService = {
 
   // Get all projects (admin only)
   async getAllProjects() {
-    return await prisma.project.findMany({
+    const projects = await prisma.project.findMany({
       include: {
         owner: {
           select: {
@@ -86,11 +104,12 @@ export const projectService = {
         createdAt: 'desc',
       },
     });
+    return withDoneTaskCounts(projects);
   },
 
   // Get projects for a specific user (projects they own or are a member of)
   async getProjectsByUser(userId: string) {
-    return await prisma.project.findMany({
+    const projects = await prisma.project.findMany({
       where: {
         OR: [
           { ownerId: userId },
@@ -122,6 +141,7 @@ export const projectService = {
         createdAt: 'desc',
       },
     });
+    return withDoneTaskCounts(projects);
   },
 
   // Get the fields needed for access control checks
