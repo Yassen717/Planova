@@ -10,6 +10,7 @@ import {
   badRequest,
   serverError,
 } from '@/lib/apiHelpers';
+import { updateProjectSchema } from '@/lib/validation';
 import { z } from 'zod';
 
 // Validation schema for creating a project
@@ -20,14 +21,9 @@ const createProjectSchema = z.object({
   endDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
 });
 
-// Validation schema for updating a project
-const updateProjectSchema = z.object({
+// PUT takes the project id in the request body
+const updateProjectBodySchema = updateProjectSchema.extend({
   id: z.string().min(1, 'Project ID is required'),
-  title: z.string().optional(),
-  description: z.string().optional(),
-  status: z.enum(['ACTIVE', 'COMPLETED', 'ARCHIVED']).optional(),
-  startDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
-  endDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
 });
 
 export async function GET() {
@@ -72,7 +68,7 @@ export async function PUT(request: Request) {
     if (!ctx) return unauthorized();
     if (ctx.isGuest) return forbidden('Forbidden: Guest users cannot update projects');
 
-    const validation = await validateRequestBody(request, updateProjectSchema);
+    const validation = await validateRequestBody(request, updateProjectBodySchema);
     if (!validation.success) return badRequest(validation.error);
     
     const access = await projectService.getProjectMembership(validation.data.id);

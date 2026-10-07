@@ -11,16 +11,7 @@ import {
   badRequest,
   serverError,
 } from '@/lib/apiHelpers';
-import { z } from 'zod';
-
-// Validation schema for updating a project
-const updateProjectSchema = z.object({
-  title: z.string().optional(),
-  description: z.string().optional(),
-  status: z.enum(['ACTIVE', 'COMPLETED', 'ARCHIVED']).optional(),
-  startDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
-  endDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
-});
+import { updateProjectSchema } from '@/lib/validation';
 
 export async function GET(
   request: Request,

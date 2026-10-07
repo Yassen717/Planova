@@ -4,7 +4,6 @@ import { projectService } from '@/lib/projectService';
 import { createApiResponse, validateRequestBody } from '@/lib/api';
 import {
   getAuthContext,
-  canViewTask,
   canModifyTask,
   canCollaborateOnProject,
   unauthorized,
@@ -13,6 +12,7 @@ import {
   badRequest,
   serverError,
 } from '@/lib/apiHelpers';
+import { updateTaskSchema } from '@/lib/validation';
 import { z } from 'zod';
 
 // Validation schema for creating a task
@@ -25,16 +25,10 @@ const createTaskSchema = z.object({
   assigneeId: z.string().nullish().transform((str) => str || undefined),
 });
 
-// Validation schema for updating a task
-const updateTaskSchema = z.object({
+// PUT takes the task id in the request body; projectId moves stay PATCH-only
+// because only PATCH verifies access to the target project
+const updateTaskBodySchema = updateTaskSchema.omit({ projectId: true }).extend({
   id: z.string().min(1, 'Task ID is required'),
-  title: z.string().optional(),
-  description: z.string().optional(),
-  status: z.enum(['TODO', 'IN_PROGRESS', 'REVIEW', 'DONE']).optional(),
-  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).optional(),
-  startDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
-  dueDate: z.string().nullish().transform((str) => str === null ? null : str ? new Date(str) : undefined),
-  assigneeId: z.string().nullish().transform((str) => str === null ? null : str || undefined),
 });
 
 export async function GET() {
@@ -81,7 +75,7 @@ export async function PUT(request: Request) {
     if (!ctx) return unauthorized();
     if (ctx.isGuest) return forbidden('Forbidden: Guest users cannot update tasks');
 
-    const validation = await validateRequestBody(request, updateTaskSchema);
+    const validation = await validateRequestBody(request, updateTaskBodySchema);
     if (!validation.success) return badRequest(validation.error);
     
     const access = await taskService.getTaskAccess(validation.data.id);
