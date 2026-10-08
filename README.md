@@ -70,7 +70,7 @@ You can test the application with these accounts:
 1. **Clone the repository**
    ```bash
    git clone https://github.com/Yassen717/Planova.git
-   cd planova
+   cd Planova
    ```
 
 2. **Install dependencies**
@@ -116,7 +116,7 @@ You can test the application with these accounts:
    4. Update `DATABASE_URL` and `DIRECT_URL` in `.env`
    
    **Option B: Vercel Postgres**
-   1. Go to [vercel.com/dashboard](https://vercel.com/dashboard)
+   1. Go to [vercel.com/dashboard](https://vercel.com/login)
    2. Storage → Create Database → Postgres
    3. Copy `POSTGRES_URL` to `.env`
    
@@ -263,10 +263,19 @@ planova/
 │   │   ├── tasks/            # Task components
 │   │   └── navigation/       # Navigation components
 │   ├── lib/                   # Utilities & services
-│   │   ├── auth.ts           # NextAuth configuration
-│   │   ├── auth-utils.ts     # Auth helper functions
-│   │   ├── prisma.ts         # Prisma client
-│   │   └── services/         # Business logic
+│   │   ├── auth.ts                   # NextAuth configuration
+│   │   ├── auth-utils.ts             # Auth helper functions
+│   │   ├── prisma.ts                 # Prisma client
+│   │   ├── authService.ts            # Auth business logic
+│   │   ├── commentService.ts         # Comment business logic
+│   │   ├── notificationService.ts    # Notification business logic
+│   │   ├── notificationDbService.ts  # Notification persistence
+│   │   ├── projectService.ts         # Project business logic
+│   │   ├── reportingService.ts       # Reporting business logic
+│   │   ├── taskService.ts            # Task business logic
+│   │   ├── userService.ts            # User business logic
+│   │   ├── constants/                # Shared constants
+│   │   └── utils/                    # Utility helpers
 │   ├── hooks/                 # Custom React hooks
 │   ├── types/                 # TypeScript types
 │   └── middleware.ts          # Route protection
@@ -380,7 +389,7 @@ For detailed authentication documentation, see [docs/authentication.md](docs/aut
 
 ### Quick Deploy to Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/planova)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Yassen717/Planova)
 
 ### Prerequisites for Deployment
 
@@ -436,8 +445,6 @@ For detailed authentication documentation, see [docs/authentication.md](docs/aut
 
 - [Authentication Guide](docs/authentication.md) - Complete auth documentation
 - [Authentication Testing](docs/authentication-testing.md) - Testing checklist
-- [Database Setup](migration-docs/NEXT_STEPS.md) - PostgreSQL setup guide
-- [Supabase Setup](migration-docs/SUPABASE_SETUP_STEPS.md) - Supabase configuration
 
 ---
 
